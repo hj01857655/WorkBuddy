@@ -1,0 +1,183 @@
+.wb-resource {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-3);
+}
+.wb-resource__group-label {
+  margin: 0;
+  padding-left: var(--wb-spacing-3);
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 400;
+  line-height: var(--wb-font-body-line-height);
+}
+.wb-resource__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-3);
+  padding: var(--wb-spacing-4) var(--wb-spacing-5);
+  background: var(--wb-bg-primary);
+  border: none;
+  border-radius: var(--wb-radius-xl);
+}
+.wb-resource__card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wb-spacing-3);
+  min-height: 28px;
+}
+.wb-resource__card-title {
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 500;
+  line-height: var(--wb-font-body-line-height);
+}
+.wb-resource__desc {
+  margin: 0;
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.wb-resource__placeholder,
+.wb-resource__error {
+  margin: 0;
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.wb-resource__placeholder {
+  color: var(--wb-color-text-tertiary);
+}
+.wb-resource__error {
+  color: var(--wb-status-error, var(--wb-color-text-primary));
+}
+.wb-resource__divider {
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  border: none;
+  background: var(--wb-border-subtle);
+}
+.wb-resource__overview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-3);
+}
+.wb-resource__metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-2);
+}
+.wb-resource__metric-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--wb-spacing-3);
+}
+.wb-resource__metric-name {
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.wb-resource__metric-value {
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.wb-resource__progress {
+  display: flex;
+  gap: 1px;
+  width: 100%;
+  height: var(--wb-spacing-2);
+  overflow: hidden;
+  background: var(--wb-button-grey-bg);
+  border-radius: var(--wb-radius-xs);
+}
+.wb-resource__progress-seg {
+  display: block;
+  height: 100%;
+  transition: width var(--wb-motion-duration-base) var(--wb-motion-easing-standard);
+}
+.wb-resource__progress-seg--self {
+  min-width: 6px;
+  background: var(--wb-color-text-brand-default);
+}
+.wb-resource__progress-seg--other {
+  background: var(--wb-color-text-tertiary);
+}
+.wb-resource__legend {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-5);
+  min-width: 0;
+}
+.wb-resource__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.wb-resource__legend-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+.wb-resource__legend-dot--self {
+  background: var(--wb-color-text-brand-default);
+}
+.wb-resource__legend-dot--other {
+  background: var(--wb-color-text-tertiary);
+}
+.wb-resource__legend-dot--free {
+  background: var(--wb-bg-tertiary);
+}
+.wb-resource__hint {
+  margin: 0;
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.wb-resource__table {
+  display: flex;
+  flex-direction: column;
+}
+.wb-resource__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 72px 88px 72px;
+  align-items: center;
+  gap: var(--wb-spacing-3);
+  min-height: 32px;
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.wb-resource__row--head {
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.wb-resource__row--head > span:not(:first-child) {
+  text-align: right;
+}
+.wb-resource__cell-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--wb-color-text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wb-resource__cell-num {
+  color: var(--wb-color-text-secondary);
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.wb-resource__copy {
+  flex-shrink: 0;
+  white-space: nowrap;
+}

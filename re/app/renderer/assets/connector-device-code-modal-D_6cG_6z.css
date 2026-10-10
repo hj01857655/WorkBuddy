@@ -1,0 +1,219 @@
+.connector-device-code-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--wb-bg-overlay);
+}
+/* Windows/Linux 桌面壳：让开顶部 30px 自绘窗口控件区，避免遮罩与按钮视觉串色。macOS 走原生 traffic light，不需要偏移。 */
+body[data-electron-desktop="true"][data-platform="windows"] .connector-device-code-modal-overlay,
+body[data-electron-desktop="true"]:not([data-platform="mac"]):not([data-platform="windows"]) .connector-device-code-modal-overlay {
+  top: var(--wb-desktop-menubar-height, 30px);
+}
+.connector-device-code-modal {
+  overflow: hidden;
+  position: relative;
+  background: var(--wb-bg-primary);
+  border-radius: 12px;
+  padding: 24px;
+  width: 440px;
+  max-width: 90vw;
+  box-shadow: var(--wb-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: deviceCodeModalSlideIn 0.3s ease-out;
+}
+@keyframes deviceCodeModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.connector-device-code-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.connector-device-code-modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.connector-device-code-modal-icon {
+  flex-shrink: 0;
+  border-radius: 6px;
+  object-fit: contain;
+}
+.connector-device-code-modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.connector-device-code-modal-close-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  color: var(--wb-color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.connector-device-code-modal-close-btn:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.connector-device-code-modal-close-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.connector-device-code-modal-primary-hint {
+  font-size: 14px;
+  color: var(--wb-color-text-primary);
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+}
+.connector-device-code-modal-code-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--wb-bg-secondary);
+  border: 1px solid var(--wb-border-default);
+  border-radius: 10px;
+}
+.connector-device-code-modal-code-display {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+.connector-device-code-modal-code {
+  flex: 1;
+  font-size: 30px;
+  font-weight: 700;
+  font-family: var(--wb-font-mono);
+  color: var(--wb-color-text-primary);
+  letter-spacing: 6px;
+  text-align: center;
+  background: var(--wb-bg-primary);
+  padding: 18px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--wb-border-default);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.connector-device-code-modal-code-copy-btn {
+  flex-shrink: 0;
+  width: 64px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  background: var(--wb-button-success-bg);
+  color: var(--wb-text-white);
+  cursor: pointer;
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+.connector-device-code-modal-code-copy-btn:hover {
+  background: var(--wb-button-success-bg-hover);
+}
+.connector-device-code-modal-code-copy-btn:active {
+  background: var(--wb-button-success-bg-hover);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.connector-device-code-modal-countdown {
+  font-size: 12px;
+  color: var(--wb-color-text-tertiary);
+  text-align: center;
+}
+.connector-device-code-modal-countdown.is-low {
+  color: var(--wb-warning);
+}
+.connector-device-code-modal-url-fallback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--wb-bg-secondary);
+  border: 1px solid var(--wb-border-default);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--wb-color-text-tertiary);
+}
+.connector-device-code-modal-url-fallback-label {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.connector-device-code-modal-url-link {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--wb-font-mono);
+  font-size: 11px;
+  color: var(--wb-color-text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.connector-device-code-modal-url-link:hover {
+  color: var(--wb-color-text-primary);
+  text-decoration: underline;
+}
+.connector-device-code-modal-url-copy-btn {
+  flex-shrink: 0;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 11px;
+  border: 1px solid var(--wb-border-default);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.connector-device-code-modal-url-copy-btn:hover {
+  color: var(--wb-color-text-primary);
+  border-color: var(--wb-border-strong);
+}
+.connector-device-code-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+.connector-device-code-modal-cancel-btn {
+  height: 32px;
+  min-width: 72px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-family: inherit;
+  border-radius: 8px;
+  border: 1px solid var(--wb-button-secondary-border, var(--wb-border-default));
+  background: var(--wb-button-secondary-bg, transparent);
+  color: var(--wb-button-secondary-fg, var(--wb-color-text-secondary));
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+.connector-device-code-modal-cancel-btn:hover:not(:disabled) {
+  background: var(--wb-button-secondary-bg-hover, var(--wb-bg-hover));
+}

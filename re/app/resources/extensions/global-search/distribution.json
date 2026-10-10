@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schemas.workbuddy.ai/extension-distribution.v1.json",
+  "extensionId": "global-search",
+  "version": "0.0.1",
+  "kind": "builtin",
+  "grantedPermissions": [
+    "*"
+  ],
+  "processPolicy": {
+    "server": null,
+    "renderer": null
+  },
+  "rollout": {
+    "strategy": "full",
+    "percentage": 100
+  },
+  "status": "active",
+  "resident": true,
+  "_comment": "global-search 是纯 UI 全局搜索窗口 —— 常驻，不参与 idle 驱逐。若资源违约仍可被 Guardian 降级（downgrade）—— 常驻不等于免死。"
+}

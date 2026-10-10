@@ -1,0 +1,28 @@
+{
+  "id": "library",
+  "name": "library",
+  "version": "0.0.1",
+  "description": "Library builtin extension loaded through a local federation proxy.",
+  "ui": {
+    "onLoadError": {
+      "errorMessage": "资料库加载失败，请检查网络并重试"
+    },
+    "entry": {
+      "title": "library",
+      "icon": "./assets/icon.svg",
+      "url": "./ui/assets/remoteEntry.js",
+      "keepAlive": true
+    },
+    "contributions": {
+      "artifactPreviews": [
+        {
+          "id": "library-document",
+          "match": {
+            "bizType": "workbuddy/browser-preview"
+          },
+          "url": "https://www.workbuddy.cn/space/extension-preview"
+        }
+      ]
+    }
+  }
+}

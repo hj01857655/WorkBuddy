@@ -1,0 +1,14 @@
+{
+  "id": "community",
+  "name": "灵感社区",
+  "version": "0.0.1",
+  "description": "灵感社区：发现、个人中心与发布，数据走 community-server。",
+
+  "ui": {
+    "entry": {
+      "title": "灵感社区",
+      "icon": "./assets/icon.svg",
+      "url": "./ui/assets/remoteEntry.js"
+    }
+  }
+}

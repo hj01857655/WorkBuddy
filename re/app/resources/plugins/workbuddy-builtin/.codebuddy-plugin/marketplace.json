@@ -1,0 +1,311 @@
+{
+  "name": "workbuddy-builtin",
+  "description": "WorkBuddy unified builtin marketplace. This directory is the target root for welcomeMode, interaction mode, skill, MCP, template, and resource plugins.",
+  "owner": {
+    "name": "WorkBuddy",
+    "email": "workbuddy@tencent.com"
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "phase": "addon-context-orchestration"
+  },
+  "plugins": [
+    {
+      "name": "welcomemode-code",
+      "description": "WorkBuddy coding welcomeMode root agent and resources.",
+      "source": "./welcomemode/code",
+      "category": "welcomeMode",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "welcomemode-work",
+      "description": "WorkBuddy working welcomeMode root agent and resources.",
+      "source": "./welcomemode/work",
+      "category": "welcomeMode",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "welcomemode-design",
+      "source": "./welcomemode/design",
+      "category": "welcomeMode",
+      "dependencies": [
+        "mcp-miora"
+      ],
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy design welcomeMode root agent and resources."
+    },
+    {
+      "name": "interactionmode-craft",
+      "source": "./interactionmode/craft",
+      "category": "interaction",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy craft interaction mode fragment and tool policy."
+    },
+    {
+      "name": "interactionmode-ask",
+      "source": "./interactionmode/ask",
+      "category": "interaction",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy ask interaction mode fragment and tool policy."
+    },
+    {
+      "name": "interactionmode-plan",
+      "source": "./interactionmode/plan",
+      "category": "interaction",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy plan interaction mode fragment and tool policy."
+    },
+    {
+      "name": "interactionmode-expert",
+      "source": "./interactionmode/expert",
+      "category": "interaction",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy expert interaction mode fragment and tool policy."
+    },
+    {
+      "name": "interactionmode-quick",
+      "source": "./interactionmode/quick",
+      "category": "interaction",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy quick Q&A interaction mode fragment and tool policy."
+    },
+    {
+      "name": "prompt-common",
+      "source": "./prompt-common",
+      "category": "template",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy shared prompt fragments for welcomeMode templates."
+    },
+    {
+      "name": "skill-ardot-design-core",
+      "description": "Design scene catalog and shared Ardot design guidance.",
+      "source": "./skills/ardot-design-core",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "skill-expert-manager",
+      "source": "./skills/expert-manager",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: expert-manager."
+    },
+    {
+      "name": "skill-wb-finance-skill",
+      "source": "./skills/wb-finance-skill",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: wb-finance-skill."
+    },
+    {
+      "name": "skill-ardot-poster",
+      "source": "./skills/ardot-poster",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: ardot-poster."
+    },
+    {
+      "name": "skill-livestream-poster",
+      "source": "./skills/livestream-poster",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: livestream-poster."
+    },
+    {
+      "name": "skill-marketplace-skill-installer",
+      "source": "./skills/marketplace-skill-installer",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: marketplace-skill-installer."
+    },
+    {
+      "name": "skill-recommend-connectors",
+      "description": "Recommend real, currently disconnected Connector plugins for the active task.",
+      "source": "./skills/recommend-connectors",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "skill-recommend-experts",
+      "description": "Recommend curated, locally valid Experts or Expert Teams for the active task.",
+      "source": "./skills/recommend-experts",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "skill-design-router",
+      "source": "./skills/design-router",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: design-router."
+    },
+    {
+      "name": "skill-ardot-design-to-code",
+      "source": "./skills/ardot-design-to-code",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: ardot-design-to-code."
+    },
+    {
+      "name": "skill-buddy-multimodal-generation",
+      "source": "./skills/buddy-multimodal-generation",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: buddy-multimodal-generation."
+    },
+    {
+      "name": "skill-buddy-image-processing",
+      "description": "WorkBuddy bundled skill resource: buddy-image-processing.",
+      "source": "./skills/buddy-image-processing",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "skill-ardot-ui-design",
+      "source": "./skills/ardot-ui-design",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: ardot-ui-design."
+    },
+    {
+      "name": "skill-skill-creator",
+      "source": "./skills/skill-creator",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: skill-creator."
+    },
+    {
+      "name": "skill-sites",
+      "source": "./skills/sites",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: sites."
+    },
+    {
+      "name": "skill-ardot-slides",
+      "source": "./skills/ardot-slides",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: ardot-slides."
+    },
+    {
+      "name": "skill-geo-map-compliance-guard",
+      "source": "./skills/geo-map-compliance-guard",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: geo-map-compliance-guard."
+    },
+    {
+      "name": "skill-library",
+      "source": "./skills/library",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: library."
+    },
+    {
+      "name": "skill-tencent-docs-routing",
+      "source": "./skills/tencent-docs-routing",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: tencent-docs-routing."
+    },
+    {
+      "name": "skill-tencent-local-office-edit",
+      "source": "./skills/tencent-local-office-edit",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: tencent-local-office-edit."
+    },
+    {
+      "name": "skill-miora-creative-core",
+      "source": "./skills/miora-creative-core",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: miora-creative-core."
+    },
+    {
+      "name": "skill-miora-brand-design",
+      "source": "./skills/miora-brand-design",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: miora-brand-design."
+    },
+    {
+      "name": "skill-miora-image-generation",
+      "source": "./skills/miora-image-generation",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: miora-image-generation."
+    },
+    {
+      "name": "skill-miora-video-generation",
+      "source": "./skills/miora-video-generation",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: miora-video-generation."
+    },
+    {
+      "name": "skill-cloud-service",
+      "source": "./skills/cloud-service",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled skill resource: cloud-service."
+    },
+    {
+      "name": "skill-wecom-forwarded-chat-resources",
+      "description": "Fetch the online resources listed in a WeCom forwarded-chat archive through the WeCom connector.",
+      "source": "./skills/wecom-forwarded-chat-resources",
+      "category": "skill",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "mcp-ardot-mcp-app",
+      "source": "./mcps/ardot-mcp-app",
+      "category": "mcp-app",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+      "description": "WorkBuddy bundled MCP app resource: ardot-mcp-app."
+    },
+    {
+      "name": "mcp-miora",
+      "description": "WorkBuddy bundled MCP app resource: Miora canvas and media generation.",
+      "source": "./mcps/miora-mcp",
+      "category": "mcp-app",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "weixinpay",
+      "description": "WeixinPay bundled plugin resource.",
+      "source": "./builtin-plugins/weixinpay",
+      "category": "builtin-plugin",
+      "version": "1.6.110"
+    },
+    {
+      "name": "tencent-docs-plugin",
+      "description": "Tencent Docs bundled plugin resource.",
+      "source": "./builtin-plugins/tencent-docs-plugin",
+      "category": "builtin-plugin",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "sheetagent",
+      "description": "Tencent Docs bundled spreadsheet agent.",
+      "source": "./builtin-plugins/sheetagent",
+      "category": "builtin-plugin",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "tencent-pptx",
+      "description": "Tencent Docs bundled presentation plugin.",
+      "source": "./builtin-plugins/tencent-pptx",
+      "category": "builtin-plugin",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    },
+    {
+      "name": "tencent-docx",
+      "description": "Tencent Docs bundled document plugin.",
+      "source": "./builtin-plugins/tencent-docx",
+      "category": "builtin-plugin",
+      "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a"
+    }
+  ]
+}

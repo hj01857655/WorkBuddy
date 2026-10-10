@@ -1,0 +1,1406 @@
+@charset "UTF-8";.cloud-service-manager {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+}
+.cloud-service-manager-view {
+  --cloud-service-content-min-height: 320px;
+  --cloud-service-empty-min-height: 280px;
+  --cloud-service-state-icon-size: 56px;
+  --cloud-service-state-text-max-width: 480px;
+  --cloud-service-status-bar-height: 40px;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  overflow-x: auto;
+  flex-direction: column;
+  background: var(--wb-color-bg-secondary-default);
+  container-name: cloud-service-manager;
+  container-type: inline-size;
+}
+.cloud-service-manager-view::-webkit-scrollbar {
+  width: var(--wb-spacing-1);
+  height: var(--wb-spacing-1);
+}
+.cloud-service-manager-view::-webkit-scrollbar-thumb {
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-scrollbar-thumb);
+}
+.cloud-service-manager-view::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-scrollbar-thumb-hover);
+}
+.cloud-service-manager-view::-webkit-scrollbar-track, .cloud-service-manager-view::-webkit-scrollbar-corner {
+  background: transparent;
+}
+.cloud-service-manager-view .wb-table__scroll::-webkit-scrollbar {
+  width: var(--wb-spacing-1);
+  height: var(--wb-spacing-1);
+}
+.cloud-service-manager-view .wb-table__scroll::-webkit-scrollbar-thumb {
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-scrollbar-thumb);
+}
+.cloud-service-manager-view .wb-table__scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-scrollbar-thumb-hover);
+}
+.cloud-service-manager-view .wb-table__scroll::-webkit-scrollbar-track, .cloud-service-manager-view .wb-table__scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+.cloud-service-manager-view {
+  /* <400px 时组件停止继续压缩。滚动能力由统一组件自身提供，不能依赖 Chat、设置页或
+     Mock 宿主是否恰好声明 overflow。每个实际内容面保持相同最小宽度。 */
+  /* :not() 提升一级选择器权重，确保子模块自身的 min-width: 0 不会覆盖 400px 保底。 */
+}
+.cloud-service-manager-view > *:not([data-cloud-service-ignore-min-width]) {
+  min-width: 400px;
+}
+.cloud-service-manager-view--loading {
+  min-height: var(--cloud-service-content-min-height);
+  align-items: center;
+  justify-content: center;
+}
+.cloud-service-manager-view--loading > .wb-loading {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+.cloud-service-manager-view__status-bar {
+  display: flex;
+  min-height: var(--cloud-service-status-bar-height);
+  padding: var(--wb-spacing-2) var(--wb-spacing-4);
+  align-items: center;
+  justify-content: flex-end;
+}
+.cloud-service-manager-view__status-badge {
+  display: inline-flex;
+  min-height: 24px;
+  padding: 0 var(--wb-spacing-3);
+  align-items: center;
+  border-radius: var(--wb-radius-md);
+  background: var(--wb-status-warning-soft);
+  color: var(--wb-status-warning);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-manager-view__status-badge.wb-button {
+  min-width: auto;
+}
+.cloud-service-manager-view__status-badge.wb-button:hover:not(:disabled) {
+  background: var(--wb-status-warning-soft);
+}
+.cloud-service-onboarding {
+  /* 视觉稿实测值（Ardot「云服务-未开启」画板，逐节点取自属性面板）：
+     内容容器 600×688 / padding 160(v) 12(h)
+     内容块 552×300：标题(35) + gap 20 + 卡片区(149) + gap 48 + CTA(320×48)
+     卡片 272×70 / 圆角 16 / padding 12(v) 16(h) / 内部 gap 4 / 列 gap 8 / 行 gap 8
+     颜色 / 圆角 / 间距 / 字号优先走 --wb-* token；token 无对应档位的钉死值
+     （块宽 552、CTA 320、标题行高 35、内容块距顶 160）收敛为下方模块变量。 */
+  --cloud-service-onboarding-block-width: 552px;
+  --cloud-service-onboarding-block-offset-top: 160px;
+  --cloud-service-onboarding-card-min-height: 70px;
+  --cloud-service-onboarding-title-line-height: 35px;
+  /* TODO(token)：35px 行高在 wb-components 无对应档位（--wb-font-h2-line-height 为 28px），
+     按设计稿钉死。若确认长期沿用，需在 wb-components 独立 PR 补该档再切回 token。 */
+  /* CTA 固定 320×48：宽度钉死于此，高度由 Button size="large" 提供 */
+  --cloud-service-onboarding-cta-width: 320px;
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  /* 内容块不居中：距内容区顶部固定 160px，与视觉稿的 v-padding 一致 */
+  padding: var(--cloud-service-onboarding-block-offset-top) var(--wb-spacing-4) var(--wb-spacing-4);
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* BFC，防子元素 margin 溢出 */
+  overflow: hidden;
+  color: var(--wb-color-text-primary);
+}
+.cloud-service-onboarding__title {
+  max-width: var(--cloud-service-onboarding-block-width);
+  margin: 0;
+  /* 20px / 行高 35：字号命中 --wb-font-h2-size，行高无对应 token */
+  font-size: var(--wb-font-h2-size);
+  line-height: var(--cloud-service-onboarding-title-line-height);
+  font-weight: var(--wb-font-h2-weight);
+  text-align: center;
+}
+.cloud-service-onboarding__cards {
+  display: grid;
+  /* 固定 2×2：视觉稿为两行两列，不随宿主宽度退化成 1 列或摊成 4 列 */
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+  max-width: var(--cloud-service-onboarding-block-width);
+  /* 标题与卡片区间距 20px */
+  margin: var(--wb-spacing-6) 0 0;
+  padding: 0;
+  /* 行列间距均为 8px */
+  gap: var(--wb-spacing-3);
+  list-style: none;
+}
+.cloud-service-onboarding__card {
+  display: flex;
+  /* 设计稿 70 是卡片外框高（12 + 22 + 4 + 20 + 12），必须按 border-box 计。
+     用 min-height 而非 height：描述换到第二行时允许长高，不裁字。 */
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--cloud-service-onboarding-card-min-height);
+  padding: var(--wb-spacing-4) var(--wb-spacing-5);
+  flex-direction: column;
+  /* 标题行与描述行间距 4px */
+  gap: var(--wb-spacing-2);
+  border-radius: var(--wb-radius-2xl);
+  background: var(--wb-bg-card-strong);
+}
+.cloud-service-onboarding__card-heading {
+  /* 图标与标题同一行，间距 4px */
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+}
+.cloud-service-onboarding__card-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--wb-icon-default);
+}
+.cloud-service-onboarding__card-title {
+  min-width: 0;
+  /* 14px / 行高 22 */
+  font-size: var(--wb-font-body-strong-size);
+  line-height: var(--wb-font-body-strong-line-height);
+  font-weight: var(--wb-font-body-strong-weight);
+}
+.cloud-service-onboarding__card-description {
+  /* 卡片在设计稿中固定 70px，描述是单行次要文案。使用 caption 字号后，
+     600px 基准下四条中文文案均完整展示；更窄表面允许省略，但不能把卡片撑高。 */
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-line-height-5);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloud-service-onboarding__quota-note {
+  max-width: var(--cloud-service-onboarding-block-width);
+  margin: var(--wb-spacing-4) 0 0;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-line-height-5);
+  text-align: center;
+}
+.cloud-service-onboarding__error {
+  max-width: var(--cloud-service-onboarding-block-width);
+  margin: var(--wb-spacing-4) 0 0;
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-line-height-5);
+  text-align: center;
+}
+.cloud-service-onboarding__action {
+  /* 固定尺寸主 CTA：320×48，圆角 12。明确不与能力卡片区等宽，也不用 fullWidth。
+     高度走 Button 的 size="large"（原生 48px），此处只钉宽度与上间距。 */
+  width: var(--cloud-service-onboarding-cta-width);
+  /* 卡片区与 CTA 间距 48px */
+  margin-top: var(--wb-spacing-10);
+}
+.cloud-service-onboarding {
+  /* 追加了额度说明或错误提示时，说明行已提供留白，CTA 上间距收窄避免叠加过大 */
+}
+.cloud-service-onboarding__quota-note + .cloud-service-onboarding__action, .cloud-service-onboarding__error + .cloud-service-onboarding__action {
+  margin-top: var(--wb-spacing-7);
+}
+.cloud-service-state-view {
+  display: flex;
+  flex: 1;
+  min-height: var(--cloud-service-content-min-height);
+  padding: var(--wb-spacing-12) var(--wb-spacing-6);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  color: var(--wb-color-text-primary);
+}
+.cloud-service-state-view__icon {
+  display: flex;
+  width: var(--cloud-service-state-icon-size);
+  height: var(--cloud-service-state-icon-size);
+  margin-bottom: var(--wb-spacing-4);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--wb-radius-xl);
+  background: var(--wb-bg-secondary);
+  color: var(--wb-color-text-brand-default);
+  /* 独立 Loading 默认按内容尺寸收缩。状态图标槽占满 56×56 后再居中，
+     避免不同宿主的行盒或缩放造成 spinner 的视觉偏移。 */
+}
+.cloud-service-state-view__icon > .wb-loading {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+.cloud-service-state-view__title {
+  margin: 0;
+  font-size: var(--wb-font-h2-size);
+  font-weight: var(--wb-font-h2-weight);
+  line-height: var(--wb-font-h2-line-height);
+}
+.cloud-service-state-view__description {
+  max-width: var(--cloud-service-state-text-max-width);
+  margin: var(--wb-spacing-2) 0 0;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.cloud-service-state-view__description > span {
+  display: block;
+}
+.cloud-service-state-view__error {
+  max-width: var(--cloud-service-state-text-max-width);
+  margin: var(--wb-spacing-3) 0 0;
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-state-view__action {
+  margin-top: var(--wb-spacing-6);
+}
+.cloud-service-state-view--product-status .cloud-service-state-view__icon {
+  width: 96px;
+  height: 96px;
+  margin-bottom: 0;
+  background: transparent;
+}
+.cloud-service-state-view--product-status .cloud-service-state-view__icon > img {
+  display: block;
+  width: 96px;
+  height: 96px;
+}
+.cloud-service-state-view--product-status .cloud-service-state-view__title {
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  font-weight: var(--wb-font-body-strong-weight);
+  line-height: var(--wb-font-body-strong-line-height);
+}
+.cloud-service-state-view--product-status .cloud-service-state-view__description {
+  max-width: 360px;
+  margin-top: var(--wb-spacing-3);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-line-height-5-2);
+}
+.cloud-service-state-view--product-status .cloud-service-state-view__action {
+  margin-top: var(--wb-spacing-3);
+}.cloud-service-workspace {
+  --cloud-service-navigation-width: 120px;
+  --cloud-service-navigation-collapsed-width: 48px;
+  --cloud-service-navigation-item-width: 96px;
+  --cloud-service-navigation-item-height: var(--wb-size-8);
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--wb-bg-primary);
+}
+.cloud-service-workspace__navigation {
+  display: flex;
+  width: var(--cloud-service-navigation-width);
+  flex: 0 0 var(--cloud-service-navigation-width);
+  min-height: 0;
+  padding: var(--wb-spacing-5) var(--wb-spacing-4);
+  flex-direction: column;
+  box-sizing: border-box;
+  border-right: 1px solid var(--wb-border-default);
+  background: var(--wb-bg-primary);
+  transition: width var(--wb-motion-duration-base) var(--wb-motion-easing-standard), flex-basis var(--wb-motion-duration-base) var(--wb-motion-easing-standard);
+}
+.cloud-service-workspace__navigation-title {
+  display: flex;
+  width: var(--cloud-service-navigation-item-width);
+  min-height: 32px;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.cloud-service-workspace__collapse, .cloud-service-workspace__navigation-item {
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.cloud-service-workspace__collapse {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--wb-radius-md);
+}
+.cloud-service-workspace__collapse:hover {
+  background: var(--wb-bg-hover);
+}
+.cloud-service-workspace__navigation-list {
+  display: flex;
+  width: var(--cloud-service-navigation-item-width);
+  margin-top: var(--wb-spacing-3);
+  flex-direction: column;
+  gap: var(--wb-spacing-3);
+}
+.cloud-service-workspace__navigation-item {
+  display: flex;
+  width: var(--cloud-service-navigation-item-width);
+  min-width: 0;
+  height: var(--cloud-service-navigation-item-height);
+  padding: 0 var(--wb-spacing-3);
+  align-items: center;
+  gap: var(--wb-spacing-3);
+  border-radius: var(--wb-radius-lg);
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+  text-align: left;
+}
+.cloud-service-workspace__navigation-item[aria-current=page] {
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-secondary);
+  font-weight: var(--wb-font-body-strong-weight);
+}
+.cloud-service-workspace__navigation-icon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+.cloud-service-workspace__navigation-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloud-service-workspace__panel {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: var(--wb-bg-primary);
+}
+.cloud-service-workspace--collapsed .cloud-service-workspace__navigation {
+  width: var(--cloud-service-navigation-collapsed-width);
+  flex-basis: var(--cloud-service-navigation-collapsed-width);
+  padding-inline: var(--wb-spacing-3);
+}
+.cloud-service-workspace--collapsed .cloud-service-workspace__navigation-title > span, .cloud-service-workspace--collapsed .cloud-service-workspace__navigation-label {
+  display: none;
+}
+.cloud-service-workspace--collapsed .cloud-service-workspace__navigation-title, .cloud-service-workspace--collapsed .cloud-service-workspace__navigation-list, .cloud-service-workspace--collapsed .cloud-service-workspace__navigation-item {
+  width: var(--cloud-service-navigation-item-height);
+  padding-inline: 0;
+  justify-content: center;
+}
+.cloud-service-workspace__unavailable {
+  display: flex;
+  min-height: var(--cloud-service-empty-min-height);
+  padding: var(--wb-spacing-8);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+.cloud-service-workspace__unavailable h2 {
+  margin: 0;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-h3-size);
+  font-weight: var(--wb-font-h3-weight);
+}
+.cloud-service-workspace__unavailable p {
+  margin: var(--wb-spacing-2) 0 0;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+}
+
+@container cloud-service-manager (max-width: 499px) {
+  .cloud-service-workspace__navigation {
+    width: var(--cloud-service-navigation-collapsed-width);
+    flex-basis: var(--cloud-service-navigation-collapsed-width);
+    padding-inline: var(--wb-spacing-3);
+  }
+  .cloud-service-workspace__navigation-title {
+    display: none;
+  }
+  .cloud-service-workspace__navigation-label {
+    display: none;
+  }
+  .cloud-service-workspace__navigation-list, .cloud-service-workspace__navigation-item {
+    width: var(--cloud-service-navigation-item-height);
+    padding-inline: 0;
+    justify-content: center;
+  }
+}.cloud-service-analytics {
+  min-width: 0;
+  min-height: 100%;
+  padding: var(--wb-spacing-5);
+  box-sizing: border-box;
+}
+.cloud-service-analytics__section-title, .cloud-service-analytics__trend-header h2, .cloud-service-analytics__users h2, .cloud-service-analytics__error h2 {
+  margin: 0;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-spec-h7-size);
+  font-weight: var(--wb-font-weight-600);
+  line-height: var(--wb-font-spec-h7-line-height);
+}
+.cloud-service-analytics__metrics {
+  display: grid;
+  margin-top: var(--wb-spacing-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-radius: var(--wb-radius-lg);
+  background: var(--wb-bg-secondary);
+}
+.cloud-service-analytics__metric {
+  position: relative;
+  min-width: 0;
+  padding: var(--wb-spacing-4);
+}
+.cloud-service-analytics__metric:not(:last-child)::after {
+  position: absolute;
+  top: var(--wb-spacing-4);
+  right: 0;
+  bottom: var(--wb-spacing-4);
+  width: 1px;
+  background: var(--wb-border-default);
+  content: "";
+}
+.cloud-service-analytics__metric span,
+.cloud-service-analytics__metric strong {
+  display: block;
+}
+.cloud-service-analytics__metric span {
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-analytics__metric strong {
+  margin-top: var(--wb-spacing-1);
+  font-size: var(--wb-font-h2-size);
+  font-weight: var(--wb-font-h2-weight);
+  line-height: var(--wb-font-h2-line-height);
+}
+.cloud-service-analytics__trend-header, .cloud-service-analytics__users-header, .cloud-service-analytics__users-header > div, .cloud-service-analytics__inline-error {
+  display: flex;
+  align-items: center;
+}
+.cloud-service-analytics__inline-error {
+  margin-bottom: var(--wb-spacing-3);
+  justify-content: flex-end;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-analytics__trend-header {
+  margin-top: var(--wb-spacing-5);
+  justify-content: space-between;
+  gap: var(--wb-spacing-3);
+}
+.cloud-service-analytics__chart {
+  min-width: 0;
+  margin-top: var(--wb-spacing-3);
+}
+.cloud-service-analytics__chart svg {
+  display: block;
+  width: 100%;
+  height: 140px;
+  overflow: visible;
+}
+.cloud-service-analytics__chart line {
+  stroke: var(--wb-border-default);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.cloud-service-analytics__chart polyline {
+  fill: none;
+  stroke: var(--wb-brand-primary);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.cloud-service-analytics__chart-labels {
+  display: flex;
+  min-height: 20px;
+  justify-content: space-between;
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-analytics__users {
+  margin-top: var(--wb-spacing-5);
+}
+.cloud-service-analytics__users-header {
+  min-height: 32px;
+  margin-bottom: var(--wb-spacing-2);
+  justify-content: space-between;
+  gap: var(--wb-spacing-3);
+}
+.cloud-service-analytics__users-header > div {
+  gap: var(--wb-spacing-2);
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-analytics__error {
+  display: flex;
+  min-height: 260px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+.cloud-service-analytics__error p {
+  margin: var(--wb-spacing-2) 0 var(--wb-spacing-4);
+  color: var(--wb-color-text-secondary);
+}
+
+@container cloud-service-manager (max-width: 499px) {
+  .cloud-service-analytics {
+    padding-inline: var(--wb-spacing-3);
+  }
+}.cloud-service-auth {
+  min-width: 0;
+  min-height: 100%;
+  padding: var(--wb-spacing-4) var(--wb-spacing-5) var(--wb-spacing-5);
+  box-sizing: border-box;
+}
+.cloud-service-auth__error {
+  display: flex;
+  margin-top: var(--wb-spacing-3);
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-auth__providers {
+  display: flex;
+  flex-direction: column;
+}
+.cloud-service-auth__provider {
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  padding: var(--wb-spacing-3) 0;
+  border: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wb-spacing-4);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.cloud-service-auth__provider:focus-visible {
+  border-radius: var(--wb-radius-sm);
+  outline: 2px solid var(--wb-color-border-focus);
+  outline-offset: 2px;
+}
+.cloud-service-auth__provider:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.cloud-service-auth__provider-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--wb-spacing-1);
+}
+.cloud-service-auth__provider-content strong {
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  font-weight: var(--wb-font-body-strong-weight);
+  line-height: var(--wb-font-body-line-height);
+}
+.cloud-service-auth__provider-content > span {
+  overflow: hidden;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloud-service-auth__provider-action {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: var(--wb-spacing-3);
+  color: var(--wb-color-text-tertiary);
+}
+
+@container cloud-service-manager (max-width: 499px) {
+  .cloud-service-auth {
+    padding-inline: var(--wb-spacing-3);
+  }
+}
+/* TODO: 此样式文件已超过 200 行，后续按详情布局与模式卡片拆分。 */
+.cloud-service-auth-detail {
+  min-width: 0;
+  min-height: 100%;
+  padding: var(--wb-spacing-4) var(--wb-spacing-5) var(--wb-spacing-5);
+  box-sizing: border-box;
+}
+.cloud-service-auth-detail__back {
+  display: inline-flex;
+  margin-bottom: var(--wb-spacing-4);
+  padding: 0;
+  border: 0;
+  align-items: center;
+  gap: var(--wb-spacing-1);
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  font: inherit;
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+  cursor: pointer;
+}
+.cloud-service-auth-detail__back:hover {
+  color: var(--wb-color-text-primary);
+}
+.cloud-service-auth-detail__back:focus-visible {
+  border-radius: var(--wb-radius-sm);
+  outline: 2px solid var(--wb-color-border-focus);
+  outline-offset: 2px;
+}
+.cloud-service-auth-detail__header {
+  margin-bottom: var(--wb-spacing-6);
+}
+.cloud-service-auth-detail__header h2 {
+  margin: 0 0 var(--wb-spacing-1);
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-spec-h7-size);
+  font-weight: var(--wb-font-weight-600);
+  line-height: var(--wb-font-spec-h7-line-height);
+}
+.cloud-service-auth-detail__header p {
+  margin: 0;
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-auth-detail__toggle-row {
+  display: flex;
+  margin-bottom: var(--wb-spacing-6);
+  padding: var(--wb-spacing-4);
+  border-radius: var(--wb-radius-lg);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wb-spacing-4);
+  background: var(--wb-bg-card-strong);
+}
+.cloud-service-auth-detail__toggle-label {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--wb-spacing-1);
+}
+.cloud-service-auth-detail__toggle-label strong {
+  color: var(--wb-color-text-secondary-solid);
+  font-size: var(--wb-font-spec-h8-size);
+  font-weight: var(--wb-font-weight-600);
+  line-height: var(--wb-font-spec-h8-line-height);
+}
+.cloud-service-auth-detail__toggle-label span {
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-auth-detail__section {
+  margin-bottom: var(--wb-spacing-6);
+}
+.cloud-service-auth-detail__section > h3 {
+  margin: 0 0 var(--wb-spacing-3);
+  color: var(--wb-color-text-secondary-solid);
+  font-size: var(--wb-font-spec-h8-size);
+  font-weight: var(--wb-font-weight-600);
+  line-height: var(--wb-font-spec-h8-line-height);
+}
+.cloud-service-auth-detail__mode-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--wb-spacing-3);
+}
+.cloud-service-auth-detail__mode-card {
+  display: flex;
+  padding: var(--wb-spacing-4);
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: var(--wb-radius-lg);
+  align-items: flex-start;
+  gap: var(--wb-spacing-3);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.cloud-service-auth-detail__mode-card:hover {
+  border-color: var(--wb-color-border-primary);
+}
+.cloud-service-auth-detail__mode-card:focus-visible {
+  outline: 2px solid var(--wb-color-border-focus);
+  outline-offset: -2px;
+}
+.cloud-service-auth-detail__mode-card:disabled {
+  border-color: var(--wb-color-border-secondary);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.cloud-service-auth-detail__mode-card--active {
+  border-color: var(--wb-brand-primary);
+  background: var(--wb-bg-card-strong);
+}
+.cloud-service-auth-detail__mode-radio {
+  display: flex;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border: 2px solid var(--wb-color-border-primary);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.cloud-service-auth-detail__mode-radio::after {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  content: "";
+  transition: background 0.15s;
+}
+.cloud-service-auth-detail__mode-card--active .cloud-service-auth-detail__mode-radio {
+  border-color: var(--wb-brand-primary);
+}
+.cloud-service-auth-detail__mode-card--active .cloud-service-auth-detail__mode-radio::after {
+  background: var(--wb-brand-primary);
+}
+.cloud-service-auth-detail__mode-icon {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  margin-top: 2px;
+  border-radius: var(--wb-radius-md);
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  background: var(--wb-bg-card-strong);
+  color: var(--wb-color-text-secondary);
+}
+.cloud-service-auth-detail__mode-card--active .cloud-service-auth-detail__mode-icon {
+  background: var(--wb-brand-primary-subtle);
+  color: var(--wb-brand-primary);
+}
+.cloud-service-auth-detail__mode-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--wb-spacing-1);
+}
+.cloud-service-auth-detail__mode-content strong {
+  color: var(--wb-color-text-secondary-solid);
+  font-size: var(--wb-font-spec-h8-size);
+  font-weight: var(--wb-font-weight-600);
+  line-height: var(--wb-font-spec-h8-line-height);
+}
+.cloud-service-auth-detail__mode-content span {
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-auth-detail__custom-fields {
+  display: flex;
+  margin-top: var(--wb-spacing-4);
+  flex-direction: column;
+  gap: var(--wb-spacing-4);
+}
+.cloud-service-auth-detail__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-2);
+}
+.cloud-service-auth-detail__field label {
+  color: var(--wb-color-text-secondary-solid);
+  font-size: var(--wb-font-body-size);
+  font-weight: var(--wb-font-body-strong-weight);
+  line-height: var(--wb-font-body-strong-line-height);
+}
+.cloud-service-auth-detail__field > span {
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-auth-detail__field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--wb-spacing-3);
+}
+.cloud-service-auth-detail__info-box {
+  margin-top: var(--wb-spacing-3);
+  padding: var(--wb-spacing-3) var(--wb-spacing-4);
+  border-radius: var(--wb-radius-md);
+  background: var(--wb-bg-card-strong);
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-auth-detail__redirect-box {
+  margin-top: var(--wb-spacing-3);
+  padding: var(--wb-spacing-3) var(--wb-spacing-4);
+  border: 1px solid var(--wb-status-warning);
+  border-radius: var(--wb-radius-md);
+  background: var(--wb-status-warning-soft);
+}
+.cloud-service-auth-detail__redirect-box p {
+  margin: 0 0 var(--wb-spacing-2);
+  color: var(--wb-status-warning);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-auth-detail__redirect-box-uri {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wb-spacing-2);
+}
+.cloud-service-auth-detail__redirect-box-uri code {
+  overflow: hidden;
+  min-width: 0;
+  flex: 1;
+  color: var(--wb-color-text-primary);
+  font-family: var(--wb-font-mono);
+  font-size: var(--wb-font-caption-size);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloud-service-auth-detail__template-note {
+  margin-top: var(--wb-spacing-3);
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-auth-detail__actions {
+  display: flex;
+  margin-top: var(--wb-spacing-8);
+  gap: var(--wb-spacing-3);
+}
+.cloud-service-auth-detail__actions > * {
+  flex: 1;
+}
+.cloud-service-auth-detail__error {
+  display: flex;
+  margin-top: var(--wb-spacing-3);
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+}
+
+@container cloud-service-manager (max-width: 499px) {
+  .cloud-service-auth-detail {
+    padding-inline: var(--wb-spacing-3);
+  }
+  .cloud-service-auth-detail__mode-cards {
+    grid-template-columns: 1fr;
+  }
+  .cloud-service-auth-detail__field-row {
+    grid-template-columns: 1fr;
+  }
+}.cloud-service-database {
+  min-width: 0;
+  min-height: 100%;
+  padding: var(--wb-spacing-4) var(--wb-spacing-5) var(--wb-spacing-5);
+  box-sizing: border-box;
+}
+.cloud-service-database__sections {
+  --wb-tabs-panel-gap: var(--wb-spacing-5);
+  --wb-tabs-font-size-s: var(--wb-font-body-size);
+  --wb-tabs-line-height-s: var(--wb-font-body-line-height);
+  --wb-tabs-default-color-text: var(--wb-color-text-secondary);
+  --wb-tabs-default-color-text-active: var(--wb-color-text-primary);
+  --wb-tabs-inkbar-color-bg: var(--wb-color-text-primary);
+  min-width: 0;
+}
+.cloud-service-database__data, .cloud-service-database__functions, .cloud-service-database__permissions {
+  min-width: 0;
+}
+.cloud-service-database__data {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-4);
+}
+.cloud-service-database__toolbar, .cloud-service-database__actions, .cloud-service-database__permissions-summary, .cloud-service-database__inline-error, .cloud-service-database__permissions-error {
+  display: flex;
+  align-items: center;
+}
+.cloud-service-database__toolbar, .cloud-service-database__permissions-summary {
+  justify-content: space-between;
+  gap: var(--wb-spacing-3);
+}
+.cloud-service-database__actions {
+  gap: var(--wb-spacing-3);
+  flex: 0 0 auto;
+}
+.cloud-service-database__action-tooltip-trigger {
+  display: inline-flex;
+}
+.cloud-service-database__table-select {
+  width: 160px;
+  min-width: 160px;
+  flex: 0 0 160px;
+}
+.cloud-service-database__table-option {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+}
+.cloud-service-database__table-option > span {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloud-service-database__description, .cloud-service-database__functions > p, .cloud-service-database__permissions > p {
+  margin: var(--wb-spacing-3) 0;
+  color: var(--wb-color-text-secondary-solid);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-line-height-4);
+}
+.cloud-service-database__functions-error {
+  display: flex;
+  margin-bottom: var(--wb-spacing-3);
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-database__permissions-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-4);
+}
+.cloud-service-database__permissions-group {
+  min-width: 0;
+  border: 1px solid var(--wb-border-default);
+  border-radius: var(--wb-radius-md);
+  overflow: hidden;
+}
+.cloud-service-database__permissions-table {
+  --wb-table-border-radius: 0;
+}
+.cloud-service-database__permissions-group-header {
+  display: flex;
+  padding: var(--wb-spacing-3);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wb-spacing-3);
+  background: var(--wb-bg-secondary);
+}
+.cloud-service-database__permissions-group-header h3 {
+  margin: 0;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.cloud-service-database__no-pk-hint {
+  margin: var(--wb-spacing-2) 0;
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-line-height-4);
+}
+.cloud-service-database__permissions-summary h2, .cloud-service-database__error h2, .cloud-service-database__unavailable h2 {
+  margin: 0;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-h3-size);
+  font-weight: var(--wb-font-h3-weight);
+}
+.cloud-service-database__error, .cloud-service-database__unavailable {
+  display: flex;
+  min-height: var(--cloud-service-empty-min-height);
+  padding: var(--wb-spacing-8);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+.cloud-service-database__error p, .cloud-service-database__unavailable p {
+  margin: var(--wb-spacing-2) 0 var(--wb-spacing-4);
+  color: var(--wb-color-text-secondary);
+}
+.cloud-service-database__inline-error {
+  margin-top: var(--wb-spacing-3);
+  justify-content: flex-end;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-database__permissions-error {
+  margin-bottom: var(--wb-spacing-3);
+  justify-content: flex-end;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-database__pagination {
+  margin-top: var(--wb-spacing-3);
+}
+.cloud-service-database__sortable-header {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  align-items: center;
+  gap: var(--wb-spacing-1);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  user-select: none;
+}
+.cloud-service-database__sortable-header:hover {
+  color: var(--wb-color-text-primary);
+}
+.cloud-service-database__cell {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloud-service-database__cell:disabled {
+  cursor: default;
+}
+.cloud-service-database__cell--editable {
+  cursor: text;
+}
+.cloud-service-database__cell--editable:hover {
+  background: var(--wb-bg-secondary);
+  border-radius: 2px;
+}
+.cloud-service-database__inline-input {
+  width: 100%;
+  padding: 0 var(--wb-spacing-1);
+  border: 1px solid var(--wb-border-focus);
+  border-radius: 2px;
+  outline: none;
+  font: inherit;
+  color: inherit;
+  background: var(--wb-bg-primary);
+  box-sizing: border-box;
+}
+.cloud-service-database__filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-2);
+  margin-top: var(--wb-spacing-3);
+  padding: var(--wb-spacing-3);
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: var(--wb-radius-md);
+  background: var(--wb-bg-secondary);
+}
+.cloud-service-database__filter-row {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+}
+.cloud-service-database__filter-col {
+  width: 140px;
+  min-width: 100px;
+  flex: 0 0 140px;
+}
+.cloud-service-database__filter-op {
+  width: 120px;
+  min-width: 100px;
+  flex: 0 0 120px;
+}
+.cloud-service-database__filter-value {
+  flex: 1 1 auto;
+  min-width: 80px;
+}
+.cloud-service-database__filter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wb-spacing-2);
+}
+.cloud-service-database__filter-buttons {
+  display: flex;
+  gap: var(--wb-spacing-2);
+}
+.cloud-service-database__row-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-3);
+  max-height: 400px;
+  overflow-y: auto;
+}
+.cloud-service-database__row-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-1);
+}
+.cloud-service-database__row-form-error {
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-database__row-form-label {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+  font-size: var(--wb-font-caption-size);
+  color: var(--wb-color-text-primary);
+}
+.cloud-service-database__row-form-type {
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+}
+
+@container cloud-service-manager (max-width: 639px) {
+  .cloud-service-database__responsive-action {
+    width: var(--wb-size-6);
+    min-width: var(--wb-size-6);
+    padding-inline: 0;
+  }
+  .cloud-service-database__responsive-action .wb-button__content {
+    display: none;
+  }
+}
+@container cloud-service-manager (max-width: 499px) {
+  .cloud-service-database {
+    padding-inline: var(--wb-spacing-3);
+  }
+  .cloud-service-database__toolbar {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .cloud-service-database__toolbar::-webkit-scrollbar {
+    display: none;
+  }
+  .cloud-service-database__filter-row {
+    flex-wrap: wrap;
+  }
+  .cloud-service-database__filter-col, .cloud-service-database__filter-op {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 80px;
+  }
+}
+/* TODO: 此样式文件已超过 200 行，后续按列表与详情样式拆分。 */
+.cloud-service-storage {
+  min-width: 0;
+  min-height: 100%;
+  padding: var(--wb-spacing-4) var(--wb-spacing-5) var(--wb-spacing-6);
+  box-sizing: border-box;
+}
+.cloud-service-storage__module-header {
+  margin-bottom: var(--wb-spacing-3);
+}
+.cloud-service-storage__module-title {
+  margin: 0 0 var(--wb-spacing-3);
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-h3-size);
+  font-weight: var(--wb-font-h3-weight);
+  line-height: var(--wb-font-h3-line-height);
+}
+.cloud-service-storage__path {
+  min-width: 0;
+}
+.cloud-service-storage__state {
+  display: flex;
+  min-height: var(--cloud-service-empty-min-height);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+.cloud-service-storage__state h3,
+.cloud-service-storage__state p {
+  margin: 0;
+}
+.cloud-service-storage__state h3 {
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-h3-size);
+  font-weight: var(--wb-font-h3-weight);
+}
+.cloud-service-storage__state p {
+  margin: var(--wb-spacing-2) 0 var(--wb-spacing-4);
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-storage__inline-error {
+  display: flex;
+  margin-bottom: var(--wb-spacing-3);
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-status-error);
+  font-size: var(--wb-font-caption-size);
+}
+.cloud-service-storage__toolbar, .cloud-service-storage__actions, .cloud-service-storage__entry-name {
+  display: flex;
+  align-items: center;
+}
+.cloud-service-storage__toolbar {
+  min-height: 0;
+  margin-bottom: var(--wb-spacing-3);
+  align-items: flex-start;
+  flex-direction: column;
+  gap: var(--wb-spacing-3);
+}
+.cloud-service-storage__actions {
+  flex: none;
+  max-width: 100%;
+  gap: var(--wb-spacing-2);
+  overflow-x: auto;
+}
+.cloud-service-storage__selection-count {
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  white-space: nowrap;
+}
+.cloud-service-storage__table {
+  min-width: 0;
+  --wb-table-border-radius: 0;
+  --wb-table-compact-font-size: var(--wb-font-caption-size);
+  --wb-table-compact-line-height: var(--wb-font-caption-line-height);
+  --wb-table-font-weight: var(--wb-font-weight-500);
+  --wb-table-header-bg: var(--wb-bg-primary);
+  --wb-table-header-color: var(--wb-color-text-tertiary);
+}
+.cloud-service-storage__table .wb-table__th {
+  background: var(--wb-bg-primary);
+}
+.cloud-service-storage {
+  /* 设计稿中的音视频共用紫色播放文件资产；覆盖通用视频资产的绿色底色。 */
+}
+.cloud-service-storage__file-icon--purple > path:first-child {
+  fill: #6f7de8;
+}
+.cloud-service-storage__file-icon--purple > g path {
+  fill: #8896ff;
+}
+.cloud-service-storage__entry-name {
+  min-width: 0;
+  max-width: 100%;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-color-text-primary);
+  font-weight: var(--wb-font-body-weight);
+}
+.cloud-service-storage__entry-name:hover {
+  background: transparent;
+  color: var(--wb-color-text-primary);
+}
+.cloud-service-storage__entry-name > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloud-service-storage__row-actions {
+  display: inline-flex;
+  gap: var(--wb-spacing-1);
+  align-items: center;
+}
+.cloud-service-storage__breadcrumb {
+  margin-bottom: var(--wb-spacing-4);
+}
+.cloud-service-storage__detail {
+  min-width: 0;
+}
+.cloud-service-storage__detail h2 {
+  margin: 0;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-h2-size);
+  font-weight: var(--wb-font-h2-weight);
+  line-height: var(--wb-font-h2-line-height);
+}
+.cloud-service-storage__detail-header {
+  display: flex;
+  margin-bottom: var(--wb-spacing-4);
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--wb-spacing-3);
+}
+.cloud-service-storage__detail-actions {
+  display: flex;
+  flex: none;
+  gap: var(--wb-spacing-2);
+}
+.cloud-service-storage__metadata {
+  display: flex;
+  margin: 0 0 var(--wb-spacing-5);
+  flex-direction: column;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+}
+.cloud-service-storage__metadata > div {
+  display: flex;
+  min-width: 0;
+  gap: var(--wb-spacing-2);
+}
+.cloud-service-storage__metadata dt {
+  flex: none;
+}
+.cloud-service-storage__metadata dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.cloud-service-storage__preview {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+  overflow-wrap: anywhere;
+}
+.cloud-service-storage__preview > :first-child {
+  margin-top: 0;
+}
+.cloud-service-storage__preview > :last-child {
+  margin-bottom: 0;
+}
+.cloud-service-storage__preview img,
+.cloud-service-storage__preview video,
+.cloud-service-storage__preview iframe {
+  max-width: 100%;
+}
+
+@container cloud-service-manager (max-width: 499px) {
+  .cloud-service-storage {
+    padding-inline: var(--wb-spacing-3);
+  }
+  .cloud-service-storage__metadata > div {
+    flex-direction: column;
+    gap: 0;
+  }
+  .cloud-service-storage__detail-header {
+    flex-direction: column;
+  }
+}

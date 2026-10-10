@@ -1,0 +1,8 @@
+{
+    "name": "workbuddy-perf-metrics",
+    "version": "0.1.0",
+    "private": true,
+    "description": "N-API bridge that samples WorkBuddy Desktop process/system performance counters.",
+    "main": "index.cjs",
+    "gypfile": true
+}

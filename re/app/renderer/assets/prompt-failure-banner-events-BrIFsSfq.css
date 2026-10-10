@@ -1,0 +1,2343 @@
+@charset "UTF-8";/* ==================== Overlay ==================== */
+.connector-auth-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.45);
+}
+/* Windows/Linux 桌面壳：让开顶部 30px 自绘窗口控件区，避免遮罩与按钮视觉串色。macOS 走原生 traffic light，不需要偏移。 */
+body[data-electron-desktop="true"][data-platform="windows"] .connector-auth-modal-overlay,
+body[data-electron-desktop="true"]:not([data-platform="mac"]):not([data-platform="windows"]) .connector-auth-modal-overlay {
+  top: var(--wb-desktop-menubar-height, 30px);
+}
+/* ==================== Modal ==================== */
+.connector-auth-modal {
+  position: relative;
+  background: var(--wb-bg-primary);
+  border-radius: 12px;
+  padding: 40px;
+  width: 90%;
+  max-width: 520px;
+  box-shadow: var(--wb-shadow-dialog-md);
+  animation: modalSlideIn 0.3s ease-out;
+}
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ==================== Header ==================== */
+.connector-auth-modal-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 18px;
+  position: relative;
+}
+.connector-auth-modal-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.connector-auth-modal-figma-logo-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  background: #ffffff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.connector-auth-modal-close-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  color: var(--wb-color-text-secondary);
+  transition: background-color 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.connector-auth-modal-close-btn:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.connector-auth-modal-close-btn:active {
+  background: var(--cb-icon-button-hover-background, rgba(255, 255, 255, 0.1));
+}
+.connector-auth-modal-close-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.connector-auth-modal-close-btn svg {
+  width: 20px;
+  height: 20px;
+}
+/* ==================== Title & Subtitle ==================== */
+.connector-auth-modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+  margin: 0 0 16px;
+  text-align: center;
+}
+.connector-auth-modal-subtitle {
+  font-size: 13px;
+  color: var(--wb-color-text-primary);
+  margin: 0 0 16px;
+  text-align: center;
+  line-height: 1.5;
+}
+/* ==================== Input ==================== */
+.connector-auth-modal-input-wrapper {
+  margin-bottom: 16px;
+  position: relative;
+}
+.connector-auth-modal-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-input-inset);
+  border: 1px solid var(--wb-border-default);
+  box-sizing: border-box;
+}
+.connector-auth-modal-input:focus {
+  border-color: var(--wb-border-focus);
+}
+.connector-auth-modal-input:disabled {
+  background: var(--wb-bg-secondary);
+  cursor: not-allowed;
+}
+.connector-auth-modal-input.connector-auth-modal-input-error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+.connector-auth-modal-error-message {
+  margin-top: 4px;
+  padding: 0px 12px;
+  margin-bottom: -8px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #dc2626;
+  line-height: 1.4;
+}
+/* ==================== Submit Button ==================== */
+.connector-auth-modal-submit-btn {
+  width: 100%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+.connector-auth-modal-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.connector-auth-modal-submit-btn:hover {
+  border-color: var(--wb-border-strong);
+}
+/* ==================== Help Box ==================== */
+.connector-auth-modal-help-box {
+  display: flex;
+  gap: 12px;
+  padding: 8px;
+  font-size: 13px;
+  border-radius: 8px;
+  background: var(--wb-bg-secondary);
+  border: 1px solid var(--wb-border-default);
+}
+.connector-auth-modal-help-icon {
+  flex-shrink: 0;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  line-height: 20px;
+  color: #6b7280;
+}
+.connector-auth-modal-help-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.connector-auth-modal-help-content {
+  flex: 1;
+}
+.connector-auth-modal-help-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wb-info);
+}
+.connector-auth-modal-help-title a {
+  color: var(--wb-info);
+  text-decoration: underline;
+}
+.connector-auth-modal-help-title a:hover {
+  text-decoration: underline;
+}
+.connector-auth-modal-help-text {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+.connector-auth-modal-help-text a {
+  color: var(--wb-info);
+  text-decoration: none;
+}
+.connector-auth-modal-help-text a:hover {
+  text-decoration: underline;
+}
+
+/**
+ * WbInputAdd 二级菜单浮层样式（按设计稿 ardot 14243:335 像素级还原）。
+ *
+ * 颜色走 cb-chat-ui token（WorkBuddy 场景由 cb-bridge 桥接到 wb 设计 token）。
+ */
+._panel_k0n3r_7 {
+  width: 200px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--cb-popover-bg-color);
+  border: 0.5px solid var(--cb-popover-border);
+  box-shadow: var(--cb-shadow-popover);
+  user-select: none;
+  outline: none !important;
+  /**
+   * 视口自适应（Issue #63193）：小视口下外层浮层 wrapper 通过 size middleware 写了
+   * max-width / max-height 收紧到可用空间，本 panel 需要能自然收缩，避免固定 200 宽
+   * 溢出被裁。
+   */
+  max-width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow: auto;
+}
+._panel_k0n3r_7:focus, ._panel_k0n3r_7:focus-visible {
+  outline: none !important;
+}
+
+._list_k0n3r_30 {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+._item_k0n3r_36 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  color: var(--cb-text-primary);
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+._item_k0n3r_36:hover:not(._disabled_k0n3r_49) {
+  background-color: var(--cb-dropdown-item-hover-bg-color);
+}
+._item_k0n3r_36._disabled_k0n3r_49 {
+  color: var(--cb-text-muted);
+  cursor: not-allowed;
+}
+
+._itemIcon_k0n3r_57 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-secondary);
+}
+
+._itemLabel_k0n3r_67 {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+._itemChevron_k0n3r_75 {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-muted);
+}
+
+._placeholder_k0n3r_85 {
+  padding: 12px 16px;
+  color: var(--cb-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.teams-container.is-mobile ._panel_k0n3r_7,
+.teams-container.is-mobile ._item_k0n3r_36 {
+  min-width: 0;
+}
+/**
+ * 「应用」二级面板样式 —— 规格对齐 reference-files 面板（同一套加号菜单二级容器）：
+ *   容器 240 宽 / padding 8 / 圆角 16 / 0.5px 边框 / popover 阴影 / 列表区 max-height 352
+ *   单行 32 高 / 圆角 8 / hover 底色 / 14px 字
+ *
+ * 相比 reference-files 多一个 `.groupTitle`：本模块要分「本任务」与「本工作区
+ * 其他任务」两组，而加号菜单此前没有带组标题的二级面板，没有可复用的既有类。
+ */
+._panel_1sy7k_10 {
+  width: 240px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--cb-dropdown-bg-color);
+  border: 0.5px solid var(--cb-popover-border);
+  box-shadow: var(--cb-shadow-popover);
+  box-sizing: border-box;
+  user-select: none;
+  outline: none !important;
+}
+._panel_1sy7k_10:focus, ._panel_1sy7k_10:focus-visible {
+  outline: none !important;
+}
+
+._list_1sy7k_25 {
+  max-height: 352px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+._list_1sy7k_25::-webkit-scrollbar {
+  width: 4px;
+}
+._list_1sy7k_25::-webkit-scrollbar-thumb {
+  background: var(--cb-scrollbar-thumb);
+  border-radius: 2px;
+}
+._list_1sy7k_25::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/** 组标题：非交互行，20 高、12px 灰字，与下方 item 左内边距对齐 */
+._groupTitle_1sy7k_7 {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--cb-text-muted);
+  font-family: "PingFang SC", sans-serif;
+  /* 第二组之前留出与第一组的呼吸间距（列表 gap 是 2px，组间需要更松） */
+}
+._groupTitle_1sy7k_7:not(:first-child) {
+  margin-top: 6px;
+}
+
+._item_1sy7k_59 {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  padding: 0 8px;
+  gap: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+._item_1sy7k_59:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+
+._icon_1sy7k_75 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-primary);
+}
+
+/** 应用名：占满剩余空间，长名 ellipsis */
+._name_1sy7k_86 {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", sans-serif;
+}
+
+/** 状态副标题（已发布 / 已下线 / 未发布）：固定宽、不缩、灰字 */
+._status_1sy7k_99 {
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 22px;
+  color: var(--cb-text-muted);
+  font-family: "PingFang SC", sans-serif;
+}
+
+._empty_1sy7k_107 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-muted);
+  font-family: "PingFang SC", sans-serif;
+}
+
+.teams-container.is-mobile ._panel_1sy7k_10 {
+  max-width: 100%;
+}
+/**
+ * `connectors` 模块二级面板样式 —— 设计稿 ardot 14650:117 / 14767:1588 /
+ * 16387:9 / 16387:154 / 16387:295 / 16387:417 像素级还原。
+ *
+ * 容器规格（节点 14650:117 / 14767:1588）：
+ *   width = 240 / padding = 8 0 / border-radius = 16 / border 1px #E5E5E5 / 双层 shadow
+ *   max-height = 392（与 14767:1588 一致；超出滚动）
+ *   背景纯白
+ *
+ * 列表项（节点 14650:589 等）：
+ *   width = 224 / height = 32 / padding = 0 8 / 圆角 8 / hover 灰底 #F2F2F2
+ *   prefix（图标 16x16 + gap 8 + 文本）/ suffix（链接图标 16x16 / 开关 26x16 / 文字）
+ *
+ * 吸底（节点 14650:175）：
+ *   分隔线 224x1 #F2F2F2 + 8 padding / 单行 224x32 / wb-jump 16x16 + 文字
+ */
+._panel_13gmy_18 {
+  width: 240px;
+  /**
+   * padding 8px 全向（设计稿 14263:315）—— 搜索框、列表、footer 均按此内边距对齐；
+   * 之前写成 `8px 0` 会让顶部 WbSearchInput 紧贴 panel 左右边缘（未还原搜索框内边距）。
+   */
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--cb-dropdown-bg-color);
+  border: 0.5px solid var(--cb-popover-border);
+  box-shadow: var(--cb-shadow-popover);
+  box-sizing: border-box;
+  user-select: none;
+  outline: none !important;
+  /* 设计稿 14767:1588 明确总高 392，container padding 上下各 8 → 内容上限 376 */
+  max-height: 392px;
+  display: flex;
+  flex-direction: column;
+  /* search 与 list、list 与 footer 之间的 8px 间距 —— 与 WbSearchPanel 同款间距规则 */
+  gap: 8px;
+}
+._panel_13gmy_18:focus, ._panel_13gmy_18:focus-visible {
+  outline: none !important;
+}
+
+/* ──────────────────── List ──────────────────── */
+._list_13gmy_44 {
+  /* 让列表区在剩余空间内自然滚动；上下界限由 .panel 的 max-height 控制 */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  /* 横向 padding 由 .panel 统一提供（padding: 8px），此处不再重复内边距 */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+._list_13gmy_44::-webkit-scrollbar {
+  width: 4px;
+}
+._list_13gmy_44::-webkit-scrollbar-thumb {
+  background: var(--cb-scrollbar-thumb);
+  border-radius: 2px;
+}
+._list_13gmy_44::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/** 单行：32 高 / 8 圆角 / hover 灰底 */
+._item_13gmy_66 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  flex-shrink: 0;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+._item_13gmy_66:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+._item_13gmy_66 {
+  /* connecting hover 状态：底色保持 hover 灰，但 suffix 区从 spinner 切到红字 */
+}
+._item_13gmy_66._connecting_13gmy_83:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+._item_13gmy_66 {
+  /* 不可交互（不兼容 / disconnect 中等）：灰显，不响应点击但仍然可见 */
+}
+._item_13gmy_66._disabled_13gmy_89 {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/** 左侧 16×16 图标：connector.icon 远端 URL（圆角 3）。 */
+._itemIcon_13gmy_95 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+._itemIcon_13gmy_95 img {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+/** 远端 icon 缺失时的 fallback：圆形灰底 + 首字母大写。 */
+._itemIconFallback_13gmy_112 {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--cb-popover-border);
+  color: var(--cb-text-secondary);
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+  font-family: "PingFang SC", sans-serif;
+}
+
+._itemName_13gmy_124 {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+._sourceTag_13gmy_136 {
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 16px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: var(--wb-color-text-tertiary);
+  font-family: "PingFang SC", sans-serif;
+  margin-left: 6px;
+}
+
+/* ──────────────────── Suffix Actions ──────────────────── */
+/** 「连接」状态：右侧链环图标（14×14）+「连接」文字，gap 4px（设计稿 14650:589 / 19978:7004）。
+ *  行整体 onClick 已承接首次授权流程，suffix 仅作视觉提示。
+ *  颜色默认 secondary（设计 50% 黑），hover 父行时加深到 primary。
+ */
+._suffixConnect_13gmy_153 {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+}
+
+._suffixConnectIcon_13gmy_161 {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  color: var(--cb-text-secondary);
+}
+._suffixConnectIcon_13gmy_161 svg {
+  display: block;
+  flex-shrink: 0;
+}
+._item_13gmy_66:hover ._suffixConnectIcon_13gmy_161 {
+  color: var(--cb-text-primary);
+}
+
+._suffixConnectLabel_13gmy_179 {
+  font-size: 12px;
+  line-height: 22px;
+  color: var(--cb-text-secondary);
+  font-family: "PingFang SC", sans-serif;
+}
+._item_13gmy_66:hover ._suffixConnectLabel_13gmy_179 {
+  color: var(--cb-text-primary);
+}
+
+/** 「正在连接」状态：spinner + "正在连接" 文字（默认）；hover 切到 "取消连接" 红字。 */
+._suffixConnecting_13gmy_190 {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+._connectingSpinner_13gmy_197 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+._connectingLabel_13gmy_206 {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", sans-serif;
+}
+
+/**
+ * 「取消连接」红字 —— 仅在 connecting 状态 + 行 hover + 已进入 cancellable 窗口（≥2s）时显示。
+ *
+ * 设计稿 16387:154 / 16387:276：取消连接颜色 #F64041 (rgb(246, 64, 65))。
+ *
+ * 视觉切换：
+ *   - 默认（rest）：spinner + "正在连接"
+ *   - 行 hover + cancellable：隐藏 spinner / "正在连接"，显示 "取消连接" 红字
+ *
+ * 用 CSS .item:hover 直接切换，避免 React state 抖动；只有在父行加 .cancellable
+ * class 时切换才生效（防止 0~2s 防误触窗口内被误触发）。
+ */
+/* 连接异常提示：开关打开但当前连不上（enabled && reason）时的条目级红色提示。
+   默认显示分类原因（授权已过期/连接异常/…），行 hover 时切换为可点的恢复动作
+   （重新授权/重试），与 connecting → 取消连接 的 hover 交互语言一致。 */
+._errorHint_13gmy_228 {
+  margin-right: 8px;
+  flex: none;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--cb-error-color);
+  white-space: nowrap;
+}
+
+._errorAction_13gmy_237 {
+  display: none;
+  cursor: pointer;
+}
+._errorAction_13gmy_237:hover {
+  text-decoration: underline;
+}
+
+._item_13gmy_66:hover ._errorHint_13gmy_228 ._errorAction_13gmy_237 {
+  display: inline;
+}
+._item_13gmy_66:hover {
+  /* 有恢复动作时 hover 只显示动作，隐藏原因文案 */
+}
+._item_13gmy_66:hover ._errorHint_13gmy_228:has(._errorAction_13gmy_237) ._errorCause_13gmy_251 {
+  display: none;
+}
+
+._cancelLabel_13gmy_255 {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--cb-error-color);
+  font-family: "PingFang SC", sans-serif;
+  cursor: pointer;
+  display: none;
+}
+
+/** cancellable + hover：取消连接红字显示，spinner / "正在连接" 隐藏。 */
+._item_13gmy_66._connecting_13gmy_83._cancellable_13gmy_222:hover ._connectingSpinner_13gmy_197,
+._item_13gmy_66._connecting_13gmy_83._cancellable_13gmy_222:hover ._connectingLabel_13gmy_206 {
+  display: none;
+}
+._item_13gmy_66._connecting_13gmy_83._cancellable_13gmy_222:hover ._cancelLabel_13gmy_255 {
+  display: inline-block;
+}
+
+/* ──────────────────── Toggle（开关） ──────────────────── */
+/**
+ * 开关：26×16 圆角胶囊，off=灰底 / on=绿底（与设计稿 14237:165 / 14237:169 一致）。
+ *
+ * off 态用 --cb-toggle-track-off-bg（与 mode / permission 开关一致的半透明叠加色）：
+ * 纯 gray-5 会与行 hover 底色撞色，hover 时关闭态开关融进底色；半透明叠加在 hover 底上
+ * 仍保留可见色差。
+ *
+ * 内部 thumb：12×12 白圆，off 时贴左 / on 时贴右。
+ */
+._toggle_13gmy_283 {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--cb-toggle-track-off-bg);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s ease;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+}
+._toggle_13gmy_283._toggleOn_13gmy_298 {
+  background: var(--cb-switch-active-bg);
+}
+._toggle_13gmy_283._toggleDisabled_13gmy_301 {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+._toggleThumb_13gmy_306 {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--cb-switch-thumb-bg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: left 0.15s ease;
+}
+._toggleOn_13gmy_298 ._toggleThumb_13gmy_306 {
+  left: 12px;
+}
+
+/* ──────────────────── Empty ──────────────────── */
+._empty_13gmy_322 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-muted);
+  font-family: "PingFang SC", sans-serif;
+}
+
+/* ──────────────────── 吸底（分隔线 + 选择更多连接器） ──────────────────── */
+._divider_13gmy_335 {
+  flex: 0 0 1px;
+  height: 1px;
+  background: var(--cb-popover-divider);
+  /* 上下间距由 .panel 的 gap 8px 统一控制，此处不再单独加 margin */
+}
+
+._footer_13gmy_342 {
+  flex: 0 0 auto;
+  /* 横向/纵向 padding 由 .panel 统一控制，此处只维护内部布局 */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+._footerItem_13gmy_350 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+._footerItem_13gmy_350:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+
+._footerIcon_13gmy_364 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-secondary);
+}
+
+._footerLabel_13gmy_374 {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.teams-container.is-mobile ._panel_13gmy_18 {
+  max-width: 100%;
+}
+.teams-container.is-mobile ._item_13gmy_66 {
+  min-width: 0;
+  overflow: hidden;
+}
+.teams-container.is-mobile ._sourceTag_13gmy_136 {
+  display: none;
+}
+/**
+ * `experts` 模块二级面板样式 —— 设计稿 ardot 14243:835 / 14243:1620 像素级还原。
+ *
+ * 容器规格：
+ *   width = 240 / padding = 8 / border-radius = 16 / border 1px #E5E5E5 / 双层 shadow
+ *   背景纯白（与同级 reference-files 一致，不走暗色 token）
+ *
+ * 列表项（置顶 / 最近 / 推荐通用）：
+ *   高 32 / 圆角 8 / padding 0 8 / gap 8 / 头像 16 / 名称 14px PingFang SC
+ *   hover 背景 #F2F2F2 / 选中态背景 #F7F7F7 + 名称 Semibold；置顶图标使用灰色
+ *
+ * 底部分隔线 + 「召唤更多专家」入口（设计稿 14243:861 / 14243:1622）：
+ *   分隔线 224 宽 / 1px / #F2F2F2
+ *   召唤入口与普通行同尺寸；左侧图标为 wb-jump（外链跳转箭头）
+ */
+._panel_1fkw5_17 {
+  width: 240px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--cb-dropdown-bg-color);
+  border: 0.5px solid var(--cb-popover-border);
+  box-shadow: var(--cb-shadow-popover);
+  box-sizing: border-box;
+  user-select: none;
+  outline: none !important;
+  display: flex;
+  flex-direction: column;
+}
+._panel_1fkw5_17:focus, ._panel_1fkw5_17:focus-visible {
+  outline: none !important;
+}
+
+._searchBox_1fkw5_34 {
+  padding: 0 0 8px;
+}
+
+/** 列表区：默认随内容撑开；超过 10 条后由 scrollList 限制最大高度。 */
+._list_1fkw5_39 {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+._list_1fkw5_39::-webkit-scrollbar {
+  width: 4px;
+}
+._list_1fkw5_39::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 12px;
+  transition: background-color 0.2s;
+}
+._list_1fkw5_39::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+._panel_1fkw5_17:hover ._list_1fkw5_39 {
+  scrollbar-color: var(--cb-scrollbar-thumb) transparent;
+}
+._panel_1fkw5_17:hover ._list_1fkw5_39::-webkit-scrollbar-thumb {
+  background: var(--cb-scrollbar-thumb);
+}
+._panel_1fkw5_17:hover ._list_1fkw5_39::-webkit-scrollbar-thumb:hover {
+  background: var(--cb-scrollbar-thumb-hover);
+}
+
+._scrollList_1fkw5_69,
+._searchList_1fkw5_70 {
+  max-height: 338px;
+  overflow-y: auto;
+}
+
+/** 单行：32 高 / 8 圆角 / hover #F2F2F2 / 选中态 #F7F7F7 + 加粗 */
+._item_1fkw5_76 {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+._item_1fkw5_76:hover:not(._selected_1fkw5_87):not(._disabled_1fkw5_87) {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+._item_1fkw5_76._selected_1fkw5_87 {
+  background: var(--cb-list-item-selected-bg);
+}
+._item_1fkw5_76._disabled_1fkw5_87 {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/** 头像容器（16x16 圆形） */
+._avatar_1fkw5_99 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-text-on-primary);
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 600;
+  font-family: "PingFang SC", sans-serif;
+}
+._avatar_1fkw5_99 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+._name_1fkw5_121 {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+._item_1fkw5_76._selected_1fkw5_87 ._name_1fkw5_121 {
+  font-weight: 600;
+}
+
+._actions_1fkw5_137 {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 18px;
+}
+
+/**
+ * 选中态右侧对勾 slot —— 与模型下拉（`.modelCheckSlot`）视觉一致：
+ * 16×16 容器居中承载 12×12 CheckIcon，颜色沿用主文本色。
+ * selected 行不再显示 pin 按钮，只显示对勾，语义更清晰。
+ */
+._checkSlot_1fkw5_151 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-primary);
+}
+
+._pinButton_1fkw5_161 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--cb-text-tertiary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+._pinButton_1fkw5_161:hover, ._pinButton_1fkw5_161:focus-visible {
+  color: var(--cb-text-secondary);
+}
+._pinButton_1fkw5_161._pinned_1fkw5_179 {
+  color: var(--cb-text-secondary);
+  opacity: 1;
+}
+
+._item_1fkw5_76:hover ._pinButton_1fkw5_161,
+._pinButton_1fkw5_161:focus-visible {
+  opacity: 1;
+}
+
+._pinIconRest_1fkw5_189,
+._pinIconHover_1fkw5_190 {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+._pinIconRest_1fkw5_189 > svg,
+._pinIconHover_1fkw5_190 > svg {
+  width: 16px;
+  height: 16px;
+}
+
+._pinIconHover_1fkw5_190 {
+  display: none;
+}
+
+._item_1fkw5_76:hover ._pinButton_1fkw5_161._pinned_1fkw5_179 ._pinIconRest_1fkw5_189 {
+  display: none;
+}
+._item_1fkw5_76:hover ._pinButton_1fkw5_161._pinned_1fkw5_179 ._pinIconHover_1fkw5_190 {
+  display: inline-flex;
+}
+
+/** 分隔线：224 宽（= 240 - padding 16）/ 1px / 浅灰 */
+._divider_1fkw5_215 {
+  height: 1px;
+  margin: 8px 0;
+  background: var(--cb-popover-divider);
+}
+
+/** 召唤更多专家入口：与普通行同尺寸，左侧 wb-jump 箭头图标 */
+._summonMore_1fkw5_222 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+._summonMore_1fkw5_222:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+
+._summonMoreIcon_1fkw5_236 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-secondary);
+}
+
+._summonMoreLabel_1fkw5_246 {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/** 空态：单行 32 高、居中、灰字（与 reference-files 一致） */
+._empty_1fkw5_258 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-muted);
+  font-family: "PingFang SC", sans-serif;
+}
+
+.teams-container.is-mobile ._panel_1fkw5_17 {
+  max-width: 100%;
+}
+.teams-container.is-mobile ._item_1fkw5_76 {
+  min-width: 0;
+}
+/**
+ * `mode` 模块二级面板样式 —— 设计稿 ardot 14256:729 / 14256:1586 / 14256:1136 像素级还原。
+ *
+ * 容器规格（ardot 14256:729 节点 schema，单位均为 px）：
+ *   width = 200
+ *   padding = 8（外层内边距）
+ *   border-radius = 16
+ *   border = 0.5px solid #E5E5E5
+ *   background = #FFFFFF
+ *   box-shadow:
+ *     0 4 6 -8 rgba(0,0,0,0.04)
+ *     0 6 24 -4 rgba(0,0,0,0.04)
+ *
+ * 描述区（ardot 14256:732 / 14256:1619）：
+ *   宽度 = 200 - 16 padding - 16 inner padding = 168
+ *   两行 / 12px / PingFang SC / rgba(0,0,0,0.5) / 行高 20
+ *   inset padding 8（左右） + 4 上 + 4 下，与设计稿一致（item/dropdown/1st 60 高内嵌）
+ *
+ * 分隔线（ardot 14256:733）：
+ *   两侧贴 panel padding 8，颜色 #F2F2F2
+ *
+ * 切换行（ardot 14256:1602）：
+ *   width = 184（200 - padding 16）/ height 32 / border-radius 8 / padding 0 8
+ *   主标签 14 / text-primary，英文小字 12 / text-tertiary，gap 4
+ *   hover #F2F2F2
+ *
+ * 开关（ardot 14237:165/169）：
+ *   26x16 / 圆角 999
+ *   off 背景 rgba(0,0,0,0.06)
+ *   on 背景 #00C29A（boundVariable r0 g0.7607 b0.6039）
+ *   thumb 12x12 圆形白色，垂直居中（top 2），off 时 left 2，on 时 transform translateX(10)
+ */
+._panel_1llkg_34 {
+  width: 200px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--cb-dropdown-bg-color);
+  border: 0.5px solid var(--cb-popover-border);
+  box-shadow: var(--cb-shadow-popover);
+  box-sizing: border-box;
+  user-select: none;
+  outline: none !important;
+  /* 用 flex 创建 BFC 防止子元素 margin 溢出（cb-chat-ui CODEBUDDY 第 2 节硬规则）。 */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+._panel_1llkg_34:focus, ._panel_1llkg_34:focus-visible {
+  outline: none !important;
+}
+
+/**
+ * 描述区：12px 灰字，两行；
+ * 设计稿在 dropdown item 容器里把文字放成 60 高，左 padding 8、上 padding 0；
+ * 这里用同款规格，不加额外 hover（描述不可交互）。
+ */
+._description_1llkg_58 {
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--cb-text-tertiary);
+  font-family: "PingFang SC", sans-serif;
+  /* 文案中含手动换行；保留原排版（描述里的 `\n` 会被换行渲染） */
+  white-space: pre-line;
+}
+
+/** 分隔线：与 panel padding 对齐，hairline 1px。 */
+._divider_1llkg_69 {
+  height: 1px;
+  background: var(--cb-popover-divider);
+  margin: 0; /* 不要 margin —— 父级用 gap 控制间距，避免 margin collapsing */
+}
+
+/** 一组切换行的容器，行间 2px gap（与设计稿 itemSpacing 2 对齐）。 */
+._group_1llkg_76 {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/** 单行：184x32 / 8 圆角 / hover #F2F2F2。 */
+._row_1llkg_83 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: default;
+  box-sizing: border-box;
+  gap: 8px;
+}
+._row_1llkg_83:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+._row_1llkg_83._disabled_1llkg_97 {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+._row_1llkg_83._disabled_1llkg_97:hover {
+  background: transparent;
+}
+
+/**
+ * 行内左侧文本组：中文标签 + 英文小字 + tooltip 占位。
+ * 设计稿用 itemSpacing 4，但中文与英文之间视觉间距更舒服一些用 4。
+ */
+._rowText_1llkg_109 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+._rowLabel_1llkg_117 {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", sans-serif;
+}
+
+._rowEn_1llkg_124 {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--cb-text-tertiary);
+  font-family: "PingFang SC", sans-serif;
+}
+
+.teams-container.is-mobile ._panel_1llkg_34 {
+  max-width: 100%;
+}
+.teams-container.is-mobile ._rowLabel_1llkg_117,
+.teams-container.is-mobile ._rowEn_1llkg_124 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/** 26x16 开关 track。 */
+._toggle_1llkg_143 {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--cb-switch-bg);
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  outline: none;
+}
+._toggle_1llkg_143:focus, ._toggle_1llkg_143:focus-visible {
+  outline: none;
+}
+
+._toggleOn_1llkg_160 {
+  background: var(--cb-switch-active-bg);
+}
+
+._toggleDisabled_1llkg_164 {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/** 12x12 圆形 thumb；off 时 left 2，on 时 translateX(10) → 总位移 26-12-2=12，停在 right 2。 */
+._toggleThumb_1llkg_170 {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--cb-switch-thumb-bg);
+  transition: transform 0.15s ease;
+}
+
+._toggleOn_1llkg_160 ._toggleThumb_1llkg_170 {
+  transform: translateX(10px);
+}
+/**
+ * `reference-files` 模块二级面板样式 —— 设计稿 ardot 14722:6757 / 16507:394 像素级还原。
+ *
+ * 容器规格（来自 ardot 14722:6757 节点 schema，单位均为 px）：
+ *   width = 240
+ *   padding = 8（itemSpacing 8 是组与组的间距，单组内 item gap = 2）
+ *   border-radius = 16
+ *   border = 0.5px solid #E5E5E5
+ *   background = #FFFFFF（纯白，不走暗色 token —— 与一级菜单一致；
+ *                        加号菜单是 WorkBuddy 主输入框 UI，统一亮色）
+ *   box-shadow:
+ *     0 4 6 -8 rgba(0,0,0,0.04)
+ *     0 6 24 -4 rgba(0,0,0,0.04)
+ *   max-height = 368（容器总高；列表区高度 = 368 - padding 16 = 352）
+ *
+ * 单行 item（ardot 14722:6799 节点 schema）：
+ *   width = 224（240 - padding 16）/ height = 32 / border-radius = 8
+ *   padding = 0 8 / icon 16x16 + gap 8 + text
+ *   hover 背景 #F2F2F2
+ *   字号 14 / 行高 22 / PingFang SC / 颜色 rgba(0,0,0,0.9)
+ *
+ * 空态（ardot 16507:394）：
+ *   单行 224x32 居中 / 颜色 rgba(0,0,0,0.3) / 同字号
+ */
+._panel_qruki_26 {
+  width: 240px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--cb-dropdown-bg-color);
+  border: 0.5px solid var(--cb-popover-border);
+  box-shadow: var(--cb-shadow-popover);
+  box-sizing: border-box;
+  user-select: none;
+  outline: none !important;
+}
+._panel_qruki_26:focus, ._panel_qruki_26:focus-visible {
+  outline: none !important;
+}
+
+/**
+ * 文件列表容器：
+ *   max-height = 352（= 容器总高 368 - 上下 padding 16），超出竖向滚动
+ *   item 间 2px 间距 —— 对齐工作空间列表样式
+ *   滚动条 4px 宽 / #EBEBEB / 圆角 2 —— 对齐 ardot 14767:2844 的视觉
+ */
+._list_qruki_47 {
+  max-height: 352px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+._list_qruki_47::-webkit-scrollbar {
+  width: 4px;
+}
+._list_qruki_47::-webkit-scrollbar-thumb {
+  background: var(--cb-scrollbar-thumb);
+  border-radius: 2px;
+}
+._list_qruki_47::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/** 单行：32 高 / 8 圆角 / hover #F2F2F2 */
+._item_qruki_66 {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  padding: 0 8px;
+  gap: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+._item_qruki_66:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+._item_qruki_66._disabled_qruki_81 {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+._item_qruki_66._disabled_qruki_81:hover {
+  background: transparent;
+}
+
+/** 文件类型图标：16x16，flex: 0 0 auto，不缩放 */
+._icon_qruki_90 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+._icon_qruki_90 img {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/**
+ * 文件名容器：扁平 flex；
+ * - .name 整体：撑满 icon 之后剩余空间（flex: 1 1 auto），承担 shrink 容器角色
+ * - .nameBase：基底名，**不主动抢占空间**（flex: 0 1 auto），自然宽 + 长名时被 shrink 触发 ellipsis
+ * - .nameExt：扩展名，固定宽，不缩
+ *
+ * 设计稿规格：14px PingFang SC / rgba(0,0,0,0.9) / 行高 22。
+ *
+ * 这样视觉上：
+ *   - 短名：图标 + 8gap + base + ext，整体靠左、右边留空（与设计稿一致）
+ *   - 长名：图标 + 8gap + base(占满剩余, ellipsis) + ext(贴右)
+ */
+._name_qruki_106 {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", sans-serif;
+}
+
+._nameBase_qruki_107 {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+._nameExt_qruki_108 {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/**
+ * 空态：单行 32 高、居中、灰字。
+ * 设计稿 ardot 16507:394：单行 224x32 居中显示「当前对话中暂无文件」/ rgba(0,0,0,0.3)。
+ * 容器 padding 已是 8 → 单行宽度 = 240 - 16 = 224，与设计稿一致。
+ */
+._empty_qruki_145 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-muted);
+  font-family: "PingFang SC", sans-serif;
+}
+
+.teams-container.is-mobile ._panel_qruki_26 {
+  max-width: 100%;
+}
+/**
+ * `skills` 模块二级面板**业务专属**样式 —— 设计稿 ardot 14263:315 / 14767:1052 /
+ * 14299:568 / 14299:803 / 14722:5496。
+ *
+ * 视觉骨架（panel / search / list / divider / 空态 / 滚动条）已抽到
+ * `wb-search-panel/wb-search-panel.module.scss`，本文件只承载 skills 专属：
+ *   - SkillRow：双行 52 高（标题 14/22 + 描述 12/20） + 右侧 wb-pin/wb-unpin
+ *   - HighlightText：搜索关键词高亮（绿色）
+ *   - actions：底部操作行（本地添加 / 管理 / 选择更多）
+ *
+ * 颜色严格遵循 cb-chat-ui token 规范（仅 --cb-* 前缀）。
+ */
+/* ──────────────────── SkillRow（双行 52 高） ──────────────────── */
+/** 单行：52 高 / 8 圆角 / hover 灰底（pin 标识仅靠右侧 PinIcon，行底色不再持续高亮） */
+._item_s54xa_16 {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  height: 52px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+._item_s54xa_16:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+
+._itemBusy_s54xa_30 {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+
+._itemDisabled_s54xa_34 {
+  cursor: default;
+}
+
+/**
+ * 左侧 16×16 头像（设计稿 17590:67 / 17590:80：width 16 height 16）：
+ * 复用 SkillAvatar（远端 URL + 首字母 fallback）。
+ *
+ * 对齐方式：图标与标题第一行（22px 行高）垂直中心对齐 ——
+ *   - 标题起点：padding-top 4px → 标题中心 = 4 + 11 = 15px
+ *   - 图标起点：padding-top 4px + margin-top 3px → 图标中心 = 7 + 8 = 15px ✓
+ * 设计稿 14263:315 确认：prefix content 内 Frame (22px) 中 技能头像 y=3 → 中心=11=22/2。
+ *
+ * 设计稿原始 itemSpacing（icon→title）8px，由 .item gap 8 提供。
+ */
+._itemIcon_s54xa_49 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+._itemIcon_s54xa_49 > * {
+  width: 16px;
+  height: 16px;
+}
+
+._itemBody_s54xa_63 {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+._itemTitle_s54xa_72 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* 标题文本包裹层：吃掉 ellipsis，避免 flex + gap 把内部 <mark> 拆成独立 flex item
+   （见 skills-submenu.tsx 中的说明）。 */
+._itemTitleText_s54xa_86 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+._sourceTag_s54xa_93,
+._syncStatus_s54xa_94 {
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 16px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: var(--wb-color-text-tertiary);
+  font-family: "PingFang SC", sans-serif;
+}
+
+._secondaryAction_s54xa_105 {
+  flex: 0 0 auto;
+  align-self: center;
+  border: none;
+  background: transparent;
+  color: var(--cb-text-link);
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+._secondaryAction_s54xa_105:disabled {
+  color: var(--cb-text-muted);
+  cursor: not-allowed;
+}
+
+/* 图标型次级动作（更新云端）：16×16 图标按钮，与 pin 同规格 */
+._secondaryActionIcon_s54xa_122 {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin-left: 4px;
+  color: var(--cb-text-muted);
+  background: transparent;
+  border-radius: 4px;
+}
+._secondaryActionIcon_s54xa_122:hover:not(:disabled) {
+  color: var(--cb-text-primary);
+  background: transparent;
+}
+._secondaryActionIcon_s54xa_122:disabled {
+  color: var(--cb-text-muted);
+  cursor: not-allowed;
+}
+._secondaryActionIcon_s54xa_122 > svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* 更新图标右上角橙色圆点（local_ahead 有本地新版本提示） */
+._secondaryActionDot_s54xa_149 {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff8800;
+  border: 1px solid var(--cb-dropdown-bg-color);
+  box-sizing: border-box;
+}
+
+/* ── 已上云云朵徽标（标题右侧常显，带 tooltip） ── */
+._cloudBadge_s54xa_162 {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--cb-text-tertiary);
+}
+._cloudBadge_s54xa_162 > svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── hover 上传提示图标（local_only 装饰，仅行 hover 显示） ── */
+._hoverHint_s54xa_177 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  align-self: center;
+  margin-left: 4px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-muted);
+}
+._item_s54xa_16:hover ._hoverHint_s54xa_177 {
+  display: inline-flex;
+}
+._hoverHint_s54xa_177 > svg {
+  width: 16px;
+  height: 16px;
+}
+
+._itemDesc_s54xa_196 {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--cb-text-tertiary);
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ──────────────────── 右侧 pin/unpin ──────────────────── */
+/**
+ * 右侧 pin 按钮：16x16，默认根据「是否置顶 + 是否 hover」显示不同图标。
+ *
+ * 状态矩阵（设计稿 14299:223 / 14299:720 + 截图）：
+ *   - 未置顶 + 未 hover  → 完全隐藏（避免抢视觉焦点）
+ *   - 未置顶 + 行 hover  → 显示 PinIcon（浅灰 0.3，提示"点击置顶"）
+ *   - 已置顶 + 未 hover  → 显示 PinIcon（深色 0.9，表明"已置顶"）
+ *   - 已置顶 + 行 hover  → 显示 UnpinIcon（带斜线，提示"点击取消置顶"）
+ *
+ * 实现：JSX 同时渲染 PinIcon (.pinIconRest) + UnpinIcon (.pinIconHover)，
+ * 由本 SCSS 通过 :hover / .pinned 组合控制 display 切换。
+ */
+._pinBtn_s54xa_219 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  align-self: center; /* 设计稿 14263:315：pin 在 52px 行内 y=18 → 中心=26=52/2，垂直居中于整行 */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--cb-text-muted);
+  /* 默认（未置顶 + 未 hover）：不占空间 —— 走查 #74385：
+     右侧不能预留 pin 空位，否则描述文字被提前截断；hover 出现时挤压左侧文字。 */
+  display: none;
+  transition: color 0.15s ease;
+  /* 行 hover：出现（挤压左侧文字） */
+}
+._item_s54xa_16:hover ._pinBtn_s54xa_219 {
+  display: inline-flex;
+}
+._pinBtn_s54xa_219 {
+  /* 已置顶：始终显示（深色实心 pin，表明"已置顶"），占位不受 hover 影响 */
+}
+._pinBtn_s54xa_219._pinned_s54xa_217 {
+  display: inline-flex;
+  color: var(--cb-text-primary);
+}
+._pinBtn_s54xa_219:hover {
+  color: var(--cb-text-primary);
+}
+
+/* 默认显示的图标（pin），尺寸 16x16 内嵌：lucide pin 24 viewBox 缩放 16 容器 */
+._pinIconRest_s54xa_216,
+._pinIconHover_s54xa_216 {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 让 24×24 viewBox 的 svg 在 16 容器里居中等比缩放 */
+}
+._pinIconRest_s54xa_216 > svg,
+._pinIconHover_s54xa_216 > svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* 默认 = pinIconRest 显示，pinIconHover 隐藏 */
+._pinIconHover_s54xa_216 {
+  display: none;
+}
+
+/* 已置顶 + 行 hover：切换显示 unpin（带斜线） */
+._item_s54xa_16:hover ._pinBtn_s54xa_219._pinned_s54xa_217 ._pinIconRest_s54xa_216 {
+  display: none;
+}
+._item_s54xa_16:hover ._pinBtn_s54xa_219._pinned_s54xa_217 ._pinIconHover_s54xa_216 {
+  display: inline-flex;
+}
+
+/* ──────────────────── 第二组（本地添加 / 管理）操作行 ────────────────────
+ *
+ * 已迁到 wb-search-panel 的 .actionGroup / .actionRow / .actionIcon / .actionLabel，
+ * 与 wb-workspace-picker footer 完全同源。本文件不再定义重复样式。
+ */
+/**
+ * WbInputAdd 加号触发按钮 + 一级菜单样式。
+ *
+ * 视觉规格对齐设计稿 ardot 14256:572：
+ *   - 加号按钮：32x32 命中区（与右侧麦克风/发送按钮 voice-trigger / send-button 对齐），
+ *     内部 SVG 图标仍为 16x16，圆形 hover 背景与麦克风一致
+ *   - 一级菜单：200px 宽 / 8px padding / 16px 圆角 / 双层柔和投影
+ *   - 单行：32px 高 / 8px 圆角 / hover #F2F2F2 / 14px 文字 / 16x16 图标
+ *
+ * 颜色严格遵循 cb-chat-ui token 规范（仅 --cb-* 前缀）。
+ */
+._container_zde11_13 {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/**
+ * 加号触发按钮：32x32 命中区 + 16x16 图标。
+ * 与右侧工具栏麦克风（cr-voice-trigger）/ 发送按钮（cr-send-button）尺寸对齐，
+ * 圆形 hover 灰底也与之视觉一致。
+ */
+._trigger_zde11_24 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cb-text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+._trigger_zde11_24:hover {
+  background-color: var(--cb-hover-bg);
+}
+._trigger_zde11_24:focus, ._trigger_zde11_24:focus-visible {
+  outline: none;
+}
+._trigger_zde11_24._active_zde11_44 {
+  background-color: var(--cb-hover-bg);
+}
+._trigger_zde11_24 {
+  /**
+   * 加号图标自身：打开态旋转 45° 变成 ×（与 demo `app.js` 同款，
+   * cubic-bezier(.25,.8,.3,1) / .42s 模仿元宝弹层 trigger 旋转曲线）。
+   * 直接复用现有 + path，无需新增 × 图标资源。
+   */
+}
+._trigger_zde11_24 > svg {
+  transition: transform 0.42s cubic-bezier(0.25, 0.8, 0.3, 1);
+  transform-origin: center;
+}
+._trigger_zde11_24._active_zde11_44 > svg {
+  transform: rotate(45deg);
+}
+
+/** 一级菜单弹层（与二级菜单视觉规格一致，但容器尺寸 200px / radius 16px / 双层投影） */
+._menu_zde11_63 {
+  width: 200px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--cb-popover-bg-color);
+  border: 0.5px solid var(--cb-popover-border);
+  box-shadow: var(--cb-shadow-popover);
+  user-select: none;
+  outline: none !important;
+  /**
+   * 进入动画：淡入 + 顶部渐变（仅 opacity，不动 transform）。
+   *
+   * ⚠️ 不要在这里改 transform：floating-ui 通过 inline style 给 .menu 写入
+   * `transform: translate(x, y)` 来定位浮层，CSS animation 的 transform 关键帧
+   * 会覆盖 inline 值——结果是面板瞬间被打回 (0,0)。
+   *
+   * 因此只用 opacity 做进入感，不引入 scale。退场不做特殊处理，关闭瞬间随
+   * React 卸载消失；体验损失很小，避免引入 useTransitionStyles 复杂度。
+   */
+  animation: _wbInputAddPopIn_zde11_1 0.18s ease-out both;
+}
+
+@keyframes _wbInputAddPopIn_zde11_1 {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/** 菜单分组容器 */
+._group_zde11_94 {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/** 分组之间的分隔线（设计稿 ardot 14092:1883/2004：1px / #F2F2F2） */
+._divider_zde11_101 {
+  height: 1px;
+  margin: 6px 4px;
+  background-color: var(--cb-popover-divider);
+}
+
+/** 一级单行菜单项 */
+._item_zde11_108 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  color: var(--cb-text-primary);
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+._item_zde11_108:hover:not(._disabled_zde11_123), ._item_zde11_108._itemActive_zde11_123:not(._disabled_zde11_123) {
+  /* itemActive 与 hover 同款灰底：鼠标移到二级浮层时仍保持当前 item 高亮，
+     视觉上明确「这一项的二级菜单正在展开」 */
+  background-color: var(--cb-dropdown-item-hover-bg-color);
+}
+._item_zde11_108 {
+  /**
+   * 二级已展开时，在 active item 右侧铺透明桥接命中区（相对 item 定位，避免
+   * 在带 transform 的 floating 容器内用 fixed + getBoundingClientRect 导致坐标错位）。
+   */
+}
+._item_zde11_108._itemActive_zde11_123:not(._disabled_zde11_123)::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: -4px;
+  width: 20px;
+  height: max(140px, 100% + 96px);
+  pointer-events: auto;
+  z-index: 1;
+}
+._item_zde11_108._disabled_zde11_123 {
+  color: var(--cb-text-muted);
+  cursor: not-allowed;
+}
+
+._itemIcon_zde11_149 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-secondary);
+}
+
+._itemLabel_zde11_159 {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+._itemChevron_zde11_166 {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-muted);
+}
+
+.teams-container.is-mobile ._item_zde11_108 {
+  min-width: 0;
+}
+/**
+ * 状态芯片群共享基础样式 —— mode/expert/connector/permission 等芯片复用。
+ *
+ * 设计稿对齐：
+ *   - 默认态：高 32 / padding 0 8 / 圆角 8 / 无背景 / gap 4
+ *   - hover/激活态：背景 rgba(0,0,0,0.06) / 文字与图标颜色加深到 90% 黑
+ *   - 文字：13px PingFang SC Medium / 行高 20 / 70% 黑（默认） / 90% 黑（hover）
+ *   - 图标 16x16
+ *
+ * 点击交互：mode/expert chip 整体**不可点**，只有 hover 时左侧的 ✕ 按钮才响应点击
+ * （避免用户阅读 chip 时误触关闭）。容器使用 `chipBaseStatic` 类压制 chipBase 默认的
+ * `cursor: pointer`；连接器 chip 维持原有 hover 触发 popover 的语义，不需要 chipBaseStatic。
+ *
+ * 业务态芯片（mode-chip / expert-chip）通过 :exported 类名复用本基础样式，
+ * 在自己的 module.scss 里只写差异（如 connector chip 多 logo 重叠的特殊布局）。
+ */
+._chipBase_1udom_18 {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  flex-shrink: 0;
+}
+._chipBase_1udom_18:focus-visible {
+  outline: 2px solid var(--cb-focus-border, #007fd4);
+  outline-offset: -2px;
+}
+._chipBase_1udom_18:hover, ._chipBase_1udom_18:focus-within {
+  background: var(--cb-icon-button-hover-background);
+}
+._chipBase_1udom_18:hover ._chipIconDefault_1udom_38, ._chipBase_1udom_18:focus-within ._chipIconDefault_1udom_38 {
+  display: none;
+}
+._chipBase_1udom_18:hover ._chipIconHover_1udom_41, ._chipBase_1udom_18:focus-within ._chipIconHover_1udom_41 {
+  display: inline-flex;
+}
+._chipBase_1udom_18:hover ._chipLabel_1udom_44, ._chipBase_1udom_18:focus-within ._chipLabel_1udom_44 {
+  color: var(--cb-text-primary);
+}
+
+/**
+ * "纯展示"形态：容器本身不可点击（mode/expert chip 用），点击交互全部下沉到内部的
+ * ✕ 按钮（chipCloseButton）。仍保留 hover 灰底（chipBaseHovered）作为视觉反馈，
+ * 提示用户进入了"可关闭区域"。
+ */
+._chipBaseStatic_1udom_53 {
+  cursor: default;
+}
+._chipBaseStatic_1udom_53:focus-visible {
+  outline: none;
+}
+
+._chipBaseHovered_1udom_60 {
+  background: var(--cb-icon-button-hover-background);
+}
+
+/**
+ * compact（icon-only）：空间不足时折叠为紧凑形态，隐藏文字只显示图标。
+ * 容器缩为 padding 4px 圆形（与 ModeSelector / ModelSelect compact 对齐）。
+ */
+._chipBaseCompact_1udom_68 {
+  padding: 4px;
+  border-radius: 50%;
+  gap: 0;
+}
+
+/**
+ * disabled 态：chip 锁定（例如 poster 选中设计风格模板时锁死"补图方式=AI"）。
+ * 视觉：cursor: not-allowed + 抑制 hover 反馈 + 保持已选态样式（文字色不变淡，
+ * 因为业务上它仍在生效，只是不能改）。
+ */
+._chipBaseDisabled_1udom_79 {
+  cursor: not-allowed;
+}
+._chipBaseDisabled_1udom_79:hover, ._chipBaseDisabled_1udom_79:focus-within {
+  background: transparent;
+}
+._chipBaseDisabled_1udom_79:hover ._chipIconDefault_1udom_38, ._chipBaseDisabled_1udom_79:focus-within ._chipIconDefault_1udom_38 {
+  display: inline-flex;
+}
+._chipBaseDisabled_1udom_79:hover ._chipIconHover_1udom_41, ._chipBaseDisabled_1udom_79:focus-within ._chipIconHover_1udom_41 {
+  display: none;
+}
+
+._chipIcon_1udom_38 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--cb-text-secondary);
+  flex-shrink: 0;
+}
+
+._chipIconDefault_1udom_38 {
+  display: inline-flex;
+}
+
+._chipIconHover_1udom_41 {
+  display: none;
+  color: var(--cb-text-primary);
+}
+
+/**
+ * 当 chipIcon 同时是 ✕ 关闭按钮（hover 态左侧那个 ✕）时叠加此类：
+ *   - 清除 button 默认的 padding / border / background（继承 transparent）
+ *   - 保持 cursor pointer，让用户清楚知道"这里可点"
+ *   - 与外层 chipBaseStatic 的 cursor:default 形成对比，进一步引导点击 ✕ 而不是文字
+ */
+._chipCloseButton_1udom_117 {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+._chipCloseButton_1udom_117:focus-visible {
+  outline: 2px solid var(--cb-focus-border, #007fd4);
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
+._chipLabel_1udom_44 {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--cb-text-secondary);
+  white-space: nowrap;
+  user-select: none;
+}
+/**
+ * ExpertChip 差异样式 —— 仅头像的圆形 16x16 占位。
+ * 主体规格（高 32 / 圆角 8 / hover 灰底等）走 chip-base.module.scss。
+ */
+._avatar_ie4s4_6 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--wb-text-on-primary);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+._avatar_ie4s4_6 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/**
+ * ConnectorChip 差异样式 —— 多 logo 重叠 + 浮层。
+ *
+ * 设计稿：
+ *   - 单个 logo（14722:239）：32x32 触发区，圆形 logo 16x16 居中，无背景
+ *   - 多个 logo（14722:670 / 14722:1192）：logos 间距 -4px 重叠，前者覆盖后者；
+ *     叠加时各 logo 外描边 2px，颜色与输入框背景同色，避免 icon 融在一起
+ *   - hover/激活（14722:1344）：32x32 灰底圆角 8（沿用 chip-base.chipBaseHovered）
+ *   - 浮层：白底 / 圆角 12 / 阴影 / 列出已连接 connector 行
+ */
+._chip_9w05j_9 {
+  padding: 0 8px;
+}
+._chip_9w05j_9:hover {
+  background: var(--cb-icon-button-hover-background);
+}
+
+._chipMulti_9w05j_19 {
+  padding: 0 8px;
+}
+._chipMulti_9w05j_19 ._logo_9w05j_22 {
+  position: relative;
+  box-shadow: 0 0 0 2px var(--cb-main-area-background);
+}
+
+._logoStack_9w05j_27 {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+._logo_9w05j_22 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--cb-dropdown-bg-color);
+}
+._logo_9w05j_22 + ._logo_9w05j_22 {
+  margin-left: -4px;
+}
+._logo_9w05j_22 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+._logoFallback_9w05j_54 {
+  background: var(--cb-avatar-fallback-bg);
+  color: var(--cb-avatar-fallback-fg);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* -------------------- 浮层 -------------------- */
+/**
+ * 浮层规格（设计稿 14722:1482）：
+ *   - 240 宽 / 圆角 16 / 白底 / 1px 灰边 #E6E6E6 / 阴影双层
+ *   - 内边距 8 / 行间距 2
+ */
+._popover_9w05j_68 {
+  background: var(--cb-dropdown-bg-color);
+  border-radius: 16px;
+  border: 1px solid var(--cb-popover-border);
+  box-shadow: var(--cb-shadow-popover);
+  padding: 8px 0;
+  min-width: 240px;
+  max-height: 392px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+._popoverEmpty_9w05j_82 {
+  padding: 16px;
+  text-align: center;
+  color: var(--cb-text-tertiary);
+  font-size: 13px;
+}
+
+._popoverList_9w05j_89 {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+._popoverList_9w05j_89::-webkit-scrollbar {
+  width: 4px;
+}
+._popoverList_9w05j_89::-webkit-scrollbar-thumb {
+  background: var(--cb-scrollbar-thumb);
+  border-radius: 2px;
+}
+._popoverList_9w05j_89::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/**
+ * 行规格（设计稿 14722:1505）：
+ *   - 高 32 / padding 0 8 / 圆角 8
+ *   - prefix 和 switch 之间 flex: 1 撑开；prefix 内部 logo 和文本 gap 8
+ *   - hover 浅灰底（设计稿 fill #F2F2F2）
+ */
+._popoverRow_9w05j_115 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: default;
+}
+._popoverRow_9w05j_115:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+
+._popoverRowIcon_9w05j_128 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+._popoverRowIcon_9w05j_128 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+._popoverRowFallback_9w05j_145 {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cb-avatar-fallback-bg);
+  color: var(--cb-avatar-fallback-fg);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+._popoverRowName_9w05j_158 {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/**
+ * 团队标识 badge（与 wb-input-add ConnectorRow 的 .sourceTag 字面同源）：
+ * 入口 2（注入模式）里"团队连接器"行名右侧展示"团队"小标签。
+ */
+._popoverRowTag_9w05j_173 {
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 16px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: var(--wb-color-text-tertiary);
+  margin-left: 6px;
+}
+
+/**
+ * Switch 开关（设计稿 14237:169 variant=on）：
+ *   - 26 x 16 胶囊，开态背景 #00C29A（rgb(0, 0.76, 0.6)），关态 #D9D9D9
+ *   - 内部 12x12 白圆点，开态 translateX(12px)，关态 translateX(2px)
+ *   - 过渡 0.18s
+ *
+ * 用 button 实现，便于键盘可访问。
+ */
+._popoverRowSwitch_9w05j_192 {
+  flex-shrink: 0;
+  width: 26px;
+  height: 16px;
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+  background: var(--cb-switch-bg);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.18s ease;
+}
+._popoverRowSwitch_9w05j_192::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--cb-switch-thumb-bg);
+  transform: translateX(2px);
+  transition: transform 0.18s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+._popoverRowSwitch_9w05j_192:focus-visible {
+  outline: 2px solid var(--cb-focus-border, #007fd4);
+  outline-offset: 2px;
+}
+
+._popoverRowSwitchOn_9w05j_222 {
+  background: var(--cb-switch-active-bg);
+}
+._popoverRowSwitchOn_9w05j_222::after {
+  transform: translateX(12px);
+}
+
+/* 吸底：分隔线 + 选择更多连接器（与 wb-input-add connectors 模块一致） */
+._popoverDivider_9w05j_230 {
+  flex: 0 0 1px;
+  height: 1px;
+  background: var(--cb-popover-divider);
+  margin: 8px 0 0;
+}
+
+._popoverFooter_9w05j_237 {
+  flex: 0 0 auto;
+  padding: 8px 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+._popoverFooterItem_9w05j_245 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+._popoverFooterItem_9w05j_245:hover {
+  background: var(--cb-dropdown-item-hover-bg-color);
+}
+
+._popoverFooterIcon_9w05j_259 {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-secondary);
+}
+
+._popoverFooterLabel_9w05j_269 {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--cb-text-primary);
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}

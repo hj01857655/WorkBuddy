@@ -1,0 +1,306 @@
+/**
+ * IdleCapabilityCard 样式（Issue #41180）
+ *
+ * 单一形态：`.idle-capability-pill` —— 胶囊条 / 详情两态共用容器，挂在 SidebarFooter 上方。
+ *   - 默认：行 1 正文、行 2 查看详情、行 3 双按钮
+ *   - 详情：增加 `.idle-capability-pill--detail` 修饰类，插入「已选中/全选」+ 列表 + 「收起详情」
+ *
+ * 使用 --wb-* token 适配亮/暗主题。
+ */
+.idle-capability-toast__manage-link {
+  display: inline;
+  margin: 0 2px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: var(--wb-text-link-brand);
+  cursor: pointer;
+}
+.idle-capability-toast__manage-link:hover {
+  text-decoration: underline;
+}
+.idle-capability-pill {
+  position: fixed;
+  top: 50px;
+  right: 20px;
+  z-index: 900;
+  box-sizing: border-box;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  padding: 20px;
+  --idle-cap-accent-text: rgba(0, 0, 0, 0.7);
+  --idle-cap-card-border: #ebebeb;
+  background: var(--cb-bg-color-container, #fff);
+  border: 0.5px solid var(--idle-cap-card-border);
+  border-radius: 24px;
+  box-shadow: 0px 8px 48px 0px rgba(0, 0, 0, 0.08), 0px 6px 12px 0px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+}
+.idle-capability-pill__close {
+  position: absolute;
+  top: 21px;
+  right: 20px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--wb-text-tertiary);
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  -webkit-app-region: no-drag;
+}
+.idle-capability-pill__close:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-text-secondary);
+}
+.idle-capability-pill__title {
+  padding-right: 24px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--wb-text-primary);
+  font-weight: 600;
+  word-break: break-word;
+}
+.idle-capability-pill__body {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--wb-color-text-tertiary);
+  font-weight: 400;
+  word-break: break-word;
+  margin-top: -4px;
+}
+.idle-capability-pill__manage-link {
+  display: inline;
+  margin: 0 2px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: var(--wb-color-text-primary);
+  cursor: pointer;
+}
+.idle-capability-pill__manage-link:hover {
+  text-decoration: underline;
+}
+.idle-capability-pill__detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: auto;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--wb-color-text-tertiary);
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.idle-capability-pill__detail-link > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.idle-capability-pill__detail-link:hover {
+  opacity: 0.75;
+}
+.idle-capability-pill__detail-caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  color: inherit;
+}
+.idle-capability-pill__detail-caret svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0.5;
+}
+.idle-capability-pill__detail-caret--up svg {
+  transform: rotate(180deg);
+}
+.idle-capability-pill__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.idle-capability-pill__select-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -2px;
+}
+.idle-capability-pill__select-count {
+  font-size: 14px;
+  color: var(--idle-cap-accent-text);
+}
+.idle-capability-pill__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  max-height: 248px;
+  overflow-y: auto;
+  background: transparent;
+  border: 1px solid var(--wb-color-bg-secondary-hover-active);
+  border-radius: 12px;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.idle-capability-pill__list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+.idle-capability-pill__list .cb-checkbox__box {
+  border-radius: 5px;
+  border-color: var(--wb-border-default, rgba(0, 0, 0, 0.25));
+}
+.idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box {
+  background: rgba(0, 0, 0, 0.75);
+  border-color: rgba(0, 0, 0, 0.75);
+}
+.idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box::after {
+  border-color: var(--wb-button-primary-fg, #ffffff);
+  border-width: 0 1.8px 1.8px 0;
+  width: 4px;
+  height: 8px;
+  top: 47%;
+  left: 50%;
+}
+.idle-capability-pill__list-row {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 8px;
+  cursor: pointer;
+  min-width: 0;
+  flex-shrink: 0;
+  position: relative;
+}
+.idle-capability-pill__list-row:hover {
+  background: var(--wb-color-bg-primary-default);
+}
+.idle-capability-pill__list-name {
+  flex: 1;
+  font-size: 14px;
+  color: var(--wb-color-text-primary);
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.idle-capability-pill__list-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--wb-text-tertiary);
+}
+.idle-capability-pill__list-date {
+  flex-shrink: 0;
+  width: 88px;
+  text-align: right;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--wb-color-text-tertiary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.idle-capability-pill__list-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 32px;
+  padding: 0 8px;
+  flex-shrink: 0;
+  position: relative;
+  background: var(--wb-color-bg-secondary-hover-active);
+}
+.idle-capability-pill__list-head-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--wb-color-text-tertiary);
+  font-weight: 500;
+}
+.idle-capability-pill__list-head-date {
+  flex-shrink: 0;
+  width: 88px;
+  text-align: right;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--wb-color-text-tertiary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.idle-capability-pill__tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 280px;
+}
+.idle-capability-pill__tooltip-name {
+  font-size: 12px;
+  line-height: 1.45;
+  word-break: break-word;
+  white-space: normal;
+}
+.idle-capability-pill__tooltip-meta {
+  font-size: 11px;
+  line-height: 1.4;
+  opacity: 0.75;
+}
+[data-theme="dark"] .idle-capability-pill,
+body[data-vscode-theme-name="IDE Night"] .idle-capability-pill,
+body.vscode-dark .idle-capability-pill,
+.vscode-dark .idle-capability-pill,
+body.dark .idle-capability-pill,
+.dark .idle-capability-pill {
+  --idle-cap-card-border: #3d3d3d;
+  --idle-cap-accent-text: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 24px 48px -4px rgba(0, 0, 0, 0.2), 0 6px 12px -8px rgba(0, 0, 0, 0.2);
+}
+[data-theme="dark"] .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box,
+body[data-vscode-theme-name="IDE Night"] .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box,
+body.vscode-dark .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box,
+.vscode-dark .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box,
+body.dark .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box,
+.dark .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+[data-theme="dark"] .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box::after,
+body[data-vscode-theme-name="IDE Night"] .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box::after,
+body.vscode-dark .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box::after,
+.vscode-dark .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box::after,
+body.dark .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box::after,
+.dark .idle-capability-pill .idle-capability-pill__list .cb-checkbox--checked .cb-checkbox__box::after {
+  border-color: #1a1a1a;
+}
+@media (max-width: 640px) {
+  .idle-capability-pill {
+    display: none;
+  }
+}

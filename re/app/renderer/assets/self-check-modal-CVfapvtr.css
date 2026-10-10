@@ -1,0 +1,464 @@
+/**
+ * Self-Check modal — 可折叠卡片风格。
+ *
+ * 视觉参考：`诊断工具-交互原型.html`
+ * 主题令牌：与 network-check-modal.less 同源（`--cb-*` / `--cb-vscode-*`），
+ *          自动适配明暗主题。
+ */
+.self-check-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.56);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: selfCheckFadeIn 0.15s ease-out;
+}
+.self-check-modal {
+  --sc-surface: var(--cb-settings-card-background, var(--cb-card-background, var(--cb-secondary-bg, #2d2d2d)));
+  --sc-surface-alt: var(--cb-vscode-editor-background, #1e1e1e);
+  --sc-border: color-mix(in srgb, var(--cb-vscode-panel-border, #3c3c3c) 72%, transparent);
+  --sc-border-soft: color-mix(in srgb, var(--cb-vscode-panel-border, #3c3c3c) 40%, transparent);
+  --sc-title: var(--cb-text-primary, var(--cb-vscode-foreground, #d4d4d4));
+  --sc-body: var(--cb-text-secondary, #858699);
+  --sc-muted: var(--cb-text-tertiary, #a0a0a0);
+  --sc-hover: color-mix(in srgb, var(--cb-vscode-foreground, #cccccc) 6%, transparent);
+  --sc-pass: var(--wb-status-success, #0CBF5B);
+  --sc-warning: var(--wb-status-warning, #FF7800);
+  --sc-fail: var(--wb-status-error, #F64041);
+  --sc-info: var(--wb-status-success, #0CBF5B);
+  width: min(820px, calc(100vw - 64px));
+  height: min(760px, calc(100vh - 64px));
+  background: var(--sc-surface-alt);
+  border: 1px solid var(--sc-border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--cb-shadow-lg, 0 18px 48px rgba(0, 0, 0, 0.28));
+  animation: selfCheckSlideUp 0.2s ease-out;
+  position: relative;
+  color: var(--sc-title);
+}
+.self-check-modal__header {
+  padding: 24px 32px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--sc-border);
+}
+.self-check-modal__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+.self-check-modal__title {
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 28px;
+  color: var(--sc-title);
+}
+.self-check-modal__subtitle {
+  font-size: 12px;
+  color: var(--sc-body);
+  line-height: 17px;
+}
+.self-check-modal__actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-right: 38px;
+}
+.self-check-modal__rerun-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid var(--sc-border);
+  background: var(--sc-surface-alt);
+  color: var(--sc-title);
+  font-size: 12px;
+  line-height: 18px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.self-check-modal__rerun-btn:hover:not(:disabled) {
+  background: var(--sc-hover);
+}
+.self-check-modal__rerun-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.self-check-modal__rerun-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.self-check-modal__close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sc-body);
+  z-index: 1;
+}
+.self-check-modal__close:hover {
+  background: var(--sc-hover);
+}
+.self-check-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.self-check-modal__body::-webkit-scrollbar {
+  width: 10px;
+}
+.self-check-modal__body::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+  background-color: color-mix(in srgb, var(--cb-vscode-foreground, #cccccc) 22%, transparent);
+}
+.self-check-modal__error-banner {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--sc-fail) 14%, transparent);
+  color: var(--sc-fail);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.self-check-modal__card {
+  border: 1px solid var(--sc-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--sc-surface-alt);
+  transition: border-color 0.15s;
+  flex-shrink: 0;
+}
+.self-check-modal__card--pass {
+  border-color: color-mix(in srgb, var(--sc-pass) 35%, var(--sc-border));
+}
+.self-check-modal__card--warning {
+  border-color: color-mix(in srgb, var(--sc-warning) 40%, var(--sc-border));
+}
+.self-check-modal__card--fail {
+  border-color: color-mix(in srgb, var(--sc-fail) 40%, var(--sc-border));
+}
+.self-check-modal__card--running {
+  border-color: color-mix(in srgb, var(--sc-info) 35%, var(--sc-border));
+}
+.self-check-modal__card-header {
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 16px;
+  background: var(--sc-surface);
+  border: none;
+  cursor: pointer;
+  color: var(--sc-title);
+  font-family: inherit;
+  text-align: left;
+  transition: background-color 0.15s;
+}
+.self-check-modal__card-header:hover {
+  background: color-mix(in srgb, var(--sc-surface) 92%, var(--sc-hover));
+}
+.self-check-modal__card-header--static {
+  cursor: default;
+}
+.self-check-modal__card-header--static:hover {
+  background: var(--sc-surface);
+}
+.self-check-modal__card-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.self-check-modal__card-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--sc-muted);
+  transition: transform 0.2s ease;
+}
+.self-check-modal__card.is-expanded .self-check-modal__card-chevron {
+  transform: rotate(90deg);
+}
+.self-check-modal__card-name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--sc-title);
+}
+.self-check-modal__card-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.self-check-modal__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--sc-surface-alt);
+}
+.self-check-modal__card-empty {
+  padding: 20px 16px;
+  text-align: center;
+  color: var(--sc-muted);
+  font-size: 12px;
+}
+.self-check-modal__row {
+  border: none;
+  border-radius: 4px;
+  background: var(--sc-surface);
+  padding: 10px 14px;
+  overflow: hidden;
+}
+.self-check-modal__row-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+.self-check-modal__row-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+.self-check-modal__row-title {
+  margin: 0;
+  color: var(--sc-title);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+.self-check-modal__row-desc {
+  margin: 0;
+  max-width: 100%;
+  color: var(--sc-body);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 17px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.self-check-modal__row-desc--pass {
+  color: var(--sc-pass);
+}
+.self-check-modal__row-desc--warning {
+  color: var(--sc-warning);
+}
+.self-check-modal__row-desc--fail {
+  color: var(--sc-fail);
+}
+.self-check-modal__row-detail {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--sc-muted);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.self-check-modal__row-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 90px;
+}
+.self-check-modal__row-advice {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-left: 2px solid var(--sc-warning);
+  background: color-mix(in srgb, var(--sc-warning) 8%, transparent);
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--sc-body);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.self-check-modal__row-advice--fail {
+  border-left-color: var(--sc-fail);
+  background: color-mix(in srgb, var(--sc-fail) 8%, transparent);
+}
+.self-check-modal__row-advice--info {
+  border-left-color: var(--sc-info);
+  background: color-mix(in srgb, var(--sc-info) 6%, transparent);
+}
+.self-check-modal__link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--cb-info, #4aa3ff);
+  font-size: 12px;
+  line-height: 17px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+.self-check-modal__link-btn:hover {
+  opacity: 0.85;
+}
+.self-check-modal__link-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+.self-check-modal__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+.self-check-modal__badge svg {
+  width: 12px;
+  height: 12px;
+}
+.self-check-modal__badge--pending {
+  color: var(--settings-body);
+  background: color-mix(in srgb, var(--cb-vscode-foreground, #cccccc) 10%, transparent);
+}
+.self-check-modal__badge--running {
+  color: var(--cb-info, #4aa3ff);
+  background: color-mix(in srgb, var(--cb-info, #4aa3ff) 14%, transparent);
+}
+.self-check-modal__badge--pass {
+  color: var(--cb-success-color, #22c55e);
+  background: color-mix(in srgb, var(--cb-success-color, #22c55e) 16%, transparent);
+}
+.self-check-modal__badge--warning {
+  color: var(--cb-warning, #facc15);
+  background: color-mix(in srgb, var(--cb-warning, #facc15) 16%, transparent);
+}
+.self-check-modal__badge--fail {
+  color: var(--cb-error-foreground, #f87171);
+  background: color-mix(in srgb, var(--cb-error-foreground, #f87171) 16%, transparent);
+}
+.self-check-modal__badge--info {
+  color: var(--settings-muted);
+  background: color-mix(in srgb, var(--cb-vscode-foreground, #cccccc) 8%, transparent);
+}
+.self-check-modal__spin {
+  animation: selfCheckSpin 1s linear infinite;
+}
+.self-check-modal__nc-embed.network-check-modal {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  animation: none !important;
+  color: var(--sc-title) !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  overflow: visible !important;
+}
+.self-check-modal__nc-embed.network-check-modal .network-check-modal__group-title {
+  font-size: 12px;
+  color: var(--sc-muted);
+  margin: 0;
+}
+.self-check-modal__nc-embed.network-check-modal .network-check-modal__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.self-check-modal__nc-embed.network-check-modal .network-check-modal__section {
+  background: var(--sc-surface);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+@keyframes selfCheckSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes selfCheckFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes selfCheckSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (max-width: 720px) {
+  .self-check-modal {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  .self-check-modal__header {
+    padding: 20px 16px 12px;
+  }
+  .self-check-modal__body {
+    padding: 16px 16px 24px;
+  }
+  .self-check-modal__item-main {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .self-check-modal__item-action {
+    justify-content: flex-start;
+  }
+}

@@ -1,0 +1,1 @@
+"use strict";exports.ids=["311"],exports.modules={48834(e,s,r){r.r(s),r.d(s,{OrderedToolsAgent:()=>OrderedToolsAgent});var t=r(8780),o=r(86119),l=r(58940);let OrderedToolsAgent=class OrderedToolsAgent extends t.Agent{constructor(e){super(e)}async getAllTools(e){let s=await super.getAllTools(e);return(0,o.$)(s,this.tools,(0,l.AE)(this.mcpServers))}}}};

@@ -1,0 +1,1730 @@
+/**
+ * ConflictModal 样式
+ *
+ * 基于 foundation Modal（variant='confirm'）渲染，
+ * 此文件仅保留业务定制样式（文件行、alert icon、勾选框）。
+ * 弹窗容器 / 遮罩 / 关闭按钮 / footer 布局由 Modal 组件统一处理。
+ */
+.conflict-modal__alert-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--wb-button-primary-foreground, #fff);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 20px;
+  background: var(--wb-error-foreground, #df6f6a);
+  border-radius: 50%;
+}
+.conflict-modal__file-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 4px 0 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--wb-bg-primary, #1e1e1e) 92%, var(--wb-bg-slate) 8%);
+}
+.conflict-modal__file-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+.conflict-modal__file-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--wb-text-strong, #d2d3e0);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.conflict-modal__apply-all {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wb-text-medium, #858699);
+}
+/**
+ * UploadModal 样式
+ *
+ * 对齐「保存到乐享知识库」弹窗（PickerDialogShell）的视觉规范：
+ *   · 弹窗 800px / 80vh / radius 6 / padding 24 / gap 16
+ *   · Header 16px/500
+ *   · FileRow 44px 高度 / flex 布局 / radius 6
+ *   · 底部按钮 30px 高 / 黑底白字主按钮 / 白底灰边次按钮
+ *
+ * 引入乐享知识库共享 token（--cb-kb-row-selected-bg 已迁移至 --wb-bg-row-selected），
+ * 保证选中行底色与乐享选择框一致；token 是 :root 全局变量，重复 import 由 less 去重。
+ */
+/**
+ * 腾讯乐享知识库面板 —— 全局 CSS token（浅色 + 深色）
+ *
+ * 该文件只包含 :root 级别的 CSS 变量声明，不含任何业务类样式。
+ * 需要由以下入口分别 import，以保证无论先进入「面板」还是先弹出「Picker」都能拿到 token：
+ *   · tencent-lexiang-panel.less（主面板）
+ *   · components/picker/lexiang-content-picker.tsx（对话里直接拉起的「选择文件」弹窗）
+ *   · components/picker/lexiang-kb-picker.tsx（对话里直接拉起的「选择知识库」弹窗）
+ *
+ * Token 命名规则：--wb-kb-{category}，kb = Knowledge Base；腾讯乐享/腾讯文档/ima 共享。
+ * 引用 --wb-* (@genie/wb-components 的 tokens) 作为真源，fallback 为 Figma 设计稿原始值。
+ */
+:root {
+  /* ---- 品牌（仅 preview-resize-handle 使用，其余视觉已弃用） ---- */
+  --wb-kb-brand: #4ecba0;
+  --wb-kb-brand-hover: #3db890;
+  /* ---- 通用文字：Figma #E5/B2/7F/4C 000000 ---- */
+  --wb-kb-text-primary: var(--wb-text-strong, rgba(0, 0, 0, 0.9));
+  --wb-kb-text-secondary: var(--wb-text-medium, rgba(0, 0, 0, 0.7));
+  --wb-kb-text-tertiary: var(--wb-text-weak, rgba(0, 0, 0, 0.5));
+  --wb-kb-text-muted: var(--wb-text-muted, rgba(0, 0, 0, 0.3));
+  /* ---- 卡片（列表/Banner/Selection bar） ---- */
+  --wb-kb-card-bg: var(--wb-bg-primary, #ffffff);
+  --wb-kb-card-bg-soft: #f8fafd;
+  --wb-kb-card-border: #f0f4f5;
+  --wb-kb-card-border-soft: #f0f4f5;
+  /* ---- 主按钮（黑底白字，Figma #E5000000） ---- */
+  --wb-kb-btn-primary-bg: var(--wb-button-primary-bg, rgba(0, 0, 0, 0.9));
+  --wb-kb-btn-primary-bg-hover: var(--wb-button-primary-bg-hover, #000000);
+  --wb-kb-btn-primary-fg: var(--wb-button-primary-fg, #ffffff);
+  /* ---- 次按钮（白底深字） ---- */
+  --wb-kb-btn-surface: var(--wb-bg-primary, #ffffff);
+  --wb-kb-btn-surface-hover: var(--wb-bg-hover, #fafafa);
+  --wb-kb-btn-border: var(--wb-border-default, rgba(229, 233, 240, 0.6));
+  --wb-kb-btn-border-hover: rgba(0, 0, 0, 0.2);
+  --wb-kb-btn-text: var(--wb-text-strong, rgba(0, 0, 0, 0.9));
+  /* ---- 行 hover / selected ---- */
+  --wb-kb-row-hover-bg: var(--wb-bg-hover, rgba(0, 0, 0, 0.05));
+  --wb-kb-row-selected-bg: var(--wb-bg-active, rgba(0, 0, 0, 0.08));
+  /* ---- 视图 Tab 胶囊（外壳 #F4F5F5 + 激活白底 + 细描边 #EBECEC + 阴影） ---- */
+  --wb-kb-tabs-container-bg: #f4f5f5;
+  --wb-kb-tabs-container-border: #ebecec;
+  --wb-kb-tabs-active-bg: var(--wb-bg-primary, #ffffff);
+  --wb-kb-tabs-active-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  --wb-kb-tab-hover-bg: rgba(0, 0, 0, 0.04);
+  /* ---- 弹窗（picker-dialog：选择知识库/文件） ---- */
+  --wb-kb-dialog-bg: var(--wb-bg-popover, #ffffff);
+  --wb-kb-dialog-border: var(--wb-border-default, rgba(229, 233, 240, 0.6));
+  --wb-kb-dialog-divider: var(--wb-border-subtle, rgba(229, 233, 240, 0.5));
+  --wb-kb-dialog-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --wb-kb-dialog-section-label: var(--wb-text-muted, rgba(0, 0, 0, 0.3));
+  /* ---- 搜索框 / 通用输入 ---- */
+  --wb-kb-input-bg: var(--wb-bg-primary, #ffffff);
+  --wb-kb-input-border: var(--wb-border-default, rgba(229, 233, 240, 0.6));
+  --wb-kb-input-placeholder: var(--wb-text-muted, rgba(0, 0, 0, 0.3));
+  --wb-kb-input-icon: #b2b2b2;
+  /* ---- Banner 装饰 ---- */
+  --wb-kb-banner-avatar-bg: #fde68a;
+  /* ---- Checkbox（Figma 设计稿：与黑色主按钮同色 #E5000000；深色模式下反相为白底黑勾） ---- */
+  --wb-kb-checkbox-accent: rgba(0, 0, 0, 0.9);
+  --wb-kb-checkbox-check-color: #ffffff;
+  /* ---- Radio 未选边框（Figma 256:7045：rgba(228, 233, 241, 0.60) 1px） ---- */
+  --wb-kb-radio-border: rgba(228, 233, 241, 0.6);
+  /* ============================================================
+   * 版本权益 / 到期提醒 / 试用过期蒙版（version-benefits）
+   * 该模块的"品牌蓝 / 商业黄"在 genie 全局 token 中没有对应色阶
+   * （genie --wb-palette-brand-* 是绿色系），故在此定义专用 token。
+   * 取值对齐 shield wb-theme.less 的 --color-brand-* / --color-yellow-*。
+   * ============================================================ */
+  /* 品牌蓝（标准版主题）—— 对齐 shield light --color-brand-* */
+  --wb-kb-ver-brand-10: #f2f8fe;
+  --wb-kb-ver-brand-40: #4d97ff;
+  --wb-kb-ver-brand-50: #1a79ff;
+  --wb-kb-ver-brand-card-bg: #f6faff;
+  --wb-kb-ver-brand-card-border: #d6e6ff;
+  /* 商业黄（商业版主题）—— 对齐 shield light --color-yellow-* + 设计稿黄 */
+  --wb-kb-ver-yellow-10: #fef9e8;
+  --wb-kb-ver-yellow-50: #e0a60d;
+  --wb-kb-ver-yellow-60: #c6920a;
+  --wb-kb-ver-yellow-icon: #e7b652;
+  --wb-kb-ver-yellow-card-bg: #fbf6ea;
+  --wb-kb-ver-yellow-card-border: rgba(234, 210, 149, 0.2);
+  --wb-kb-ver-yellow-card-border-hover: #eaca77;
+  /* 蒙版遮罩背景（毛玻璃底色）。light 值等价于 --wb-bg-scrim-light，直接复用。 */
+  --wb-kb-ver-overlay-bg: var(--wb-bg-scrim-light, rgba(255, 255, 255, 0.8));
+  /* QR 码白底（二维码需固定白底，深浅色一致）。--wb-palette-white-100 始终为 #ffffff。 */
+  --wb-kb-ver-qr-bg: var(--wb-palette-white-100, #ffffff);
+}
+:root.dark,
+:root .dark,
+body[data-vscode-theme-kind="vscode-dark"],
+body[data-vscode-theme-name="IDE Night"],
+body.vscode-dark,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) {
+  /* ---- 文字：对齐 --wb-* 深色主题分级 ---- */
+  --wb-kb-text-primary: rgba(255, 255, 255, 0.92);
+  --wb-kb-text-secondary: rgba(255, 255, 255, 0.72);
+  --wb-kb-text-tertiary: rgba(255, 255, 255, 0.5);
+  --wb-kb-text-muted: rgba(255, 255, 255, 0.32);
+  /* ---- 卡片 ---- */
+  --wb-kb-card-bg: rgba(255, 255, 255, 0.03);
+  --wb-kb-card-bg-soft: #232730;
+  --wb-kb-card-border: rgba(255, 255, 255, 0.1);
+  --wb-kb-card-border-soft: rgba(255, 255, 255, 0.08);
+  /* ---- 主按钮：深色下反色（白底黑字） ---- */
+  --wb-kb-btn-primary-bg: rgba(255, 255, 255, 0.92);
+  --wb-kb-btn-primary-bg-hover: #ffffff;
+  --wb-kb-btn-primary-fg: #000000;
+  /* ---- 次按钮 ---- */
+  --wb-kb-btn-surface: transparent;
+  --wb-kb-btn-surface-hover: rgba(255, 255, 255, 0.06);
+  --wb-kb-btn-border: rgba(255, 255, 255, 0.14);
+  --wb-kb-btn-border-hover: rgba(255, 255, 255, 0.28);
+  --wb-kb-btn-text: rgba(255, 255, 255, 0.92);
+  /* ---- 行 hover / selected ---- */
+  --wb-kb-row-hover-bg: rgba(255, 255, 255, 0.08);
+  --wb-kb-row-selected-bg: rgba(255, 255, 255, 0.12);
+  /* ---- 视图 Tab 胶囊 ---- */
+  --wb-kb-tabs-container-bg: rgba(255, 255, 255, 0.04);
+  --wb-kb-tabs-container-border: rgba(255, 255, 255, 0.08);
+  --wb-kb-tabs-active-bg: rgba(255, 255, 255, 0.12);
+  --wb-kb-tabs-active-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  --wb-kb-tab-hover-bg: rgba(255, 255, 255, 0.06);
+  /* ---- 弹窗 ---- */
+  --wb-kb-dialog-bg: #212234;
+  --wb-kb-dialog-border: rgba(255, 255, 255, 0.1);
+  --wb-kb-dialog-divider: rgba(255, 255, 255, 0.06);
+  --wb-kb-dialog-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --wb-kb-dialog-section-label: rgba(255, 255, 255, 0.32);
+  /* ---- 搜索 / 输入 ---- */
+  --wb-kb-input-bg: rgba(255, 255, 255, 0.04);
+  --wb-kb-input-border: rgba(255, 255, 255, 0.12);
+  --wb-kb-input-placeholder: rgba(255, 255, 255, 0.32);
+  --wb-kb-input-icon: rgba(255, 255, 255, 0.4);
+  /* ---- Banner ---- */
+  --wb-kb-banner-avatar-bg: rgba(253, 230, 138, 0.22);
+  /* ---- Checkbox：深色模式下反相为白底黑勾 ---- */
+  --wb-kb-checkbox-accent: rgba(255, 255, 255, 0.92);
+  --wb-kb-checkbox-check-color: #000000;
+  /* ---- Radio 未选边框：深色下用可辨识的低透明度白 ---- */
+  --wb-kb-radio-border: rgba(255, 255, 255, 0.24);
+  /* ---- 版本权益 / 到期 / 试用过期（深色，对齐 shield wb-dark） ---- */
+  /* 品牌蓝：深色下用 shield dark --color-brand-10 (实色，非 rgba 半透)
+     此前 rgba(26, 121, 255, 0.08) 叠加在 --wb-bg-popover (#2C2C2C) 上几乎不可见，
+     导致 popup tabs 区域与 body 之间产生 ~4% 亮度差，用户视觉上感觉"border 漏出来"。
+     改用 shield 实色 #0f2444 后，tabs 与 body 形成明确主题色/卡色对比，是设计意图。 */
+  --wb-kb-ver-brand-10: #0f2444;
+  --wb-kb-ver-brand-40: #2b83ff;
+  --wb-kb-ver-brand-50: #60a2ff;
+  --wb-kb-ver-brand-card-bg: rgba(26, 121, 255, 0.1);
+  --wb-kb-ver-brand-card-border: rgba(255, 255, 255, 0.1);
+  /* 商业黄：深色下用 shield dark --color-yellow-10 (实色，非 rgba 半透)
+     修复同上：rgba 8% alpha 在 #2C2C2C 上几乎不可见，
+     改用 shield 实色 #3d3014 让 tabs 主题色明显起来。 */
+  --wb-kb-ver-yellow-10: #3d3014;
+  --wb-kb-ver-yellow-50: #ffcd66;
+  --wb-kb-ver-yellow-60: #ffdd99;
+  --wb-kb-ver-yellow-icon: #e7b652;
+  --wb-kb-ver-yellow-card-bg: rgba(255, 179, 0, 0.1);
+  --wb-kb-ver-yellow-card-border: rgba(255, 255, 255, 0.1);
+  --wb-kb-ver-yellow-card-border-hover: #ffbe3a;
+  /* 蒙版遮罩背景（深色毛玻璃底，dark 专用色值） */
+  --wb-kb-ver-overlay-bg: rgba(34, 34, 34, 0.8);
+  /* QR 码白底：复用 palette white-100，始终为 #ffffff */
+  --wb-kb-ver-qr-bg: var(--wb-palette-white-100, #ffffff);
+}
+.upload-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wb-bg-overlay);
+}
+.upload-modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 800px;
+  min-width: 480px;
+  height: 80vh;
+  max-height: 700px;
+  min-height: 400px;
+  overflow: hidden;
+  background: var(--wb-bg-primary);
+  border-radius: 6px;
+  box-shadow: var(--wb-shadow-dialog-md);
+  box-sizing: border-box;
+  padding: 24px;
+  gap: 16px;
+  animation: upload-modal-fade-in 0.15s ease-out;
+}
+.upload-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.upload-modal__header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.upload-modal__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--wb-text-strong);
+  white-space: nowrap;
+}
+.upload-modal__file-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  font-size: 12px;
+  color: var(--wb-text-medium);
+  background: var(--wb-bg-secondary);
+  border-radius: 4px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.upload-modal__close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--wb-text-weak);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.upload-modal__close svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+.upload-modal__close:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-text-strong);
+}
+.upload-modal__save-progress-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  background: var(--wb-bg-secondary);
+  border: 1px solid var(--wb-border-default);
+  border-radius: 6px;
+}
+.upload-modal__save-progress-bar-icon {
+  flex-shrink: 0;
+  color: var(--wb-button-primary-bg);
+  animation: upload-spin 1s linear infinite;
+}
+.upload-modal__save-progress-bar-text {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--wb-text-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50%;
+}
+.upload-modal__save-progress-bar-track {
+  flex: 1;
+  min-width: 80px;
+  height: 4px;
+  background: var(--wb-border-default);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.upload-modal__save-progress-bar-fill {
+  height: 100%;
+  background: var(--wb-button-primary-bg);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.upload-modal__save-progress-bar-cancel {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--wb-text-weak);
+  padding: 0 4px;
+  line-height: 1;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+}
+.upload-modal__save-progress-bar-cancel:hover {
+  color: var(--wb-text-strong);
+  background: var(--wb-bg-hover);
+}
+.upload-modal__breadcrumb {
+  flex-shrink: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.upload-modal__search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 30px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  background: var(--wb-bg-secondary);
+  border: 1px solid var(--wb-border-card);
+  transition: border-color 120ms ease;
+  width: 240px;
+  flex-shrink: 0;
+}
+.upload-modal__search-box:focus-within {
+  border-color: var(--wb-border-popover-strong);
+}
+.upload-modal__search-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--wb-text-weak);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.upload-modal__search-input {
+  flex: 1;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wb-text-strong);
+}
+.upload-modal__search-input::placeholder {
+  color: var(--wb-text-weak);
+}
+.upload-modal__search-clear {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-text-weak);
+  transition: color 80ms ease;
+}
+.upload-modal__search-clear:hover {
+  color: var(--wb-text-strong);
+}
+.upload-modal__search-clear svg {
+  width: 12px;
+  height: 12px;
+}
+.upload-modal__list-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--wb-border-card);
+  border-radius: 6px;
+}
+.upload-modal__list-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  flex-shrink: 0;
+  gap: 8px;
+  border-bottom: 1px solid var(--wb-border-card);
+}
+.upload-modal__list-header span {
+  font-size: 12px;
+  color: var(--wb-text-weak);
+  font-weight: 400;
+  line-height: 20px;
+}
+.upload-modal__list-header-name {
+  flex: 1;
+  min-width: 0;
+  padding-left: 30px;
+}
+.upload-modal__list-header-owner {
+  width: 80px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.upload-modal__list-header-time {
+  width: 100px;
+  text-align: left;
+  flex-shrink: 0;
+}
+.upload-modal__file-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding: 4px 8px;
+}
+.upload-modal__file-list::-webkit-scrollbar {
+  width: 4px;
+}
+.upload-modal__file-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.upload-modal__file-list::-webkit-scrollbar-thumb {
+  background: var(--wb-scrollbar-thumb);
+  border-radius: 2px;
+}
+.upload-modal__file-list::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-scrollbar-thumb-hover);
+}
+.upload-modal__create-folder-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  min-height: 44px;
+  box-sizing: border-box;
+  background: var(--wb-bg-secondary);
+  border-radius: 6px;
+}
+.upload-modal__create-folder-input {
+  flex: 1;
+  height: 28px;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: var(--wb-text-strong);
+  background: var(--wb-bg-primary);
+  border: 1px solid var(--wb-button-primary-bg);
+  border-radius: 4px;
+  outline: none;
+}
+.upload-modal__create-folder-input::placeholder {
+  color: var(--wb-text-weak);
+}
+.upload-modal__rename-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  min-height: 44px;
+  box-sizing: border-box;
+  background: var(--wb-bg-secondary);
+  border-radius: 6px;
+}
+.upload-modal__rename-input {
+  flex: 1;
+  height: 28px;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: var(--wb-text-strong);
+  background: var(--wb-bg-primary);
+  border: 1px solid var(--wb-button-primary-bg);
+  border-radius: 4px;
+  outline: none;
+}
+.upload-modal__loading,
+.upload-modal__error,
+.upload-modal__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 8px;
+  padding: 48px 16px;
+  font-size: 13px;
+  color: var(--wb-text-weak);
+}
+.upload-modal__error {
+  color: var(--wb-error-foreground);
+}
+.upload-modal__load-more {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+.upload-modal__load-more button {
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--wb-text-medium);
+  background: none;
+  border: 1px solid var(--wb-border-default);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.upload-modal__load-more button:hover {
+  background: var(--wb-bg-hover);
+}
+.upload-modal__loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 0;
+  font-size: 12px;
+  color: var(--wb-text-weak);
+}
+.upload-modal__loading-more-icon {
+  animation: upload-spin 1s linear infinite;
+}
+.upload-modal__file-select-input {
+  display: none;
+}
+.upload-modal__queue {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  max-height: 120px;
+  overflow-y: auto;
+  border-top: 1px solid var(--wb-border-default);
+}
+.upload-modal__queue::-webkit-scrollbar {
+  width: 4px;
+}
+.upload-modal__queue::-webkit-scrollbar-track {
+  background: transparent;
+}
+.upload-modal__queue::-webkit-scrollbar-thumb {
+  background: var(--wb-scrollbar-thumb);
+  border-radius: 2px;
+}
+.upload-modal__queue::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-scrollbar-thumb-hover);
+}
+.upload-modal__queue-header {
+  display: flex;
+  align-items: center;
+  padding: 6px 0 4px;
+}
+.upload-modal__queue-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--wb-text-medium);
+}
+.upload-modal__queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 6px;
+}
+.upload-modal__queue-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--wb-bg-secondary);
+  position: relative;
+}
+.upload-modal__queue-item-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.upload-modal__queue-item-name {
+  flex: 1;
+  font-size: 11px;
+  color: var(--wb-text-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.upload-modal__queue-item-size {
+  font-size: 10px;
+  color: var(--wb-text-weak);
+  white-space: nowrap;
+}
+.upload-modal__queue-item-percent {
+  min-width: 36px;
+  text-align: right;
+  font-size: 10px;
+  color: var(--wb-text-medium);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.upload-modal__queue-item-progress {
+  height: 2px;
+  background: var(--wb-bg-primary);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.upload-modal__queue-item-progress-bar {
+  height: 100%;
+  background: var(--wb-button-primary-bg);
+  border-radius: 1px;
+  transition: width 0.2s ease;
+}
+.upload-modal__queue-item-error {
+  font-size: 10px;
+  color: var(--wb-error-foreground);
+}
+.upload-modal__queue-item-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-radius: 3px;
+  color: var(--wb-text-weak);
+  opacity: 0;
+  transition: opacity 0.12s, color 0.12s;
+}
+.upload-modal__queue-item:hover .upload-modal__queue-item-remove {
+  opacity: 1;
+}
+.upload-modal__queue-item-remove:hover {
+  color: var(--wb-error-foreground);
+}
+.upload-modal__queue-item--success {
+  opacity: 0.6;
+}
+.upload-modal__status-icon {
+  flex-shrink: 0;
+}
+.upload-modal__status-icon--pending {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--wb-bg-tertiary);
+  opacity: 0.3;
+}
+.upload-modal__status-icon--uploading {
+  color: var(--wb-button-primary-bg);
+  animation: upload-spin 1s linear infinite;
+}
+.upload-modal__status-icon--success {
+  color: var(--wb-button-primary-bg);
+}
+.upload-modal__status-icon--error {
+  color: var(--wb-error-foreground);
+}
+.upload-modal__status-icon--conflict {
+  color: var(--wb-warning);
+}
+.upload-modal__conflict-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--wb-bg-secondary);
+  border-radius: 6px;
+}
+.upload-modal__conflict-confirm-msg {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--wb-warning);
+}
+.upload-modal__conflict-confirm-actions {
+  display: flex;
+  gap: 6px;
+}
+.upload-modal__conflict-btn {
+  padding: 2px 8px;
+  font-size: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.12s;
+  border: 1px solid var(--wb-border-default);
+  background: var(--wb-bg-primary);
+  color: var(--wb-text-strong);
+}
+.upload-modal__conflict-btn:hover {
+  opacity: 0.8;
+}
+.upload-modal__conflict-btn--overwrite {
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+  border-color: var(--wb-button-primary-bg);
+}
+.upload-modal__conflict-btn--skip {
+  color: var(--wb-text-medium);
+}
+.upload-modal__footer {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.upload-modal__btn-create-folder {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  height: 30px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--wb-text-strong);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+  white-space: nowrap;
+}
+.upload-modal__btn-create-folder:hover {
+  background: var(--wb-bg-hover);
+}
+.upload-modal__btn-create-folder:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.upload-modal__btn-create-folder svg {
+  color: var(--wb-text-medium);
+}
+.upload-modal__footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.upload-modal__current-path {
+  font-size: 12px;
+  color: var(--wb-text-weak);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.upload-modal__current-path-name {
+  color: var(--wb-text-medium);
+}
+.upload-modal__btn-cancel,
+.upload-modal__btn-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: 6px;
+  height: 30px;
+  min-width: 64px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.upload-modal__btn-cancel:disabled,
+.upload-modal__btn-upload:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.upload-modal__btn-cancel {
+  background: var(--wb-button-secondary-bg);
+  color: var(--wb-text-strong);
+  border: 1px solid var(--wb-border-hover);
+}
+.upload-modal__btn-cancel:hover:not(:disabled) {
+  background: var(--wb-bg-hover);
+  border-color: var(--wb-checkbox-border-default);
+}
+.upload-modal__btn-upload {
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+  border: 1px solid var(--wb-button-primary-bg);
+  font-weight: 400;
+}
+.upload-modal__btn-upload:hover:not(:disabled) {
+  background: var(--wb-button-primary-bg-hover);
+  border-color: var(--wb-button-primary-bg-hover);
+}
+.upload-modal__context-menu {
+  position: fixed;
+  z-index: 11000;
+  min-width: 120px;
+  padding: 4px 0;
+  background: var(--wb-bg-primary);
+  border: 1px solid var(--wb-border-default);
+  border-radius: 8px;
+  box-shadow: var(--wb-shadow-tooltip);
+}
+.upload-modal__context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--wb-text-strong);
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.upload-modal__context-menu-item:hover {
+  background: var(--wb-bg-hover);
+}
+.upload-modal__context-menu-item--danger {
+  color: var(--wb-error-foreground);
+}
+.file-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: 6px;
+  box-sizing: border-box;
+  cursor: default;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--wb-text-strong);
+  transition: background-color 120ms ease;
+}
+.file-row--clickable {
+  cursor: pointer;
+}
+.file-row--file {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.file-row--selected {
+  background: var(--wb-bg-row-selected);
+}
+.file-row--selected .file-row__name {
+  font-weight: 500;
+}
+.file-row--selected:hover {
+  background: var(--wb-bg-row-selected);
+}
+.file-row:hover {
+  background: var(--wb-bg-item-selected);
+}
+.file-row__radio {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 1px solid var(--wb-kb-radio-border);
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.file-row__radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--wb-kb-checkbox-check-color);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.file-row__radio--checked {
+  border-color: var(--wb-kb-checkbox-accent);
+  background: var(--wb-kb-checkbox-accent);
+}
+.file-row__radio--checked::after {
+  opacity: 1;
+}
+.file-row__name-cell {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.file-row__icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.file-row__icon svg {
+  width: 16px;
+  height: 16px;
+}
+.file-row__name {
+  font-size: 13px;
+  color: var(--wb-text-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-row__owner {
+  width: 80px;
+  flex-shrink: 0;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wb-text-weak);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-row__time {
+  width: 100px;
+  flex-shrink: 0;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@keyframes upload-modal-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes upload-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.upload-modal__folder-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--wb-bg-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10010;
+  animation: upload-modal-fade-in 0.15s ease;
+}
+.upload-modal__folder-dialog {
+  width: 360px;
+  background: var(--wb-bg-primary);
+  border-radius: 6px;
+  box-shadow: var(--wb-shadow-dialog-md);
+  overflow: hidden;
+  padding: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.upload-modal__folder-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.upload-modal__folder-dialog-title {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--wb-text-strong);
+}
+.upload-modal__folder-dialog-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--wb-text-weak);
+  transition: background-color 120ms ease;
+}
+.upload-modal__folder-dialog-close:hover {
+  background: var(--wb-bg-hover);
+}
+.upload-modal__folder-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.upload-modal__folder-dialog-label {
+  display: block;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wb-text-medium);
+}
+.upload-modal__folder-dialog-input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--wb-text-strong);
+  background: var(--wb-bg-secondary);
+  border: 1px solid var(--wb-border-default);
+  border-radius: 6px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 150ms ease;
+}
+.upload-modal__folder-dialog-input:focus {
+  border-color: var(--wb-text-strong);
+}
+.upload-modal__folder-dialog-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.upload-modal__folder-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.upload-modal__folder-dialog-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: 6px;
+  height: 30px;
+  min-width: 64px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.upload-modal__folder-dialog-btn--cancel {
+  color: var(--wb-text-strong);
+  background: var(--wb-bg-primary);
+  border: 1px solid var(--wb-border-default);
+}
+.upload-modal__folder-dialog-btn--cancel:hover {
+  background: var(--wb-bg-hover);
+  border-color: var(--wb-checkbox-border-default);
+}
+.upload-modal__folder-dialog-btn--confirm {
+  color: var(--wb-button-primary-fg);
+  background: var(--wb-button-primary-bg);
+  border: 1px solid var(--wb-button-primary-bg);
+}
+.upload-modal__folder-dialog-btn--confirm:hover:not(:disabled) {
+  background: var(--wb-button-primary-bg-hover);
+  border-color: var(--wb-button-primary-bg-hover);
+}
+.upload-modal__folder-dialog-btn--confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+:root .cb-dark .upload-modal-overlay,
+body[data-vscode-theme-kind="vscode-dark"] .upload-modal-overlay,
+body[data-vscode-theme-name="IDE Night"] .upload-modal-overlay,
+body.vscode-dark .upload-modal-overlay,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .upload-modal-overlay {
+  background: var(--wb-bg-overlay);
+}
+:root .cb-dark .upload-modal,
+body[data-vscode-theme-kind="vscode-dark"] .upload-modal,
+body[data-vscode-theme-name="IDE Night"] .upload-modal,
+body.vscode-dark .upload-modal,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .upload-modal {
+  background: var(--wb-bg-primary);
+  box-shadow: var(--wb-shadow-dialog-md);
+}
+:root .cb-dark .upload-modal__file-list::-webkit-scrollbar-thumb,
+body[data-vscode-theme-kind="vscode-dark"] .upload-modal__file-list::-webkit-scrollbar-thumb,
+body[data-vscode-theme-name="IDE Night"] .upload-modal__file-list::-webkit-scrollbar-thumb,
+body.vscode-dark .upload-modal__file-list::-webkit-scrollbar-thumb,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .upload-modal__file-list::-webkit-scrollbar-thumb {
+  background: var(--wb-bg-active);
+}
+:root .cb-dark .upload-modal__file-list::-webkit-scrollbar-thumb:hover,
+body[data-vscode-theme-kind="vscode-dark"] .upload-modal__file-list::-webkit-scrollbar-thumb:hover,
+body[data-vscode-theme-name="IDE Night"] .upload-modal__file-list::-webkit-scrollbar-thumb:hover,
+body.vscode-dark .upload-modal__file-list::-webkit-scrollbar-thumb:hover,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .upload-modal__file-list::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-border-hover);
+}
+:root .cb-dark .file-row--selected,
+body[data-vscode-theme-kind="vscode-dark"] .file-row--selected,
+body[data-vscode-theme-name="IDE Night"] .file-row--selected,
+body.vscode-dark .file-row--selected,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .file-row--selected {
+  background: var(--wb-dropdown-item-hover-bg-color);
+}
+:root .cb-dark .file-row--selected:hover,
+body[data-vscode-theme-kind="vscode-dark"] .file-row--selected:hover,
+body[data-vscode-theme-name="IDE Night"] .file-row--selected:hover,
+body.vscode-dark .file-row--selected:hover,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .file-row--selected:hover {
+  background: var(--wb-dropdown-item-hover-bg-color);
+}
+:root .cb-dark .file-row:hover,
+body[data-vscode-theme-kind="vscode-dark"] .file-row:hover,
+body[data-vscode-theme-name="IDE Night"] .file-row:hover,
+body.vscode-dark .file-row:hover,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .file-row:hover {
+  background: var(--wb-dropdown-item-hover-bg-color);
+}
+:root .cb-dark .upload-modal__btn-create-folder:hover,
+body[data-vscode-theme-kind="vscode-dark"] .upload-modal__btn-create-folder:hover,
+body[data-vscode-theme-name="IDE Night"] .upload-modal__btn-create-folder:hover,
+body.vscode-dark .upload-modal__btn-create-folder:hover,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .upload-modal__btn-create-folder:hover {
+  background: var(--wb-button-grey-bg-hover);
+}
+:root .cb-dark .upload-modal__btn-cancel,
+body[data-vscode-theme-kind="vscode-dark"] .upload-modal__btn-cancel,
+body[data-vscode-theme-name="IDE Night"] .upload-modal__btn-cancel,
+body.vscode-dark .upload-modal__btn-cancel,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .upload-modal__btn-cancel {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+:root .cb-dark .upload-modal__btn-cancel:hover:not(:disabled),
+body[data-vscode-theme-kind="vscode-dark"] .upload-modal__btn-cancel:hover:not(:disabled),
+body[data-vscode-theme-name="IDE Night"] .upload-modal__btn-cancel:hover:not(:disabled),
+body.vscode-dark .upload-modal__btn-cancel:hover:not(:disabled),
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .upload-modal__btn-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--wb-border-hover);
+}
+body.wb-mobile-layout .upload-modal {
+  width: calc(var(--wb-mobile-container-width, 100%) - var(--wb-spacing-8));
+  min-width: 0;
+  max-width: none;
+  height: calc(var(--wb-mobile-container-height, 100dvh) - var(--wb-spacing-8));
+  min-height: 0;
+}
+/**
+ * Folder Picker Modal Styles
+ *
+ * 交互参考腾讯文档 AIO 的"选择文件"弹窗：
+ * - header
+ * - 双 tab（云盘/空间）
+ * - 当前位置（根 = 云盘/空间；子层级 = 面包屑）
+ * - 3 列列表（名称 / 所有者 / 最近编辑）
+ *   - 文件夹行：normal + 右侧 chevron，hover 高亮，可点击进入
+ *   - 文件行：整行灰显 + pointer-events: none，仅展示不可选
+ * - 底部：左 "+ 新建文件夹"；右 "取消" + "确定"
+ */
+/* ── Overlay & modal shell ── */
+.folder-picker-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--wb-bg-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+  animation: folder-picker-fade-in 0.15s ease-out;
+}
+.folder-picker-modal {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 720px;
+  height: 80vh;
+  max-height: 730px;
+  min-height: 420px;
+  background-color: var(--wb-bg-primary);
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: 16px;
+  box-shadow: var(--wb-shadow-heavy);
+  overflow: hidden;
+  animation: folder-picker-slide-in 0.2s ease-out;
+}
+/* ── Header ── */
+.folder-picker-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* left 50px，跟"云盘"面包屑 / 列表"名称"列 / footer 的"+ 新建文件夹"统一左对齐 */
+  padding: 16px 24px 16px 50px;
+  flex-shrink: 0;
+}
+.folder-picker-modal__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+}
+.folder-picker-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+.folder-picker-modal__close:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+/* ── Tabs (云盘 / 空间) ── */
+.folder-picker-modal__tabs {
+  display: flex;
+  gap: 0;
+  /* left 50px，跟下方的"云盘"路径标签 + 列表"名称"列起始位置对齐 */
+  padding: 0 24px 0 50px;
+  border-bottom: 1px solid var(--wb-color-border-secondary);
+  flex-shrink: 0;
+  /*
+    当前只有"云盘"一个 tab 生效，单独一个 tab 没切换意义 → 整条 bar 隐藏。
+    去掉这条类即可一键恢复（配合恢复空间 tab 的 --hidden）。
+  */
+}
+.folder-picker-modal__tabs--hidden {
+  display: none;
+}
+.folder-picker-modal__tab {
+  display: flex;
+  align-items: center;
+  padding: 10px 4px;
+  margin-right: 16px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  /*
+    隐藏但保留 DOM：当前仅支持"云盘"上传，"空间"tab 产品未开放。
+    去掉这条类即可一键恢复。
+  */
+}
+.folder-picker-modal__tab:hover {
+  color: var(--wb-color-text-primary);
+}
+.folder-picker-modal__tab--active {
+  color: var(--wb-color-text-primary);
+  font-weight: 600;
+  border-bottom-color: var(--wb-color-text-primary);
+}
+.folder-picker-modal__tab--hidden {
+  display: none;
+}
+/* ── Current location (截图里 tabs 下方的"云盘"那行) ── */
+.folder-picker-modal__location {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  /* left = 50px，跟 tabs / 列表"名称"列起始位置对齐 */
+  padding: 12px 24px 8px 50px;
+  font-size: 13px;
+  color: var(--wb-color-text-secondary);
+  flex-shrink: 0;
+}
+.folder-picker-modal__location-current {
+  color: var(--wb-color-text-primary);
+  font-weight: 500;
+}
+.folder-picker-modal__location-item {
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.folder-picker-modal__location-item:hover {
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-hover);
+}
+/*
+  首个面包屑项（通常是"云盘"）：抵消自身 padding-left: 6px，
+  让文字起点对齐到容器的 50px 左 padding，和标题 / 列表"名称"列 /
+  footer "+ 新建文件夹" 保持一致。
+  进入子文件夹时首项是 button；根目录时首项是 span（无 padding，天然对齐）。
+*/
+.folder-picker-modal__location > .folder-picker-modal__location-item:first-child {
+  margin-left: -6px;
+}
+.folder-picker-modal__location-sep {
+  color: var(--wb-color-text-tertiary);
+  margin: 0 2px;
+}
+/* ── Body (list area) ── */
+.folder-picker-modal__body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /*
+    .tdoc-file-list-header / .tdoc-file-list-item 用全局默认 padding-left: 50px
+    （跟 tabs / 路径标签、标题对齐）。Radio 用 absolute 定位浮在 24~50 这段
+    left padding 区里，不占用列宽、不影响"名称"列起始位置。
+  */
+}
+.folder-picker-modal__body .tdoc-file-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.folder-picker-modal__body .tdoc-file-list__body {
+  flex: 1;
+  overflow: hidden;
+}
+/* ── Row states (folder vs file) ── */
+.folder-picker-modal__row {
+  cursor: default;
+  /*
+    Radio 用 absolute 浮在行的左 padding 区里（.tdoc-file-list-item 全局
+    padding-left: 50px，24~50 这段 26px 空白刚好容得下 18×18 radio + 4px 间距）。
+    行 hover / 选中态时浮出，不占列宽、不影响"名称"列起始位置。
+    行 .tdoc-file-list-item 已经 position: relative，直接绝对定位。
+  */
+}
+.folder-picker-modal__row--folder {
+  cursor: pointer;
+}
+.folder-picker-modal__row--picked {
+  background: var(--wb-bg-active);
+}
+.folder-picker-modal__row--file {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default;
+}
+.folder-picker-modal__row .folder-picker-modal__radio {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.folder-picker-modal__row:hover .folder-picker-modal__radio,
+.folder-picker-modal__row--picked .folder-picker-modal__radio {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* ── Name cell (icon + title) ── */
+.folder-picker-modal__name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+.folder-picker-modal__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--wb-color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/*
+  ── Per-row radio button (单选)
+  锚到 .tdoc-file-list-item（position: relative, padding-left: 50px）：
+  left: 24px 刚好让 radio 居中落在 24~42 这段（跟 modal 内边距 24 对齐起点）。
+*/
+.tdoc-file-list-item .folder-picker-modal__radio {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1.5px solid var(--wb-border-control);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+  /* 内部小圆点：未选中时不显示 */
+}
+.tdoc-file-list-item .folder-picker-modal__radio:hover {
+  border-color: var(--wb-color-text-solid);
+}
+.tdoc-file-list-item .folder-picker-modal__radio .folder-picker-modal__radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+.tdoc-file-list-item .folder-picker-modal__radio.folder-picker-modal__radio--checked {
+  border-color: var(--wb-color-text-solid);
+  background: var(--wb-color-text-solid);
+}
+.tdoc-file-list-item .folder-picker-modal__radio.folder-picker-modal__radio--checked .folder-picker-modal__radio-dot {
+  background: var(--wb-bg-primary);
+}
+/* ── 行尾 chevron + 占位（保证非文件夹行的"最近编辑"列也能右对齐到同一位置） ── */
+.folder-picker-modal__modified-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+.folder-picker-modal__modified-cell .folder-picker-modal__cell-text {
+  flex: 1;
+  min-width: 0;
+}
+.folder-picker-modal__row-chevron,
+.folder-picker-modal__row-chevron-placeholder {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+.folder-picker-modal__row-chevron {
+  color: var(--wb-color-text-tertiary);
+}
+/* ── Generic cell text (owner / modified) ── */
+.folder-picker-modal__cell-text {
+  font-size: 13px;
+  color: var(--wb-color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* ── Footer ── */
+.folder-picker-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  /* left 50px，跟标题 / 面包屑 / 列表"名称"列左对齐 */
+  padding: 12px 24px 12px 50px;
+  border-top: 1px solid var(--wb-color-border-secondary);
+  background: var(--wb-bg-primary);
+  flex-shrink: 0;
+}
+.folder-picker-modal__new-folder {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  /* 左 padding 改为 0，让按钮文字从 footer 的 50px 起；右侧保留一点点内边距方便 hover 背景 */
+  padding: 6px 8px 6px 0;
+  margin-left: -2px;
+  /* 对齐微调，抵消图标的视觉左内边距 */
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.folder-picker-modal__new-folder:hover:not(:disabled) {
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-hover);
+}
+.folder-picker-modal__new-folder:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+/* ── Confirm button (primary 风格，与面板新建按钮一致) ── */
+.folder-picker-modal__confirm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--wb-button-confirm-bg);
+  color: var(--wb-button-primary-fg);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.folder-picker-modal__confirm-btn:hover:not(:disabled) {
+  background: var(--wb-button-primary-bg-active);
+}
+.folder-picker-modal__confirm-btn:active:not(:disabled) {
+  background: var(--wb-button-primary-bg-active);
+}
+.folder-picker-modal__confirm-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+/* ── Cancel button (outline 风格，跟 confirm 同高同字号，避免大小错位) ── */
+.folder-picker-modal__cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 14px;
+  border: 1px solid var(--wb-button-secondary-border);
+  border-radius: 6px;
+  background: var(--wb-button-cancel-bg);
+  color: var(--wb-color-text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+.folder-picker-modal__cancel-btn:hover:not(:disabled) {
+  background: var(--wb-bg-hover);
+  border-color: var(--wb-border-strong);
+}
+.folder-picker-modal__cancel-btn:active:not(:disabled) {
+  background: var(--wb-bg-active);
+}
+.folder-picker-modal__cancel-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.folder-picker-modal__footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* ── Auth states ── */
+.folder-picker-modal__auth-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 24px;
+}
+.folder-picker-modal__auth {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+.folder-picker-modal__auth .tencent-docs-auth-guide,
+.folder-picker-modal__auth .tencent-docs-auth-webview-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+/* ── Nested "新建文件夹" modal ── */
+/* z-index 比主弹窗高一层；overlay 同样半透明遮罩。 */
+.folder-picker-modal-overlay--nested {
+  z-index: 10001;
+}
+.new-folder-modal {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 380px;
+  background-color: var(--wb-bg-primary);
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: 12px;
+  box-shadow: var(--wb-shadow-medium);
+  overflow: hidden;
+  animation: folder-picker-slide-in 0.18s ease-out;
+}
+.new-folder-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  flex-shrink: 0;
+}
+.new-folder-modal__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+}
+.new-folder-modal__body {
+  padding: 4px 16px 12px;
+}
+.new-folder-modal__input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-secondary);
+  border: 1px solid var(--wb-border-input);
+  border-radius: 6px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+.new-folder-modal__input::placeholder {
+  color: var(--wb-color-text-tertiary);
+}
+.new-folder-modal__input:focus {
+  border-color: var(--wb-border-popover-strong);
+}
+.new-folder-modal__input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.new-folder-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px 16px;
+}
+/* ── Animations ── */
+@keyframes folder-picker-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes folder-picker-slide-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

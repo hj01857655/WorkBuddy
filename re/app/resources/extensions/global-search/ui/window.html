@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+  global-search · 独立窗口入口 (standalone entry)。
+
+  ── 用途 ──────────────────────────────────────────────────────────
+  由 `wb.windows.open('wb-extension://global-search/window.html')` 触发，
+  在新 BrowserWindow 里独立跑一个 <GlobalSearchWindow />（铺满整窗的
+  全局搜索面板）。窗口本身即边界（原生红绿灯 / resize / close），不用 Modal。
+
+  ── 为什么不用 index.html ──────────────────────────────────────────
+  同目录的 index.html 是 module-federation 构建的 vite 占位 stub
+  (federation 独占 rollupOptions.input)，不能承担独立 entry 职责。
+  新开一个 window.html 走 vite HTML pipeline，跟 federation 虚拟 entry
+  是两条独立管线，互不冲突。
+
+  ── wb 全局怎么来 ─────────────────────────────────────────────────
+  新窗口由 windows-service (`wb.windows.open` main 侧) 打开时，判断 URL 是
+  `wb-extension://global-search/…` + distribution.kind='builtin' →
+  给窗口挂主 preload，`window.wb`（全局）直接可用，window.tsx 里直接用。
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <title>搜索</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        html, body, #root { height: 100%; margin: 0; padding: 0; }
+        body { font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+  <script type="module" crossorigin src="./assets/window-DneOqonZ.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/__federation_fn_import-Bhkkie5I.js">
+  <link rel="modulepreload" crossorigin href="./assets/index-BxRxKft-.js">
+  <link rel="modulepreload" crossorigin href="./assets/index-CM0Mep8a.js">
+  <link rel="modulepreload" crossorigin href="./assets/__federation_expose_Main-CF6W7ItU.js">
+  <link rel="stylesheet" crossorigin href="./assets/__federation_expose_Main-BUTdIFw8.css">
+  <link rel="stylesheet" crossorigin href="./assets/window-cah-4mYe.css">
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

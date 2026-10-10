@@ -1,0 +1,68 @@
+.claw-agent-chat-pane {
+  --claw-agent-chat-content-max-width: 832px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: var(--wb-home-bg-secondary);
+  overflow: hidden;
+}
+.claw-agent-chat-pane .colleague-chat-cb-chat {
+  --cb-chat-max-content-width: var(--claw-agent-chat-content-max-width);
+}
+.claw-agent-chat-pane .colleague-chat-cb-chat [class*='input-area-container'] {
+  max-width: var(--cb-chat-max-content-width);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+.claw-agent-chat-pane .colleague-chat-empty--profile {
+  gap: var(--wb-spacing-7);
+  padding: 0 var(--wb-spacing-5);
+}
+.claw-agent-chat-pane .colleague-chat-empty-profile {
+  gap: var(--wb-spacing-2);
+}
+.claw-agent-chat-pane .colleague-chat-empty-profile__avatar {
+  width: var(--wb-spacing-12);
+  height: var(--wb-spacing-12);
+  margin-bottom: var(--wb-spacing-4);
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: calc(var(--wb-radius-lg) + var(--wb-radius-md) + var(--wb-radius-sm));
+  box-shadow: none;
+  box-sizing: border-box;
+}
+.claw-agent-chat-pane .colleague-chat-empty-profile__avatar.colleague-card-avatar--image[data-cloud-assistant='true'] {
+  background: color-mix(in srgb, var(--wb-status-info) 10%, transparent);
+}
+.claw-agent-chat-pane .colleague-chat-empty-profile__title,
+.claw-agent-chat-pane .colleague-chat-page--floating .colleague-chat-empty-profile__title {
+  color: var(--wb-color-text-primary);
+  font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: var(--wb-font-h1-size);
+  line-height: var(--wb-font-h1-line-height);
+  font-weight: 500;
+}
+.claw-agent-chat-pane .colleague-chat-empty-profile__description,
+.claw-agent-chat-pane .colleague-chat-page--floating .colleague-chat-empty-profile__description {
+  max-width: calc(var(--wb-spacing-9) * 9 + var(--wb-font-caption-line-height));
+  color: var(--wb-color-text-tertiary);
+  font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+  font-weight: var(--wb-font-body-weight);
+}
+.claw-agent-chat-pane .colleague-chat-suggestions {
+  gap: var(--wb-spacing-4);
+}
+.claw-agent-chat-pane .colleague-chat-suggestions__item,
+.claw-agent-chat-pane .colleague-chat-page--floating .colleague-chat-suggestions__item {
+  min-height: calc(var(--wb-spacing-7) + var(--wb-spacing-2) + var(--wb-spacing-1));
+  padding: calc(var(--wb-spacing-3) - var(--wb-spacing-1)) var(--wb-spacing-4);
+  border-radius: var(--wb-radius-lg);
+  font-size: 13px;
+  line-height: calc(var(--wb-font-caption-line-height) - var(--wb-spacing-1));
+  font-weight: var(--wb-font-caption-weight);
+}

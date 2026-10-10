@@ -1,0 +1,408 @@
+.miniprogram-publish-dialog .wb-modal__body {
+  max-height: min(680px, calc(100vh - 180px));
+  overflow-y: auto;
+}
+.miniprogram-publish-dialog .wb-modal__footer {
+  gap: var(--wb-spacing-3);
+}
+.miniprogram-publish-dialog__title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+}
+.miniprogram-publish-dialog__title-copy {
+  display: inline-flex;
+  flex-direction: column;
+}
+.miniprogram-publish-dialog__title-copy small {
+  color: var(--wb-color-text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+}
+/*
+ * 弹窗里的独立加载态。
+ *
+ * `.wb-loading` 自身是 `inline-flex`，直接放进弹窗内容区会贴在左上角。撑满宽度后，
+ * 它自带的 `flex-direction: column` + `align-items: center` 负责水平居中；再给一个
+ * 最小高度并在主轴（纵向）居中，spinner 就落在框中间，同时减少内容到位时的跳动。
+ */
+.miniprogram-loading {
+  display: flex;
+  width: 100%;
+  min-height: 120px;
+  justify-content: center;
+}
+.miniprogram-binding-choice,
+.miniprogram-overview,
+.miniprogram-settings,
+.miniprogram-privacy,
+.miniprogram-auth {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-4);
+  color: var(--wb-color-text-primary);
+}
+.miniprogram-binding-choice > p {
+  margin: 0;
+  color: var(--wb-color-text-secondary);
+  font-size: 13px;
+}
+.miniprogram-binding-choice__card {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  gap: var(--wb-spacing-4);
+  padding: 12px 16px;
+  text-align: left;
+}
+.miniprogram-binding-choice__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+.miniprogram-binding-choice__copy small {
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+}
+.miniprogram-auth {
+  align-items: center;
+}
+.miniprogram-auth__description {
+  align-self: stretch;
+  margin: 0;
+  color: var(--wb-color-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+.miniprogram-auth__description .wb-button--link {
+  margin: 0 var(--wb-spacing-2);
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  text-decoration: underline;
+}
+.miniprogram-auth__error {
+  align-self: stretch;
+}
+.miniprogram-auth__qrcode {
+  display: flex;
+  width: 192px;
+  height: 192px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: var(--wb-radius-lg, 8px);
+  background: #fff;
+}
+.miniprogram-auth__qrcode img {
+  width: 176px;
+  height: 176px;
+}
+.miniprogram-auth__qrcode-message {
+  padding: 0 var(--wb-spacing-6);
+  color: var(--wb-color-text-tertiary);
+  font-size: 13px;
+  line-height: 20px;
+  text-align: center;
+}
+.miniprogram-auth > strong,
+.miniprogram-auth__countdown {
+  font-size: 12px;
+  line-height: 20px;
+}
+.miniprogram-auth__countdown {
+  color: var(--wb-color-text-tertiary);
+}
+.miniprogram-overview {
+  gap: 32px;
+  padding-top: 12px;
+}
+.miniprogram-overview__app {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-4);
+}
+.miniprogram-overview__meta {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+.miniprogram-overview__meta strong {
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.miniprogram-overview__meta span {
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+}
+.miniprogram-overview__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--wb-spacing-3);
+}
+.miniprogram-overview__publish {
+  display: inline-flex;
+  /*
+         * 置灰时把命中让给这层 span：浏览器不会在 disabled 按钮上派发鼠标事件，
+         * 不关掉按钮的 pointer-events，Tooltip 就收不到 hover。cursor 也得跟着上移，
+         * 否则按钮自己的 not-allowed 一并失效、退回默认箭头。
+         */
+}
+.miniprogram-overview__publish:has(> .wb-button:disabled) {
+  cursor: not-allowed;
+}
+.miniprogram-overview__publish:has(> .wb-button:disabled) > .wb-button:disabled {
+  pointer-events: none;
+}
+.miniprogram-overview__versions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-5);
+}
+.miniprogram-version-row {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: var(--wb-spacing-4);
+  padding: 5px 12px;
+  border-radius: var(--wb-radius-lg, 8px);
+}
+.miniprogram-version-row__copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: var(--wb-spacing-3);
+}
+.miniprogram-version-row__copy strong {
+  font-size: 14px;
+  line-height: 20px;
+}
+.miniprogram-version-row__status {
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+}
+.miniprogram-version-row__status .wb-tag__label {
+  color: var(--wb-color-text-tertiary);
+}
+.miniprogram-version-row__status.wb-tag--error .wb-tag__label {
+  color: var(--wb-palette-red-8, #f64041);
+}
+.miniprogram-version-row__status-group {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+}
+.miniprogram-version-row__error-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-palette-red-8, #f64041);
+}
+.miniprogram-version-row__qrcode-disabled {
+  display: inline-flex;
+}
+.miniprogram-version-row--selectable {
+  min-height: 60px;
+  padding: 11px 12px;
+}
+.miniprogram-version-row__select {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+}
+.miniprogram-version-row__select .wb-checkbox {
+  width: 100%;
+  align-items: flex-start;
+  gap: var(--wb-spacing-3);
+}
+.miniprogram-version-row__select .wb-checkbox__control {
+  margin-top: 2px;
+}
+.miniprogram-version-row__select .wb-checkbox__label {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+.miniprogram-version-row__select strong {
+  font-size: 14px;
+  line-height: 20px;
+}
+.miniprogram-version-row__summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+}
+.miniprogram-settings {
+  gap: 10px;
+}
+.miniprogram-settings__item {
+  display: flex;
+  min-height: 62px;
+  align-items: flex-start;
+  gap: var(--wb-spacing-3);
+  padding: 10px 14px;
+  border-radius: var(--wb-radius-lg, 8px);
+}
+.miniprogram-settings__item > div {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+.miniprogram-settings__item strong {
+  font-size: 14px;
+  line-height: 20px;
+}
+.miniprogram-settings__item p {
+  margin: 0;
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+}
+.miniprogram-settings__item .wb-button--link {
+  height: auto;
+  min-height: 0;
+  margin: 0 var(--wb-spacing-2);
+  padding: 0;
+  color: var(--wb-color-text-brand-default);
+  font-size: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+.miniprogram-settings__item .wb-button--link:hover:not(:disabled) {
+  color: var(--wb-color-text-brand-hover);
+}
+.miniprogram-settings__item .wb-button--link:active:not(:disabled) {
+  color: var(--wb-color-text-brand-active);
+}
+.miniprogram-settings__item > .wb-button {
+  flex-shrink: 0;
+}
+.miniprogram-privacy {
+  gap: 0;
+  /*
+     * 采集项列表：最多完整显示 3 条，更多条目靠滚动。
+     *
+     * 行高 = 控件高度（32px）+ 行间距（8px），三行正好落在第 3 条的底边，
+     * 不露出第 4 条的上沿。`scrollbar-gutter: stable` 让第 4 条出现时不因为
+     * 滚动条占位而把输入框挤窄一下。
+     *
+     * ⚠️ 这是个 overflow 容器，里面的 Select 浮层必须 Portal 到
+     * `&__dropdown-host` —— 默认的 inline 渲染会被这里裁掉。
+     */
+  /*
+     * 用途与隐私项两个字段等分剩余宽度（basis 0 + 同等 grow），所以「其他」那一行
+     * 换成输入框后，宽度与其他行的下拉框完全一致。
+     *
+     * ⚠️ 必须按自有 class 选，不能按组件内部类名：`Input` 带 `allowClear` 时外层会从
+     * `.wb-input` 换成 `.wb-input-wrapper`，那样选择器落空、该字段不参与等分，
+     * 反过来把用途输入框挤成一条缝。
+     */
+}
+.miniprogram-privacy__notify-contact {
+  margin-top: -12px;
+}
+.miniprogram-privacy__description {
+  margin: 0 0 var(--wb-spacing-5);
+  color: var(--wb-color-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+.miniprogram-privacy__collect-header {
+  margin: 0 0 var(--wb-spacing-3);
+}
+.miniprogram-privacy__collect-header strong {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+.miniprogram-privacy__collect-list {
+  --miniprogram-privacy-collect-row: calc(var(--wb-size-control-md) + var(--wb-spacing-3));
+  max-height: calc(3 * var(--miniprogram-privacy-collect-row));
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.miniprogram-privacy__dropdown-host {
+  display: contents;
+}
+.miniprogram-privacy__collect-item {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-3);
+  margin-bottom: var(--wb-spacing-3);
+}
+.miniprogram-privacy__collect-item > .wb-button {
+  flex-shrink: 0;
+}
+.miniprogram-privacy__collect-field {
+  width: auto;
+  min-width: 0;
+  flex: 1 1 0;
+}
+.miniprogram-privacy__collect-prefix {
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 22px;
+  white-space: nowrap;
+}
+.miniprogram-privacy__add {
+  align-self: flex-start;
+}
+@media (max-width: 560px) {
+  .miniprogram-publish-dialog {
+    width: calc(100vw - 32px) !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+  .miniprogram-privacy__collect-item {
+    flex-wrap: wrap;
+  }
+  .miniprogram-privacy__collect-field {
+    flex-basis: calc(50% - 48px);
+  }
+  /* 窄屏下采集项折行成两排，行高翻倍才仍是「完整显示 3 条」。 */
+  .miniprogram-privacy__collect-list {
+    --miniprogram-privacy-collect-row: calc(2 * var(--wb-size-control-md) + 2 * var(--wb-spacing-3));
+  }
+}
+.miniprogram-audit-tooltip {
+  /*
+     * 清洗后的失败文案带真换行（微信驳回理由原本用 `<br>` 分段），必须 pre-line 才
+     * 分得开。限高只能加在这层内部元素上：浮层根节点一旦 overflow，箭头
+     * `.wb-tooltip__arrow` 会被一起裁掉。
+     */
+}
+.miniprogram-audit-tooltip__message {
+  display: block;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-line;
+}
+.miniprogram-audit-tooltip .wb-button--link {
+  margin: 0 var(--wb-spacing-2);
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  text-decoration: underline;
+  vertical-align: baseline;
+}

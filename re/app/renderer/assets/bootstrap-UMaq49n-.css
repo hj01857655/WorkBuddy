@@ -1,0 +1,1564 @@
+/**
+ * Office 独立窗壳层样式 —— 对齐 Ardot 2809:12929。
+ * content 区留给文档 SDK，本文件只覆盖 Tab 栏 + 标题栏框架。
+ */
+
+/* Toast Portal 挂在 body 下，越过 Tab 栏后仅保留 6px 宿主间距。 */
+body:has(.office-shell) {
+    --cb-chat-toast-host-offset: var(--wb-size-control-xl);
+    --cb-chat-toast-default-offset: 6px;
+}
+
+.office-shell {
+    --office-tabbar-h: var(--wb-size-control-xl);
+    --office-titlebar-h: var(--wb-size-control-xl);
+    --office-chrome-bg: var(--wb-color-bg-primary-default, #F2F2F2);
+    --office-surface: var(--wb-color-bg-secondary-default, #FFF);
+    --office-elevated: var(--wb-color-bg-secondary-default, #FFF);
+    --office-text-primary: var(--wb-color-text-primary);
+    --office-text-secondary: var(--wb-color-text-tertiary);
+    --office-text-tertiary: var(--wb-color-text-secondary);
+    --office-title-text: var(--wb-palette-black-90);
+    --office-icon: var(--wb-icon-secondary);
+    --office-divider: var(--wb-border-default);
+    --office-border: var(--wb-color-border-solid);
+    --office-tab-active-bg: var(--wb-color-bg-secondary-default, #FFF);
+    --office-tab-title: var(--wb-color-text-primary);
+    /* 未保存圆点：设计稿是黑色 30%，对应 disabled 文字色 */
+    --office-tab-dirty: var(--wb-color-text-disabled, rgba(0, 0, 0, 0.3));
+    --office-hit-hover: var(--wb-color-bg-secondary-hover-active);
+    --office-close-hover: rgba(0, 0, 0, 0.06);
+    --office-drop-scrim: rgba(0, 0, 0, 0.28);
+    --office-image-toolbar-bg: #F4F5F7;
+    --office-warning-bg: #fff7e6;
+    --office-warning-border: #ffe7ba;
+    --office-error-text: #d4380d;
+    --office-tooltip-bg: var(--office-elevated);
+    --office-tooltip-text: var(--office-text-primary);
+    --office-tooltip-border: var(--office-border);
+    --office-scrollbar-size: var(--wb-spacing-4);
+    --office-scrollbar-thumb-inset: calc(var(--office-scrollbar-size) / 4);
+    --office-scrollbar-thumb: var(--wb-scrollbar-thumb-hover);
+    --office-hit: var(--wb-size-control-md);
+    --office-radius-tab: var(--wb-radius-lg);
+    --office-radius-btn: var(--wb-radius-lg);
+    /* 浅色：深色按钮 + 浅色图标；深色由 primary 按钮 token 自动反转 */
+    --office-chat-btn-bg: var(--wb-button-primary-bg, var(--wb-palette-black-90));
+    --office-chat-btn-bg-hover: var(--wb-button-primary-bg-hover, var(--wb-palette-black-75));
+    --office-chat-btn-fg: var(--wb-button-primary-fg, var(--wb-palette-white-100));
+    --office-tab-max-width: calc(
+        var(--wb-size-17) + var(--wb-size-17) + var(--wb-size-17) - var(--wb-spacing-2)
+    );
+    --office-tab-min-width: calc(var(--wb-size-10) + var(--wb-size-10));
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background: var(--office-chrome-bg);
+    color: var(--office-text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/*
+ * body 也带 office-shell class，用于让 Portal 浮层继承 Office 变量；但它不能成为
+ * flex 容器，否则菜单 Portal 根节点挂载/卸载时会参与根布局，推动右侧账号区域。
+ * 真正的 flex 壳层由 #root 下同名的 OfficeShellApp 根节点承担。
+ */
+body.office-shell {
+    display: block;
+}
+
+/* 暗色：secondary 语义在设计系统里仍是纯白，壳层表面必须单独映射，避免 Tab/标题栏发白 */
+html[data-theme='dark'] .office-shell {
+    --office-chrome-bg: var(--wb-color-bg-primary-default, #1A1A1A);
+    --office-surface: #292929;
+    --office-elevated: #292929;
+    --office-tab-active-bg: #292929;
+    --office-tab-title: rgba(255, 255, 255, 0.90);
+    --office-tab-dirty: rgba(255, 255, 255, 0.30);
+    --office-text-primary: rgba(255, 255, 255, 1);
+    --office-text-secondary: rgba(255, 255, 255, 0.50);
+    --office-text-tertiary: rgba(255, 255, 255, 0.65);
+    --office-title-text: var(--wb-palette-white-90);
+    --office-icon: rgba(255, 255, 255, 0.65);
+    --office-border: #3D3D3D;
+    --office-divider: rgba(255, 255, 255, 0.08);
+    --office-hit-hover: #3a3a3a;
+    --office-close-hover: rgba(255, 255, 255, 0.08);
+    --office-drop-scrim: rgba(0, 0, 0, 0.45);
+    --office-image-toolbar-bg: #242424;
+    --office-warning-bg: rgba(250, 173, 20, 0.12);
+    --office-warning-border: rgba(250, 173, 20, 0.24);
+    --office-error-text: #ff7a45;
+    --office-tooltip-bg: #333333;
+    --office-tooltip-text: #ffffff;
+    --office-tooltip-border: transparent;
+    --office-chat-btn-bg: var(--wb-button-primary-bg, var(--wb-palette-white-90));
+    --office-chat-btn-bg-hover: var(--wb-button-primary-bg-hover, var(--wb-palette-white-75));
+    --office-chat-btn-fg: var(--wb-button-primary-fg, var(--wb-palette-black-90));
+}
+
+body[data-office-shell='true'] .cb-tooltip,
+body[data-office-shell='true'] .wb-tooltip {
+    --wb-tooltip-bg: var(--office-tooltip-bg);
+    --wb-tooltip-text-color: var(--office-tooltip-text);
+    background-color: var(--office-tooltip-bg);
+    border: 1px solid var(--office-tooltip-border);
+}
+
+body[data-office-shell='true'] .cb-tooltip .cb-tooltip-content,
+body[data-office-shell='true'] .cb-tooltip .cb-tooltip-content *,
+body[data-office-shell='true'] .wb-tooltip .wb-tooltip__content,
+body[data-office-shell='true'] .wb-tooltip .wb-tooltip__content * {
+    color: var(--office-tooltip-text);
+}
+
+body[data-office-shell='true'] .cb-tooltip .cb-tooltip-arrow,
+body[data-office-shell='true'] .wb-tooltip .wb-tooltip__arrow {
+    color: var(--office-tooltip-bg);
+}
+
+/* 冷启动 Loading 期：整窗与骨架屏同色（header 与内容区都是 surface），
+ * 避免拆骨架时先闪一帧灰色 chrome。 */
+.office-shell[data-office-cold-start='true'] {
+    background: var(--office-surface);
+}
+
+.office-shell__cold-start-topbar {
+    height: var(--office-tabbar-h);
+    flex-shrink: 0;
+    background: var(--office-surface);
+    -webkit-app-region: drag;
+}
+
+/* 拖入本地文件的提示蒙层。pointer-events: none 是必须的：
+ * 蒙层若吃掉 dragover/drop，drop 事件就到不了监听拖拽的壳层容器。 */
+.office-shell__drop-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--wb-spacing-4);
+    background: var(--office-drop-scrim);
+    pointer-events: none;
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__drop-overlay-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wb-spacing-2);
+    padding: var(--wb-spacing-6) var(--wb-spacing-8);
+    border: 1px dashed var(--office-border);
+    border-radius: var(--wb-radius-lg);
+    background: var(--office-elevated);
+    box-shadow: var(--wb-shadow-md);
+}
+
+.office-shell__drop-overlay-title {
+    margin: 0;
+    font-size: var(--wb-font-size-3);
+    font-weight: 600;
+    color: var(--office-text-primary);
+}
+
+.office-shell__drop-overlay-hint {
+    margin: 0;
+    font-size: var(--wb-font-size-5);
+    color: var(--office-text-secondary);
+}
+
+/* ── Tab 栏（48） ── */
+
+.office-shell__tabbar {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: var(--office-tabbar-h);
+    padding: 0 8px 0 12px;
+    background: var(--office-chrome-bg);
+    border-radius: 12px 12px 0 0;
+    flex-shrink: 0;
+    -webkit-app-region: drag;
+}
+
+/* 拖文件期间解除 Tab 栏原生拖拽区，否则收不到 HTML5 的 dragover 与 drop。 */
+body[data-office-file-drag='true'] .office-shell__tabbar,
+body[data-office-file-drag='true'] .office-shell__titlebar,
+body[data-office-file-drag='true'] .office-shell__cold-start-topbar {
+    -webkit-app-region: no-drag;
+}
+
+body[data-platform='mac'] .office-shell__tabbar {
+    /* 原生红绿灯约 12px + 左右留白，与第一颗 Tab 拉开间距 */
+    padding-left: 90px;
+}
+
+body[data-platform='mac'][data-fullscreen='true'] .office-shell__tabbar {
+    padding-left: 12px;
+}
+
+body[data-platform='windows'] .office-shell__tabbar {
+    /* Windows titleBarOverlay：3 × 46px */
+    padding-right: 138px;
+}
+
+.office-shell__tabs {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    gap: var(--wb-spacing-2);
+    overflow: hidden; /* 禁止横向滚动条；溢出进菜单 */
+}
+
+.office-shell__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wb-spacing-2);
+    max-width: var(--office-tab-max-width);
+    height: var(--wb-size-control-md);
+    padding: 0 var(--wb-spacing-3);
+    border: none;
+    border-radius: var(--office-radius-tab);
+    background: transparent;
+    color: var(--office-tab-title);
+    font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: var(--wb-font-size-5);
+    font-weight: 400;
+    line-height: var(--wb-font-line-height-5-2);
+    cursor: pointer;
+    flex-shrink: 0;
+    min-width: var(--office-tab-min-width);
+    box-sizing: border-box;
+    -webkit-app-region: no-drag;
+    position: relative;
+    touch-action: none;
+}
+
+/* 分割线画在每颗 Tab / 溢出按钮右侧（含末 Tab → +、溢出 → +）。
+ * 只在贴着选中 Tab 的两侧隐藏；hover 不藏线。 */
+.office-shell__tab::after,
+.office-shell__overflow::after {
+    content: '';
+    position: absolute;
+    right: calc(var(--wb-spacing-2) / -2);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 20px;
+    border-right: 1px solid var(--wb-color-border-solid, #DEDEDE);
+    pointer-events: none;
+}
+
+.office-shell__tab--active::after,
+.office-shell__tab:has(+ .office-shell__tab--active)::after {
+    opacity: 0;
+}
+
+.office-shell__tab:hover:not(.office-shell__tab--active) {
+    background: var(--office-tab-active-bg);
+}
+
+.office-shell__tab--active {
+    background: var(--office-tab-active-bg);
+    justify-content: space-between;
+}
+
+.office-shell__tab--busy {
+    cursor: progress;
+}
+
+.office-shell__tab--overlay {
+    /* DragOverlay portal 到 body，无法继承 .office-shell 上的局部变量。 */
+    --office-tab-active-bg: var(--wb-color-bg-secondary-default, #FFF);
+    --office-tab-title: var(--wb-color-text-primary);
+    --office-tab-dirty: var(--wb-color-text-disabled, rgba(0, 0, 0, 0.3));
+    --office-text-primary: var(--wb-color-text-primary);
+    --office-text-secondary: var(--wb-color-text-tertiary);
+    background: var(--office-tab-active-bg);
+    color: var(--office-text-primary);
+    border-radius: var(--wb-radius-lg);
+    box-shadow: var(--wb-shadow-md);
+    cursor: grabbing;
+    pointer-events: none;
+    opacity: 1;
+    z-index: 10001;
+}
+
+html[data-theme='dark'] .office-shell__tab--overlay {
+    --office-tab-active-bg: #292929;
+    --office-tab-title: rgba(255, 255, 255, 0.90);
+    --office-tab-dirty: rgba(255, 255, 255, 0.30);
+    --office-text-primary: rgba(255, 255, 255, 1);
+    --office-text-secondary: rgba(255, 255, 255, 0.50);
+}
+
+/* 关闭按钮与未保存圆点共用同一个槽位：两者叠在一起，靠 hover 切换显隐。 */
+.office-shell__tab-slot {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--wb-icon-size-md);
+    height: var(--wb-icon-size-md);
+    flex-shrink: 0;
+}
+
+/* 设计稿 5347:167：6px 圆点、黑色 30% 不透明度，压在关闭按钮的同一格里。 */
+.office-shell__tab-dirty {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--office-tab-dirty);
+    pointer-events: none;
+}
+
+.office-shell__tab-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--wb-icon-size-md);
+    height: var(--wb-icon-size-md);
+}
+
+.office-shell__tab-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: nowrap;
+    text-align: left;
+    font-size: var(--wb-font-size-5);
+    font-weight: 400;
+    line-height: var(--wb-font-line-height-5-2);
+    color: var(--office-tab-title);
+    /* 溢出用右侧 24px 渐变淡出，不用省略号；短文案靠左，透明区落在空白上 */
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%);
+}
+
+.office-shell__tab--active .office-shell__tab-title {
+    font-weight: 600;
+}
+
+.office-shell__tab-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--wb-icon-size-md);
+    height: var(--wb-icon-size-md);
+    flex-shrink: 0;
+    border: none;
+    border-radius: var(--wb-radius-sm);
+    background: transparent;
+    color: var(--office-text-secondary);
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.office-shell__tab-action-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+/* 已保存：Tab 激活或 hover 时露出关闭按钮 */
+.office-shell__tab:hover .office-shell__tab-slot:not(.office-shell__tab-slot--dirty) .office-shell__tab-close,
+.office-shell__tab:focus-visible .office-shell__tab-slot:not(.office-shell__tab-slot--dirty) .office-shell__tab-close,
+.office-shell__tab--active .office-shell__tab-slot:not(.office-shell__tab-slot--dirty) .office-shell__tab-close {
+    opacity: 1;
+}
+
+/* 未保存：非激活 Tab 也显示圆点，只有 hover 到槽位才换成关闭按钮 */
+.office-shell__tab-slot--dirty:hover .office-shell__tab-dirty {
+    opacity: 0;
+}
+
+.office-shell__tab-slot--dirty:hover .office-shell__tab-close {
+    opacity: 1;
+}
+
+.office-shell__tab-close:hover {
+    background: var(--office-close-hover);
+    color: var(--office-text-primary);
+}
+
+.office-shell__tab-slot--busy .office-shell__tab-dirty,
+.office-shell__tab-slot--busy .office-shell__tab-close {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.office-shell__tab-add-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--wb-size-control-md);
+    height: var(--wb-size-control-md);
+    flex-shrink: 0;
+    border-radius: var(--office-radius-tab);
+    background: transparent;
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__tab-add-wrap:hover,
+.office-shell__tab-add-wrap--open {
+    background: var(--office-tab-active-bg);
+}
+
+.office-shell__tab-add-wrap--open,
+.office-shell__overflow--open {
+    position: relative;
+    z-index: 10002;
+}
+
+.office-shell__tab-add-wrap--open .office-shell__tab-add,
+.office-shell__overflow--open .office-shell__overflow-btn {
+    position: relative;
+    z-index: 10001;
+}
+
+.office-shell__tab-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--wb-size-control-md);
+    height: var(--wb-size-control-md);
+    flex-shrink: 0;
+    border: none;
+    border-radius: var(--office-radius-tab);
+    background: transparent;
+    color: var(--office-icon);
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__tab-add:hover,
+.office-shell__tab-add[aria-expanded='true'] {
+    background: transparent;
+}
+
+/* 加号菜单 —— Ardot 2852:17737；portal 到 body 后用 fixed 定位 */
+.office-shell__add-menu-dropdown {
+    /* 浮层覆盖 Electron 标题栏拖拽区时仍需接收点击。 */
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__add-menu-dropdown .wb-dropdown__item {
+    padding: 3px 8px;
+}
+
+/* 分享/上传菜单仍复用主窗纯 View，仅在 Office chrome 覆盖浮层视觉。 */
+.office-shell__upload-menu-dropdown {
+    z-index: 10001 !important;
+    -webkit-app-region: no-drag;
+    padding: var(--wb-popover-padding, 8px);
+    border: 0.5px solid var(--wb-popover-border-color) !important;
+    border-radius: var(--wb-popover-radius, var(--wb-radius-2xl, 16px)) !important;
+    background: var(--wb-bg-popover) !important;
+    box-shadow: var(--wb-popover-shadow) !important;
+    color: var(--wb-color-text-primary);
+}
+
+.office-shell__upload-menu-dropdown button {
+    box-sizing: border-box;
+    min-height: var(--wb-dropdown-item-min-height, 32px) !important;
+    padding: var(--wb-dropdown-item-padding-y, 5px) var(--wb-dropdown-spacing-3, 8px) !important;
+    border-radius: var(--wb-dropdown-item-radius, var(--wb-radius-lg, 8px)) !important;
+    color: var(--wb-dropdown-item-text-color, var(--wb-color-text-primary));
+    font-size: var(--wb-dropdown-item-font-size, 14px);
+    line-height: var(--wb-dropdown-item-line-height, 22px);
+}
+
+.office-shell__upload-menu-dropdown button:hover:not(:disabled),
+.office-shell__upload-menu-dropdown button:focus-visible:not(:disabled) {
+    outline: none;
+    background: var(--wb-dropdown-item-bg-hover) !important;
+}
+
+.office-shell__add-menu-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.office-shell__add-menu-recent-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    min-height: 32px;
+    padding: 3px 8px;
+    border: none;
+    border-radius: var(--wb-radius-lg);
+    background: transparent;
+    color: var(--wb-color-text-primary);
+    font-size: var(--wb-font-body-size);
+    line-height: var(--wb-font-body-line-height);
+    text-align: left;
+    cursor: pointer;
+}
+
+.office-shell__add-menu-recent-item:hover,
+.office-shell__add-menu-recent-item:focus-visible {
+    outline: none;
+    background: var(--wb-color-bg-secondary-hover-active);
+}
+
+.office-shell__add-menu-recent-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.office-shell__add-menu-recent-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.office-shell__add-menu-url-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+}
+
+.office-shell__add-menu-url-form .wb-input-wrapper {
+    min-width: 0;
+    flex: 1;
+}
+
+.office-shell__add-menu-section-title {
+    display: flex;
+    align-items: center;
+    height: 28px;
+    padding: 4px 8px;
+    box-sizing: border-box;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--wb-color-text-tertiary);
+    user-select: none;
+}
+
+.office-shell__add-menu-empty {
+    padding: 6px 8px 10px;
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--wb-color-text-tertiary);
+}
+
+.office-shell__add-menu-recent {
+    max-height: min(320px, calc(100vh - 280px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.office-shell__overflow {
+    position: relative;
+    flex-shrink: 0;
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__overflow-dropdown {
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__overflow-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--wb-size-control-md);
+    height: var(--wb-size-control-md);
+    border: none;
+    border-radius: var(--office-radius-tab);
+    background: transparent;
+    color: var(--office-icon);
+    font-size: var(--wb-icon-size-md);
+    line-height: 1;
+    cursor: pointer;
+}
+
+.office-shell__overflow-btn:hover {
+    background: var(--office-hit-hover);
+}
+
+.office-shell__tab-context-dropdown {
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__tab-context-anchor {
+    position: fixed;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.office-shell__tabbar-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__account {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    -webkit-app-region: no-drag;
+}
+
+/*
+ * 头像触发器 + Buddy 加油站签到气泡的定位容器。
+ * 气泡（.daily-checkin--bubble）默认相对最近定位祖先绝对定位，这里提供定位上下文。
+ */
+.office-shell__account-trigger-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+}
+
+/*
+ * 签到气泡在 Office 需出现在头像**下方**：
+ * 主窗头像在左下侧栏，气泡默认 bottom:100%（向上浮）；Office 头像在右上标题栏，
+ * 沿用默认会浮到窗口顶边之外（不可见，表现为"点击加油站没反应"，#117270）。
+ * 这里在 Office 作用域内翻转为向下展开，并右对齐、给定固定宽度（标题栏容器仅 32px 宽）。
+ */
+.office-shell .office-shell__account-trigger-wrapper .daily-checkin--bubble {
+    top: calc(100% + 12px);
+    bottom: auto;
+    left: auto;
+    right: 0;
+    width: 300px;
+}
+
+.office-shell__account-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__account-login:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.office-shell__account-guest-avatar {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.20);
+}
+
+.office-shell__account-trigger.user-menu-trigger--workbuddy-collapsed {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    padding: 2px;
+    box-sizing: border-box;
+    flex: 0 0 32px;
+}
+
+.office-shell__account-trigger.user-menu-trigger--workbuddy-collapsed .wb-avatar {
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.20);
+}
+
+/* Linux 自绘窗口控件 */
+
+.office-shell__win-controls {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: 4px;
+}
+
+.office-shell__win-control {
+    width: 36px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--cb-vscode-titleBar-activeForeground, #cccccc);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    padding: 0;
+}
+
+.office-shell__win-control:hover {
+    background: var(--office-close-hover);
+}
+
+.office-shell__win-control--close:hover {
+    background: #c42b1c;
+    color: #fff;
+}
+
+.office-shell__win-control svg {
+    width: 10px;
+    height: 10px;
+    stroke: currentColor;
+    stroke-width: 1;
+    fill: none;
+}
+
+/* ── 标题栏（48） ── */
+
+.office-shell__titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    height: var(--office-titlebar-h);
+    /* Ardot 2809:12930：左 12 / 右 8 */
+    padding: 0 8px 0 12px;
+    flex-shrink: 0;
+    background: var(--office-surface);
+    border-bottom: 1px solid var(--wb-color-border-secondary, #EBEBEB);
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__titlebar--scrolled {
+    border-bottom-color: var(--wb-color-border-secondary, #EBEBEB);
+}
+
+.office-shell__title-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+}
+
+.office-shell__filename {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+    color: var(--office-title-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    user-select: text;
+    cursor: text;
+}
+
+.office-shell__save-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 24px;
+    padding: 0 4px;
+    color: var(--office-text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    flex-shrink: 0;
+}
+
+.office-shell__save-status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    line-height: 0;
+    color: var(--office-text-secondary);
+}
+
+.office-shell__save-status-icon svg {
+    display: block;
+    flex: 0 0 auto;
+}
+
+.office-shell__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__actions--menu-open {
+    position: relative;
+    z-index: 10002;
+}
+
+/*
+ * 文档主体是跨源 iframe，Tab/标题栏又包含 Electron 原生拖拽区，两者的指针事件都不会
+ * 冒泡给父 renderer。所有 Office 菜单统一用透明 no-drag 层接住外点。
+ */
+.office-shell__menu-dismiss-layer {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    pointer-events: auto;
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__more-dropdown {
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__ima-dialog-layer,
+.office-shell__ima-dialog-layer .ima-file-selector__dialog {
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__more-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+.office-shell__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--office-icon);
+    cursor: pointer;
+    padding: 0;
+}
+
+.office-shell__icon-btn:hover {
+    background: var(--wb-color-bg-secondary-hover-active, #F2F2F2);
+}
+
+.office-shell__icon-btn:disabled {
+    cursor: default;
+    opacity: 0.35;
+    background: transparent;
+}
+
+.office-shell__icon-btn[data-dirty='true'] {
+    color: var(--office-text-primary);
+}
+
+.office-shell__chat-btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 24px;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 6px;
+    background: var(--office-chat-btn-bg);
+    color: var(--office-chat-btn-fg);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.office-shell__chat-btn:hover {
+    background: var(--office-chat-btn-bg-hover);
+}
+
+.office-shell__chat-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: inherit;
+}
+
+/* ── 内容宿主 ── */
+
+/*
+ * Tab 栏之下的横向两栏容器（设计稿 3014:4594）。
+ * position: relative 同时作为对话面板 resizer 的绝对定位参照。
+ */
+.office-shell__body {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    overflow: hidden;
+}
+
+/*
+ * 左栏：文档标题栏 + 文档内容。
+ * 标题栏属于这一栏内部，所以对话区展开时会跟着文档一起收缩，
+ * 而不是横跨整个窗口宽度。
+ */
+.office-shell__doc-column {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.office-shell__content {
+    flex: 1;
+    min-height: 0;
+    background: var(--office-surface);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* display:flex 会盖掉 [hidden] 的默认 display:none，收起态必须显式声明。 */
+.office-shell__chat-pane[hidden],
+.office-shell__chat-resizer[hidden] {
+    display: none;
+}
+
+/*
+ * 与主端产物栏 sash 同构（cb-chat-ui grid/sash.tsx）：
+ *   - 绝对定位浮在布局之上，不占宽度；水平位置由 inline style 按面板宽度给出
+ *   - 默认整块透明，那条静态灰线由面板自己的 border-left 提供
+ *   - hover / 拖拽时本体与 ::before 同时变蓝，作为可拖拽的视觉反馈
+ * 不要给它默认上色：那样看起来就是一条 4px 的粗线。
+ */
+.office-shell__chat-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    width: 4px;
+    cursor: col-resize;
+    background-color: transparent;
+    touch-action: none;
+    transition: background-color 0.1s ease-out;
+    /* Electron 自绘标题栏下所有可交互元素都要显式 no-drag。 */
+    -webkit-app-region: no-drag;
+}
+
+.office-shell__chat-resizer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background-color: transparent;
+    transition: background-color 0.1s ease-out;
+}
+
+.office-shell__chat-resizer:hover,
+.office-shell__chat-resizer[data-resizing='true'] {
+    background-color: rgba(0, 122, 204, 0.6);
+}
+
+.office-shell__chat-resizer:hover::before,
+.office-shell__chat-resizer[data-resizing='true']::before {
+    background-color: rgba(0, 122, 204, 0.6);
+}
+
+/*
+ * 设计稿 3014:3209：白底 + 左侧 1px 描边。
+ * 这条 border 就是那条静态分割线（与主端一致：sash 只负责命中与 hover 反馈，
+ * 灰线由容器自己画），resizer 会浮在它上面。
+ */
+.office-shell__chat-pane {
+    flex: 0 0 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--office-surface);
+    border-left: 1px solid var(--office-border);
+    overflow: hidden;
+    -webkit-app-region: no-drag;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.office-shell__chat-pane button,
+.office-shell__chat-pane [role='button'] {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* 设计稿 3014:3210：高 48，padding 左 20 右 8，gap 12 */
+.office-shell__chat-header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    height: 48px;
+    padding: 0 8px 0 20px;
+}
+
+/* 设计稿 2852:7410：avatar + gap 8 + 标题 + gap 2 + jump 按钮 */
+.office-shell__chat-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+}
+
+/* 渐变与圆角都在 SVG 里，这里只负责占位与间距 */
+.office-shell__chat-avatar {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+}
+
+/*
+ * 设计稿 3207:141 里这个 32x32 容器无填充、无圆角，只是图标的命中区，
+ * 所以默认不要背景色。hover 才给一层轻反馈（与 titlebar 其他图标按钮一致）。
+ */
+.office-shell__chat-jump-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--office-radius-btn);
+    background: transparent;
+    color: var(--office-text-tertiary);
+    line-height: 1;
+    cursor: pointer;
+}
+
+.office-shell__chat-jump-btn:hover {
+    background: var(--office-hit-hover);
+    color: var(--office-text-primary);
+}
+
+.office-shell__chat-jump-tooltip {
+    padding: var(--wb-spacing-1) var(--wb-spacing-3);
+    border: none;
+    border-radius: var(--wb-radius-md);
+    background: var(--office-tooltip-bg);
+    color: var(--office-tooltip-text);
+    font-size: var(--wb-font-size-3);
+    line-height: var(--wb-font-line-height-4-2);
+}
+
+.office-shell__chat-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    color: var(--office-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.office-shell__chat-header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+}
+
+.office-shell__chat-header-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--office-radius-btn);
+    background: transparent;
+    color: var(--office-text-tertiary);
+    line-height: 1;
+    cursor: pointer;
+}
+
+.office-shell__chat-header-btn:hover {
+    background: var(--office-hit-hover);
+    color: var(--office-text-primary);
+}
+
+.office-shell__chat-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 当前 Tab 的会话实例；切 Tab 时卸载并由 Engine 从 Core 快照恢复。 */
+.office-shell__chat-conversation {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    inset: 0;
+}
+
+.office-shell__chat-conversation[hidden] {
+    display: none;
+}
+
+/* Office 空态标题贴近快捷指令区左下方，保持 8px 内容缩进。 */
+.office-shell .conversation-embed-empty__intro {
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding-left: var(--wb-spacing-3);
+    text-align: left;
+}
+
+.office-shell__panes {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.office-shell__pane {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    inset: 0;
+}
+
+.office-shell__pane--active {
+    position: relative;
+    z-index: 1;
+}
+
+.office-shell__pane--inactive {
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 冷启动 Loading 铺满 content（白底对齐设计稿） */
+.office-shell__content:has(.office-cold-start) {
+    background: var(--office-elevated, #FFF);
+}
+
+.office-content-host__state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--office-text-secondary);
+    font-size: 13px;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.office-content-host__state--error {
+    color: var(--office-error-text);
+}
+
+.office-content-host__hint {
+    margin: 0;
+    font-size: 12px;
+    color: var(--office-text-secondary);
+}
+
+.office-content-host__banner {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--office-text-secondary);
+    background: var(--office-warning-bg);
+    border-bottom: 1px solid var(--office-warning-border);
+}
+
+.office-content-host__frame-wrap {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.office-content-host__browser {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--office-surface);
+}
+
+/* ── 图片查看器（内联居中 fit + 底部工具栏）── */
+
+.office-image-host {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--office-surface);
+    overflow: hidden;
+}
+
+.office-image-host__stage {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--wb-spacing-5);
+    cursor: grab;
+    overflow: hidden;
+}
+
+.office-image-host__stage[data-dragging='true'] {
+    cursor: grabbing;
+}
+
+.office-image-host__img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    will-change: transform;
+    transition: transform 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.office-image-host__stage[data-dragging='true'] .office-image-host__img {
+    transition: none;
+}
+
+.office-image-host__toolbar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--wb-spacing-5);
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--wb-spacing-3);
+    border: none;
+    border-radius: 0;
+    background: var(--office-image-toolbar-bg);
+    box-shadow: none;
+    -webkit-app-region: no-drag;
+}
+
+.office-image-host__tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--office-hit);
+    height: var(--office-hit);
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--office-icon);
+    padding: 0;
+    cursor: pointer;
+}
+
+.office-image-host__tool:hover:not(:disabled) {
+    border-radius: var(--wb-radius-lg);
+    background: var(--office-elevated);
+    color: var(--office-icon);
+}
+
+.office-image-host__tool:disabled {
+    color: var(--office-text-secondary);
+    opacity: 0.4;
+    cursor: default;
+}
+
+.office-content-host__unified {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--office-surface);
+}
+
+.office-content-host__iframe,
+.office-content-host__webview {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: var(--office-surface);
+}
+
+.office-content-host__markdown {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    background: var(--office-surface);
+}
+
+.office-content-host__textarea {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border: none;
+    resize: none;
+    padding: 16px 20px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--office-text-primary);
+    background: var(--office-surface);
+    outline: none;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.office-content-host__media {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #1a1a1a;
+}
+
+.office-content-host__media--image {
+    background: var(--office-surface);
+}
+
+.office-shell__add-menu-recent,
+.office-content-host__textarea,
+.office-content-host__unified,
+.office-content-host__unified * {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.office-shell__add-menu-recent:hover,
+.office-content-host__textarea:hover,
+.office-content-host__unified:hover,
+.office-content-host__unified:hover * {
+    scrollbar-color: var(--office-scrollbar-thumb) transparent;
+}
+
+.office-shell__add-menu-recent::-webkit-scrollbar,
+.office-content-host__textarea::-webkit-scrollbar,
+.office-content-host__unified::-webkit-scrollbar,
+.office-content-host__unified *::-webkit-scrollbar {
+    width: var(--office-scrollbar-size);
+    height: var(--office-scrollbar-size);
+}
+
+.office-shell__add-menu-recent::-webkit-scrollbar-track,
+.office-content-host__textarea::-webkit-scrollbar-track,
+.office-content-host__unified::-webkit-scrollbar-track,
+.office-content-host__unified *::-webkit-scrollbar-track,
+.office-shell__add-menu-recent::-webkit-scrollbar-corner,
+.office-content-host__textarea::-webkit-scrollbar-corner,
+.office-content-host__unified::-webkit-scrollbar-corner,
+.office-content-host__unified *::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+.office-shell__add-menu-recent::-webkit-scrollbar-thumb,
+.office-content-host__textarea::-webkit-scrollbar-thumb,
+.office-content-host__unified::-webkit-scrollbar-thumb,
+.office-content-host__unified *::-webkit-scrollbar-thumb {
+    border: var(--office-scrollbar-thumb-inset) solid transparent;
+    border-radius: var(--wb-radius-full);
+    background-clip: padding-box;
+    background-color: transparent;
+}
+
+.office-shell__add-menu-recent:hover::-webkit-scrollbar-thumb,
+.office-content-host__textarea:hover::-webkit-scrollbar-thumb,
+.office-content-host__unified:hover::-webkit-scrollbar-thumb,
+.office-content-host__unified:hover *::-webkit-scrollbar-thumb {
+    background-color: var(--office-scrollbar-thumb);
+}
+
+.office-content-host__img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    user-select: none;
+}
+
+.office-content-host__video {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.office-content-host__audio {
+    width: min(480px, 100%);
+}
+/**
+ * Office 冷启动 Loading 样式 —— Ardot 3753:20 / 3753:124。
+ *
+ * 规格：
+ * - 纵向 gap 40，padding-bottom 4
+ * - 插画容器与图均为 130×140（Frame 6 @3x）
+ * - 主文案 26/Semibold/42，副文案 16/Regular/24
+ * - 进度条 340×6，轨道 gray-4，填充 black-90
+ *
+ * 文案单行不换行，所以堆叠宽度交给内容撑（副文案约 690px），
+ * 只有进度条保持设计稿的固定 340px。
+ */
+
+/* 铺满整窗的遮罩：真实壳层（Tab 栏 / 标题栏 / 内容区）在它下面先画好，
+   再把它淡出。以前两者同帧替换，白底一下变灰 chrome，就是「快加载完闪一下」。 */
+.office-cold-start {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--office-surface, #FFF);
+    -webkit-app-region: no-drag;
+    opacity: 1;
+    transition: opacity 200ms ease-out;
+}
+
+.office-cold-start--fading {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .office-cold-start {
+        transition: none;
+    }
+}
+
+.office-cold-start__stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding-bottom: 4px;
+    box-sizing: border-box;
+}
+
+.office-cold-start__hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.office-cold-start__mascot {
+    position: relative;
+    width: 130px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    flex-shrink: 0;
+}
+
+.office-cold-start__mascot-img {
+    width: 130px;
+    height: 140px;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+}
+
+.office-cold-start__text {
+    margin: 0;
+    height: 42px;
+    font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 42px;
+    letter-spacing: 0;
+    text-align: center;
+    color: var(--office-tab-title);
+    white-space: nowrap;
+}
+
+.office-cold-start__subtext {
+    margin: 0;
+    font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: center;
+    color: var(--office-text-secondary);
+    white-space: nowrap;
+}
+
+.office-cold-start__progress {
+    width: 340px;
+    height: 6px;
+    flex-shrink: 0;
+}
+
+.office-cold-start__progress-track {
+    position: relative;
+    width: 100%;
+    height: 6px;
+    border-radius: 100px;
+    background: var(--office-chrome-bg, var(--wb-palette-gray-4, #EBEBEB));
+    overflow: hidden;
+}
+
+.office-cold-start__progress-bar {
+    height: 100%;
+    width: 0;
+    border-radius: 6px;
+    background: var(--office-tab-title);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    transition: width 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .office-cold-start__progress-bar {
+        transition: none;
+        width: 44%;
+    }
+}

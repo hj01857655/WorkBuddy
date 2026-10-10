@@ -1,0 +1,125 @@
+/**
+ * 共享：腾讯文档场景下的「批量选择 + 添加到任务」浮动操作条
+ *
+ * 类名 `.tdoc-selection-bar` 同时被以下场景复用，避免两份重复样式 / 视觉割裂：
+ *   - 主面板列表底部（tencent-docs/index.tsx）
+ *   - 搜索弹窗底部（components/search-result-modal/search-result-modal.tsx）
+ *
+ * 历史背景：搜索弹窗曾用 `.search-result-modal__selection-bar` + `#4ECBA0`
+ * 绿色按钮，与主面板「黑色 + chat+ 图标」割裂（同 #39357）。统一到此处的
+ * `.tdoc-selection-bar` 后保持视觉一致，新增/调整都改这一份。
+ */
+.tdoc-selection-bar {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--wb-bg-primary);
+  border: 1px solid var(--wb-color-border-secondary);
+  box-shadow: var(--wb-shadow-dialog-md);
+  z-index: 10;
+  white-space: nowrap;
+}
+.tdoc-selection-bar__count {
+  font-size: 13px;
+  color: var(--wb-color-text-primary);
+  white-space: nowrap;
+}
+.tdoc-selection-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+.tdoc-selection-bar__btn:hover {
+  background: var(--wb-button-primary-bg-active);
+}
+.tdoc-selection-bar__btn:active {
+  background: var(--wb-button-primary-bg-active);
+}
+.tdoc-selection-bar__btn svg {
+  flex-shrink: 0;
+}
+.tdoc-ownership-tag {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 5px;
+  height: 18px;
+  line-height: 1;
+  font-size: 11px;
+  font-weight: 400;
+  border-radius: 3px;
+  white-space: nowrap;
+  user-select: none;
+  color: var(--wb-color-text-tertiary);
+  background: var(--wb-bg-primary);
+  border: 1px solid var(--wb-color-border-secondary);
+}
+/* ---- Action Popover Menu Panel ---- */
+/* 视觉对齐主导航「更多」浮层（foundation Dropdown .wb-popover.wb-dropdown）：
+   容器圆角 16px + 阴影 Layer 1（--wb-shadow-popover），列表项尺寸/间距/圆角同 Dropdown。 */
+.action-popover__menu {
+  z-index: 10000;
+  min-width: 140px;
+  /* 容器 padding 8px，与 Dropdown 一致 */
+  padding: var(--wb-spacing-3);
+  background: var(--wb-bg-primary);
+  border: 1px solid var(--wb-color-border-secondary);
+  /* 容器圆角 16px → --wb-radius-2xl */
+  border-radius: var(--wb-radius-2xl);
+  box-shadow: var(--wb-shadow-popover);
+}
+.action-popover__item {
+  display: flex;
+  align-items: center;
+  /* icon 与 label 间距 8px */
+  gap: var(--wb-spacing-3);
+  width: 100%;
+  /* item padding 5px 8px，高度 32px，圆角 8px —— 同 Dropdown */
+  padding: var(--wb-spacing-2-5) var(--wb-spacing-3);
+  min-height: var(--wb-size-control-md);
+  border: none;
+  border-radius: var(--wb-radius-lg);
+  background: transparent;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.action-popover__item:hover {
+  background: var(--wb-bg-hover);
+}
+.action-popover__item--danger {
+  color: var(--wb-status-error);
+}
+.action-popover__item--danger:hover {
+  background: var(--wb-status-error-soft);
+}
+.action-popover__item-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.action-popover__divider {
+  height: 1px;
+  /* 分组间距 8px：上下各 4px → --wb-spacing-2 */
+  margin: var(--wb-spacing-2) 0;
+  background: var(--wb-border-subtle);
+}

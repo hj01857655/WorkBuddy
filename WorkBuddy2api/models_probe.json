@@ -1,0 +1,387 @@
+{
+ "auto": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618274
+ },
+ "fast-model": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618278
+ },
+ "balanced-model": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618280
+ },
+ "deep-model": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618284
+ },
+ "hy3": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618287
+ },
+ "hy3-b": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618291
+ },
+ "hy3-c": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618293
+ },
+ "hy3-x": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618294
+ },
+ "hy4-preview": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618296
+ },
+ "hy4-preview-dev": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618300
+ },
+ "hy4-preview-x": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [hy4-preview-x] service info not found",
+  "at": 1791618302
+ },
+ "minimax-m2.5": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [minimax-m2.5] service info not found",
+  "at": 1791618303
+ },
+ "glm-5v-turbo": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618304
+ },
+ "glm-5.3": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618306
+ },
+ "glm-5.3-flash": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618315
+ },
+ "glm-5.2": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618317
+ },
+ "glm-5.1": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618320
+ },
+ "glm-5.0-turbo": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618322
+ },
+ "glm-4.6v": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [glm-4.6v] service info not found",
+  "at": 1791618327
+ },
+ "kimi-k3-1": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618329
+ },
+ "kimi-k2.8-preview": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618334
+ },
+ "kimi-k2.7": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618336
+ },
+ "kimi-k2.6": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618338
+ },
+ "kimi-k2.5": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618340
+ },
+ "kimi-k2-thinking": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [kimi-k2-thinking] service info not found",
+  "at": 1791618342
+ },
+ "minimax-m3": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618343
+ },
+ "minimax-m2.7": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618347
+ },
+ "glm-4.6": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [glm-4.6] service info not found",
+  "at": 1791618349
+ },
+ "deepseek-v4-flash": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618353
+ },
+ "deepseek-v4.1-flash": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618355
+ },
+ "deepseek-v4-pro": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618357
+ },
+ "deepseek-v3-2-volc": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618359
+ },
+ "deepseek-v3-1-volc": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [deepseek-v3-1-volc] service info not found",
+  "at": 1791618361
+ },
+ "deepseek-v3-1-lkeap": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618362
+ },
+ "deepseek-v3-1": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618365
+ },
+ "deepseek-v3-0324-lkeap": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618376
+ },
+ "deepseek-r1-0528-lkeap": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618378
+ },
+ "kimi-k2-instruct-taiji": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [kimi-k2-instruct-taiji] service info not found",
+  "at": 1791618380
+ },
+ "completion-gf": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [completion-gf] service info not found",
+  "at": 1791618381
+ },
+ "default-1.1": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [default-1.1] service info not found",
+  "at": 1791618382
+ },
+ "hunyuan-3b": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [hunyuan-3b] service info not found",
+  "at": 1791618383
+ },
+ "hunyuan-7b-dense": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [hunyuan-7b-dense] service info not found",
+  "at": 1791618384
+ },
+ "codewise-completions": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [completion-077] service info not found",
+  "at": 1791618386
+ },
+ "codewise-rewrite": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618387
+ },
+ "codewise-nes-a4-027-aide": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618388
+ },
+ "codewise-jump": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618389
+ },
+ "deepseek-r1-0528": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [deepseek-r1-0528] service info not found",
+  "at": 1791618390
+ },
+ "deepseek-v3-0324-taco-completion": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [deepseek-v3-0324-taco-completion] service info not found",
+  "at": 1791618391
+ },
+ "deepseek-v3-0324": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618392
+ },
+ "default-1.2": {
+  "probed": true,
+  "callable": false,
+  "code": 11102,
+  "msg": "model [default-1.2] service info not found",
+  "at": 1791618394
+ },
+ "hunyuan-2.0-instruct": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618395
+ },
+ "hunyuan-chat": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618397
+ },
+ "hunyuan-image-alpha": {
+  "probed": true,
+  "callable": false,
+  "code": 11103,
+  "msg": "Backend [hunyuan-stream] is not supported",
+  "at": 1791618399
+ },
+ "hunyuan-image-alpha-edit": {
+  "probed": true,
+  "callable": false,
+  "code": 11103,
+  "msg": "Backend [hunyuan-stream] is not supported",
+  "at": 1791618400
+ },
+ "space-bunny": {
+  "probed": true,
+  "callable": true,
+  "code": null,
+  "msg": "",
+  "at": 1791618401
+ }
+}

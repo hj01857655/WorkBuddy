@@ -1,0 +1,54 @@
+.main-content.main-content--genie {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--wb-home-bg-secondary);
+}
+.genie-main-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.genie-webview {
+  flex: 1;
+  min-height: 0;
+}
+.workbuddy-topbar--genie-slim {
+  flex-shrink: 0;
+  /*
+     * 根因：slim 顶栏复用了 .workbuddy-topbar 基类，会被 index.less 的
+     * `-webkit-app-region: drag` + workbuddy-app 运行态注入的
+     * `body[data-application-name="workbuddy"] .workbuddy-topbar { -webkit-app-region: drag !important }`
+     * 强制成整条拖拽区。侧栏收起时这条 56px 顶栏覆盖在内嵌 Genie 项目预览页的顶部工具栏
+     * （原型/页面预览/全屏/分享）之上，OS 把落入 drag 区的点击判为「拖窗」吞掉。
+     *
+     * 修法：slim 顶栏整条改no-drag，并让「按钮以外的区域」pointer-events: none，
+     * 把点击穿透给下方 Genie 工具栏。仅展开按钮所在的 .workbuddy-topbar-left 恢复
+     * pointer-events，保证按钮可点。
+     * 必须带 !important —— 才能压过workbuddy-app 运行态的 `drag !important`。
+     *
+     * ⚠️ 不要再加「flex:1 + drag 的填充块」来保留拖窗体验：那块 56px 高的 drag 区会盖住
+     * Genie 工具栏，点击被判为拖窗吞掉（表现为「偶尔能点、大多点不动」）。这里是 Genie 的
+     * 功能区、不是窗口空白，本就不该拖窗。
+     */
+}
+.workbuddy-topbar--genie-slim.workbuddy-topbar {
+  -webkit-app-region: no-drag;
+  pointer-events: none;
+}
+.workbuddy-topbar--genie-slim .workbuddy-topbar-left {
+  pointer-events: auto;
+}
+/* 运行态强制规则带 !important，业务侧对应覆盖也必须 !important、同源前缀，确保后写生效 */
+body[data-application-name="workbuddy"] .workbuddy-topbar.workbuddy-topbar--genie-slim {
+  -webkit-app-region: no-drag !important;
+  pointer-events: none;
+}
+body[data-application-name="workbuddy"] .workbuddy-topbar.workbuddy-topbar--genie-slim .workbuddy-topbar-left {
+  pointer-events: auto;
+}

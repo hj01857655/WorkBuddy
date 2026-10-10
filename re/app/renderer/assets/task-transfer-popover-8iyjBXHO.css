@@ -1,0 +1,1862 @@
+/* TODO: 此文件已超过 200 行，考虑按弹窗布局、任务信息、表单控件拆分样式。 */
+/* 项目统一细滚动条（4px + --wb-scrollbar-thumb），覆盖各滚动区默认粗滚动条。
+   与详情弹窗 __detail-main-scroll / 富文本编辑器内容区保持同一套观感。 */
+.task-transfer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.task-transfer-overlay .plan-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: var(--wb-color-mask-color);
+  cursor: default;
+}
+/**
+ * 弹窗整体尺寸（设计稿 12157:463 双态）：
+ *   - 默认：880×480（content 304）
+ *   - 最大：880×720（content 596，min(720, vh-48)）
+ * 高度由 .is-maximized 切换。
+ */
+.task-transfer-popover.plan-new-modal {
+  position: relative;
+  z-index: 1;
+  width: min(880px, calc(100vw - 48px));
+  height: min(480px, calc(100vh - 48px));
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: 18px;
+  background: var(--wb-bg-primary);
+  color: var(--wb-color-text-primary);
+  box-shadow: var(--wb-shadow-xl);
+  transition: height 0.18s ease;
+}
+.task-transfer-popover.plan-new-modal.is-maximized {
+  height: min(720px, calc(100vh - 48px));
+}
+.task-transfer-popover .plan-new-head,
+.task-transfer-popover .plan-new-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--wb-bg-primary);
+  flex: 0 0 auto;
+}
+.task-transfer-popover .plan-new-head {
+  height: 56px;
+  padding: 0 16px 0 24px;
+  /* 设计稿 12079:1127 分割线 visible:false */
+  border-bottom: 0;
+  gap: 24px;
+}
+.task-transfer-popover .plan-new-footer {
+  min-height: 68px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--wb-border-popover);
+}
+.task-transfer-popover .plan-new-breadcrumb strong {
+  color: var(--wb-color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+.task-transfer-popover .plan-new-actions,
+.task-transfer-popover .plan-new-attachment-area,
+.task-transfer-popover .plan-new-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* 头部按钮区：设计稿 12079:1128 itemSpacing=4 */
+.task-transfer-popover .plan-new-head .plan-new-actions {
+  gap: 4px;
+}
+.task-transfer-popover .plan-new-attachment-area {
+  min-width: 0;
+  flex: 1;
+}
+/* 头部图标按钮：最大化 + 关闭，按设计稿 32×32 hover 灰底 8 圆角 */
+.task-transfer-popover .plan-new-icon-btn,
+.task-transfer-popover .plan-new-upload {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--wb-color-text-tertiary);
+  cursor: pointer;
+}
+.task-transfer-popover .plan-new-icon-btn:hover,
+.task-transfer-popover .plan-new-upload:hover:not(:disabled) {
+  background: var(--wb-bg-hover-light);
+  color: var(--wb-color-text-primary);
+}
+.task-transfer-popover .plan-new-upload:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+/* 弹窗内容区是唯一的滚动宿主：AI 总结 / 描述 / chip / 附件都在这条流里，
+   滚动时一起向上滚走（不再各自嵌套滚动条）。 */
+.task-transfer-popover .plan-new-pane {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 22px 16px;
+  background: var(--wb-bg-primary);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--wb-scrollbar-thumb) transparent;
+}
+.task-transfer-popover .plan-new-pane::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.task-transfer-popover .plan-new-pane::-webkit-scrollbar-thumb {
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-scrollbar-thumb);
+}
+.task-transfer-popover .plan-new-pane::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-scrollbar-thumb-hover);
+}
+.task-transfer-popover .plan-new-pane::-webkit-scrollbar-track {
+  background: transparent;
+}
+.task-transfer-popover .plan-new-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* ─── 标题：大字、无边框 ─── */
+.task-transfer-popover .transfer-title-input {
+  width: 100%;
+  padding: 4px 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--wb-color-text-primary);
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 35px;
+}
+.task-transfer-popover .transfer-title-input::placeholder {
+  color: var(--wb-color-text-disabled);
+  font-weight: 600;
+}
+/* ─── 描述：富文本编辑器容器（与新建/编辑待办同一组件，page-flow 模式）。
+ *      编辑器自身随内容撑高、不出内部滚动条，超长时由外层 pane 统一滚动；
+ *      字号 / 占位 / 滚动条等观感全部收敛在 rich 编辑器组件的 less 里，这里只管在弹窗流里的布局与间距。
+ *
+ *      flex: 1 0 auto —— 内容少时撑满剩余空间，把 chip 行（工具栏）+ 附件顶到底部（对齐新建待办的观感）；
+ *      内容多时按内容撑高（flex-shrink:0 不压缩、不裁剪），溢出由外层 pane 统一滚动，
+ *      不会像 textarea 那样在自身内部再出一个滚动条。 ─── */
+.task-transfer-popover .transfer-description-rich {
+  width: 100%;
+  flex: 1 0 auto;
+  padding: 4px 0;
+  /* flex 列容器：让内部富文本编辑器（--page-flow-scroll）撑满本区，内容少时把 chip 行顶到底部 */
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+/* ─── 区块（任务进度摘要 / 任务产物）：小标题 + 竖线 frame + 内容 ─── */
+/* 设计稿：小标题 25px 高（prompt 16 图标 + 文字 14 + chevron）；
+   内容区 = 16px 宽竖线 frame（内含 4px 宽 #EBEBEB 圆角条）+ 右侧内容；section gap=12 */
+.task-transfer-popover .transfer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.task-transfer-popover .transfer-section-head {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 4px;
+  height: 25px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.task-transfer-popover .transfer-section-head--static {
+  cursor: default;
+}
+.task-transfer-popover .transfer-section-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--wb-color-text-tertiary);
+}
+.task-transfer-popover .transfer-section-label {
+  color: var(--wb-color-text-tertiary);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+}
+.task-transfer-popover .transfer-section-count {
+  color: var(--wb-color-text-tertiary);
+  font-weight: 400;
+}
+.task-transfer-popover .transfer-section-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--wb-color-text-disabled);
+  transition: transform 0.18s ease;
+}
+.task-transfer-popover .transfer-section.is-open .transfer-section-chevron {
+  transform: rotate(180deg);
+}
+/* 内容区：16px 宽竖线 frame + 内容（设计稿 itemSpacing=4，竖线 frame 宽 16） */
+.task-transfer-popover .transfer-section-body {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+/* 竖线 frame：16px 宽，内含 4px 宽 #EBEBEB 圆角竖条（设计稿 Rectangle x=4 w=4） */
+.task-transfer-popover .transfer-vertical-line {
+  flex: 0 0 16px;
+  width: 16px;
+  align-self: stretch;
+  background: linear-gradient(var(--wb-color-border-secondary), var(--wb-color-border-secondary)) no-repeat 4px 4px / 4px calc(100% - 8px);
+  border-radius: 2px;
+}
+/* ─── 摘要生成中：环形 spinner + 文字（设计稿 12157:2321） ─── */
+.task-transfer-popover .transfer-summary-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 5px 0;
+}
+.task-transfer-popover .transfer-summary-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+.task-transfer-popover .transfer-summary-spinner svg {
+  animation: transferSummarySpin 0.9s linear infinite;
+}
+.task-transfer-popover .transfer-summary-loading-text {
+  color: var(--wb-color-text-tertiary);
+  font-size: 14px;
+  line-height: 22px;
+}
+@keyframes transferSummarySpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* ─── 进度摘要展开文本 ─── */
+/* AI 总结不再限高 + 独立滚动：直接随内容撑高，跟着外层 pane 一起滚动
+   （避免「弹窗里再套一个总结滚动条」的嵌套滚动观感）。长行靠换行兜底，不产生横向滚动。 */
+.task-transfer-popover .transfer-info-progress {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--wb-color-text-tertiary);
+  font-size: 14px;
+  line-height: 25px;
+}
+.task-transfer-popover .transfer-info-progress .cb-markdown {
+  --markdown-content-gap: 6px;
+  color: var(--wb-color-text-tertiary);
+  font-size: 14px;
+  line-height: 25px;
+}
+.task-transfer-popover .transfer-info-progress .cb-markdown > :last-child {
+  padding-bottom: 0;
+}
+/* ─── 产物 chip：180px 固定宽，8px 圆角，灰底
+ *    设计稿 12157:2247 itemSpacing=8（横排）；规格统一与附件保持：
+ *    一行 3 个，最多 2 行，超出 2 行滚动 ─── */
+.task-transfer-popover .transfer-artifact-cards {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 180px);
+  grid-auto-rows: 32px;
+  justify-content: start;
+  column-gap: 8px;
+  row-gap: 8px;
+  max-height: calc(32px * 2 + 8px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--wb-scrollbar-thumb) transparent;
+}
+.task-transfer-popover .transfer-artifact-cards::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.task-transfer-popover .transfer-artifact-cards::-webkit-scrollbar-thumb {
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-scrollbar-thumb);
+}
+.task-transfer-popover .transfer-artifact-cards::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-scrollbar-thumb-hover);
+}
+.task-transfer-popover .transfer-artifact-cards::-webkit-scrollbar-track {
+  background: transparent;
+}
+.task-transfer-popover .transfer-artifact-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: 180px;
+  max-width: 180px;
+  height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--wb-bg-secondary);
+  cursor: default;
+}
+.task-transfer-popover .transfer-artifact-card:hover {
+  background: var(--wb-bg-hover);
+}
+.task-transfer-popover .transfer-artifact-card .transfer-artifact-icon {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+}
+.task-transfer-popover .transfer-artifact-name {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--wb-color-text-primary);
+  font-size: 14px;
+  line-height: 22px;
+}
+.task-transfer-popover .task-transfer-attachment-list {
+  margin: 4px 0 8px;
+}
+/* attachment-list 标题样式：12px 灰色小字（设计稿 #54184） */
+.task-transfer-popover .project-plan-panel__create-attachments-title {
+  margin-bottom: 4px;
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+}
+.task-transfer-popover .plan-new-chip-row,
+.task-transfer-popover .plan-new-chip-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.task-transfer-popover .plan-new-chip-wrap {
+  position: relative;
+}
+/* chip-row 内三个 chip 真值（设计稿 12157:233）：
+ *   - 高度 28px、内 itemSpacing=4、padding 0 8（仅左 padding，右侧 chevron 紧贴右边）
+ *   - 灰底 #F2F2F2、cornerRadius=100（pill）
+ *   - 进度 70×28 / 处理人 72×28 / 截止 84×28 */
+.task-transfer-popover .plan-new-chip,
+.task-transfer-popover .project-plan-panel__create-chip,
+.task-transfer-popover .project-plan-panel__priority-picker-trigger--create,
+.task-transfer-popover .project-plan-panel__tags-picker-trigger--create {
+  max-width: 200px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--wb-bg-hover-light);
+  color: var(--wb-color-text-secondary);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 20px;
+  cursor: pointer;
+}
+/* priority / tags create trigger 内文本超长省略（标签过多时不撑爆 chip 行） */
+.task-transfer-popover .project-plan-panel__priority-picker-trigger--create,
+.task-transfer-popover .project-plan-panel__tags-picker-trigger--create {
+  max-width: 200px;
+}
+.task-transfer-popover .plan-new-chip--assignee-set {
+  gap: 4px;
+  padding: 4px 8px;
+  max-width: 280px;
+  overflow: hidden;
+}
+.task-transfer-popover .transfer-assignee-summary {
+  min-width: 0;
+}
+.task-transfer-popover .project-plan-panel__create-chip-placeholder {
+  color: var(--wb-color-text-secondary) !important;
+}
+.task-transfer-popover .project-plan-panel__status-picker {
+  position: relative;
+}
+.task-transfer-popover .project-plan-panel__status-trigger,
+.task-transfer-popover .project-plan-panel__quick-action {
+  height: 28px;
+  padding: 4px 8px;
+  border: 0;
+  background: var(--wb-palette-gray-3);
+  font-size: 12px;
+  font-weight: 400;
+}
+/* 设计稿 12157:233 所有 chip 都是 cornerRadius=100 的 pill；status picker 默认是 8px 圆角，
+ * 在 task-transfer 弹窗内复用 + 套 pill 样式。 */
+.task-transfer-popover .project-plan-panel__status-trigger {
+  gap: 4px;
+  border-radius: 999px;
+  background: var(--wb-bg-hover-light);
+}
+/* status picker chevron 视觉对齐：设计稿真值是 fill 黑 0.5 的 db-chevron-down（粗短下尖角）；
+ * 默认实现 stroke=1.2 偏细。在 task-transfer 弹窗内加粗描边并改色到 0.5 黑。 */
+.task-transfer-popover .project-plan-panel__status-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-color-text-tertiary);
+}
+.task-transfer-popover .project-plan-panel__status-chevron svg path {
+  stroke-width: 1.6;
+}
+.task-transfer-popover .project-plan-panel__status-trigger--pending {
+  color: var(--wb-color-text-secondary);
+}
+.task-transfer-popover .project-plan-panel__status-trigger,
+.task-transfer-popover .project-plan-panel__status-option {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.task-transfer-popover .project-plan-panel__status-option:hover,
+.task-transfer-popover .project-plan-panel__status-option--active {
+  background-color: var(--wb-bg-hover-light);
+}
+.task-transfer-popover .project-plan-panel__status-menu {
+  z-index: 3;
+  border: 1px solid var(--wb-dropdown-border-color);
+  background: var(--wb-dropdown-bg-color);
+  box-shadow: var(--wb-shadow-message-toolbar);
+}
+.task-transfer-popover .plan-new-chip:hover,
+.task-transfer-popover .project-plan-panel__create-chip:hover,
+.task-transfer-popover .project-plan-panel__priority-picker-trigger--create:hover,
+.task-transfer-popover .project-plan-panel__tags-picker-trigger--create:hover,
+.task-transfer-popover .project-plan-panel__status-trigger:hover {
+  background: var(--wb-color-bg-primary-hover-strong);
+  color: var(--wb-color-text-primary);
+}
+.task-transfer-popover .plan-new-cancel {
+  min-width: 76px;
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid var(--wb-button-secondary-border);
+  border-radius: 12px;
+  background: var(--wb-button-ghost-bg);
+  color: var(--wb-button-ghost-fg);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.task-transfer-popover .plan-new-cancel:hover:not(:disabled) {
+  background: var(--wb-button-ghost-bg-hover);
+}
+.task-transfer-popover .plan-new-cancel:disabled {
+  cursor: not-allowed;
+  background-color: var(--wb-button-ghost-fg-disabled);
+}
+.task-transfer-popover .plan-new-submit {
+  min-width: 76px;
+  height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.task-transfer-popover .plan-new-submit:hover:not(:disabled) {
+  opacity: 0.92;
+}
+.task-transfer-popover .plan-new-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.teams-container.is-mobile .task-transfer-popover .transfer-artifact-cards {
+  grid-template-columns: repeat(auto-fill, minmax(8.75rem, 1fr));
+}
+.assignee-chip-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.assignee-chip-summary__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.assignee-chip-summary__item--primary {
+  flex: 0 0 auto;
+}
+.assignee-chip-summary__item--primary:only-child {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.assignee-chip-summary__item--primary:only-child .assignee-chip-summary__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.assignee-chip-summary__item--secondary {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.assignee-chip-summary__avatar {
+  flex: 0 0 auto;
+}
+.assignee-chip-summary__avatar--more.wb-avatar {
+  box-shadow: 0 0 0 1px var(--wb-bg-primary);
+  background: var(--wb-palette-gray-5);
+  color: var(--wb-color-text-primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+.assignee-chip-summary__name {
+  color: var(--wb-color-text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.assignee-chip-summary__item--secondary .assignee-chip-summary__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/**
+ * 待办附件 chip 样式（#54184 唯一形态）：
+ * 详情面板/创建态共用同一套规则（node 12157:392 文件1）。
+ * 评论输入框 pending 附件用 --compact 变体（node 12079:1244）。
+ *
+ * 作用域说明（#57216 follow-up）：
+ *   - 原 scope 是 `.workbuddy-collab--portal`，仅覆盖弹窗内挂载点
+ *     （待办详情 modal、project list create dialog 等）。
+ *   - 项目动态面板 ProjectMessageComposer 是 **inline** 在详情主页
+ *     `.workbuddy-collab.workbuddy-collab--detail` 里渲染，挂载点没有
+ *     `--portal` 修饰符 → chip 样式全部失配（用户看到 button 原生外观 + 巨大图标）。
+ *   - 改用 `.workbuddy-collab` 顶层 scope 让 portal / detail / list 三处挂载点
+ *     都能命中；portal 上同时挂着 `.workbuddy-collab` 和 `--portal`，不丢覆盖。
+ */
+.workbuddy-collab {
+  /* 容器：自适应宽度、wrap 避免横向滚动。详情面板设计稿 node 12157:382 itemSpacing 8 */
+  /* chip 卡片（设计稿 node 12157:392）：
+     - 180×32，per-corner radius 8
+     - bg #F2F2F2
+     - padding 4 8（top/bottom 4，left/right 8），itemSpacing 8
+     - 文件名 14/22 Regular 黑0.9
+
+     #57216 follow-up（样式失配根因）：
+     原来 display/align-items/gap/padding/border-radius/font-size/line-height 全靠
+     create-modal.less 在 .workbuddy-collab--portal scope 下提供。详情动态(inline，
+     无 --portal)复用这些 chip 时只命中本文件的 height/bg/border-color，布局属性全丢失
+     → 圆角/边距/字号/按钮位置全错（用户反馈样式很怪）。
+     这里把 chip 完整规格全部内聚到 .workbuddy-collab 顶层 scope，portal/inline 一致。 */
+  /* 文件类型图标尺寸固定 16px，颜色由 ArtifactFileTypeIcon 自身决定 */
+  /* 文件名：左对齐 + 单行省略；flex item 必须 min-width:0 才能在 nowrap 下触发 ellipsis 而不是撑爆/消失 */
+  /* preview 按钮：去除原生按钮外观，作为 chip 的可点击主区域 */
+  /* 操作按钮通用（更多 …）：14×14 图标按钮（设计 wb-ellipsis = 14×14，黑 0.5）。
+     必须显式 scope 到 __create-attachment-action，避免压缩 preview 按钮。
+     默认隐藏，hover chip 时淡入（hover-only 的更多入口）。 */
+  /* hover chip 时显示「…」更多按钮；菜单展开后也保持显示（focus-within） */
+  /* 「…」更多按钮 hover：颜色加深 */
+  /* 直接删除图标（新建待办面板 showDeleteOnly 场景）：始终可见的灰色垃圾桶，hover 变红。
+     从 create-modal.less 内聚过来，保证 portal / inline 一致（#57216）。 */
+  /* compact 变体（设计稿 node 12079:1244）：评论输入框 pending 附件
+     - chip bg #F7F7F7（默认 #F2F2F2）
+     - line-height: 20px（默认 22px）
+     - chip 栏 gap: 4px（默认 8px） */
+}
+.workbuddy-collab .project-plan-panel__create-attachments .project-plan-panel__create-attachment-list {
+  width: 100%;
+  max-width: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  overflow-x: visible;
+}
+.workbuddy-collab .project-plan-panel__create-attachments .project-plan-panel__create-attachment-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  flex: 0 0 180px;
+  width: 180px;
+  max-width: 180px;
+  min-width: 0;
+  height: 32px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--wb-bg-secondary);
+  border-color: transparent;
+  color: var(--wb-color-text-primary);
+  font-size: 14px;
+  line-height: 22px;
+}
+.workbuddy-collab .project-plan-panel__create-attachment-item--previewable {
+  cursor: default;
+}
+.workbuddy-collab .project-plan-panel__create-attachments .project-plan-panel__create-attachment-icon {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+}
+.workbuddy-collab .project-plan-panel__create-attachment-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  color: inherit;
+  font-weight: 400;
+}
+.workbuddy-collab .project-plan-panel__create-attachment-item .project-plan-panel__create-attachment-preview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  flex: 1 1 auto;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  opacity: 1;
+}
+.workbuddy-collab .project-plan-panel__create-attachment-item .project-plan-panel__create-attachment-preview:hover .project-plan-panel__create-attachment-name {
+  color: var(--wb-border-focus);
+}
+.workbuddy-collab .project-plan-panel__create-attachments .project-plan-panel__create-attachment-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--wb-color-text-tertiary);
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s, opacity 0.15s;
+  opacity: 0;
+  pointer-events: none;
+}
+.workbuddy-collab .project-plan-panel__create-attachments .project-plan-panel__create-attachment-action svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+.workbuddy-collab .project-plan-panel__create-attachment-item:hover .project-plan-panel__create-attachment-action,
+.workbuddy-collab .project-plan-panel__create-attachment-item:focus-within .project-plan-panel__create-attachment-action {
+  opacity: 1;
+  pointer-events: auto;
+}
+.workbuddy-collab .project-plan-panel__create-attachments .project-plan-panel__create-attachment-menu:hover {
+  color: var(--wb-color-text-primary);
+}
+.workbuddy-collab .project-plan-panel__create-attachments .project-plan-panel__create-attachment-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--wb-color-text-tertiary);
+  cursor: pointer;
+}
+.workbuddy-collab .project-plan-panel__create-attachments .project-plan-panel__create-attachment-remove:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-error-default);
+}
+.workbuddy-collab .project-plan-panel__create-attachments--compact .project-plan-panel__create-attachment-list {
+  gap: 4px;
+}
+.workbuddy-collab .project-plan-panel__create-attachments--compact .project-plan-panel__create-attachment-item {
+  background: var(--wb-bg-hover);
+}
+.workbuddy-collab .project-plan-panel__create-attachments--compact .project-plan-panel__create-attachment-name {
+  font-size: 12px;
+  line-height: 20px;
+}
+.project-plan-panel__desc-rich {
+  width: 100%;
+}
+.project-plan-panel__desc-rich-root {
+  height: auto !important;
+  min-height: 40.5px;
+  padding: 0;
+  background: transparent;
+}
+.project-plan-panel__desc-rich-root .sc-editor-content {
+  padding: 0 !important;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.project-plan-panel__desc-rich-root .sc-editor-content:hover {
+  scrollbar-color: var(--wb-scrollbar-thumb) transparent;
+}
+.project-plan-panel__desc-rich-root .sc-editor-content::-webkit-scrollbar {
+  width: 4px;
+}
+.project-plan-panel__desc-rich-root .sc-editor-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.project-plan-panel__desc-rich-root .sc-editor-content::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: var(--wb-radius-full);
+}
+.project-plan-panel__desc-rich-root .sc-editor-content:hover::-webkit-scrollbar-thumb {
+  background: var(--wb-scrollbar-thumb);
+}
+.project-plan-panel__desc-rich-root .sc-page,
+.project-plan-panel__desc-rich-root .sc-page-body {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+.project-plan-panel__desc-rich--container-scroll {
+  height: 100%;
+  min-height: 0;
+}
+.project-plan-panel__desc-rich--container-scroll .project-plan-panel__desc-rich-root {
+  height: 100% !important;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  --sc-page-body-padding-bottom: 24px;
+}
+.project-plan-panel__desc-rich--container-scroll .sc-editor-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: clip;
+  position: relative;
+}
+.project-plan-panel__desc-rich--container-scroll .project-plan-panel__desc-rich-placeholder {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.project-plan-panel__desc-rich--container-scroll .project-plan-panel__desc-rich-placeholder--has-empty-block {
+  inset: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  pointer-events: none;
+}
+.project-plan-panel__desc-rich--page-flow-scroll {
+  flex: 1 0 auto;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+}
+.project-plan-panel__desc-rich--page-flow-scroll .project-plan-panel__desc-rich-root {
+  height: auto !important;
+  min-height: 0;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  --sc-page-body-padding-bottom: 8px;
+}
+.project-plan-panel__desc-rich--page-flow-scroll .sc-editor-content {
+  flex: 1 0 auto;
+  min-height: 0;
+  position: relative;
+}
+.project-plan-panel__desc-rich--page-flow-scroll .project-plan-panel__desc-rich-placeholder {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.project-plan-panel__desc-rich--page-flow-scroll .project-plan-panel__desc-rich-placeholder--has-empty-block {
+  inset: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  pointer-events: none;
+}
+.project-plan-panel__desc-rich-placeholder {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--wb-color-text-tertiary);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 25px;
+  text-align: left;
+  cursor: text;
+}
+.project-plan-panel__desc-rich--page-scroll .sc-editor-content {
+  position: relative;
+}
+.project-plan-panel__desc-rich--page-scroll .project-plan-panel__desc-rich-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+  display: block;
+}
+.project-plan-panel__desc-rich--page-scroll .project-plan-panel__desc-rich-placeholder--has-empty-block {
+  pointer-events: none;
+}
+.sc-link-atom {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  padding: 0 4px;
+  color: var(--sc-ui-primary, #2f76ff);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.sc-link-atom:hover {
+  background: var(--sc-ui-active);
+}
+.sc-link-atom--selected {
+  background: var(--sc-ui-active);
+}
+/* 换行时 icon 必须贴第一行，不能用 align-items: center（会相对整段标题居中）。
+   直接子级 flex-start + 1lh 偏移，只在第一行行盒内视觉居中。 */
+.sc-link-atom > .sc-link-atom__icon {
+  align-self: flex-start;
+  margin-top: calc((1lh - 1em) / 2);
+}
+@supports not (height: 1lh) {
+  .sc-link-atom > .sc-link-atom__icon {
+    margin-top: calc((var(--sc-content-line-height, 1.6) * 1em - 1em) / 2);
+  }
+}
+.sc-link-atom__icon {
+  flex-shrink: 0;
+  border-radius: 2px;
+  object-fit: cover;
+}
+.sc-link-atom__icon img,
+.sc-link-atom__icon svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+.sc-link-atom__icon--default {
+  stroke: currentColor;
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+.sc-link-atom > .sc-link-atom__loading {
+  align-self: flex-start;
+  margin-top: calc((1lh - 0.85em) / 2);
+}
+@supports not (height: 1lh) {
+  .sc-link-atom > .sc-link-atom__loading {
+    margin-top: calc((var(--sc-content-line-height, 1.6) * 1em - 0.85em) / 2);
+  }
+}
+.sc-link-atom__loading {
+  display: block;
+  flex-shrink: 0;
+  width: 0.85em;
+  height: 0.85em;
+  border: 1.5px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: sc-link-atom-spin 0.6s linear infinite;
+}
+@keyframes sc-link-atom-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.sc-link-atom__title {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.sc-editor[data-sc-mode='markdown'] {
+  --sc-text-default: rgba(0, 0, 0, 0.9);
+  --sc-border-grey: #ebebeb;
+  --sc-bg-grey_background: #f7f7f7;
+  --sc-divider-default: #efefef;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+:root[data-sc-color-scheme='dark'] .sc-editor[data-sc-mode='markdown'] {
+  --sc-text-default: rgba(255, 255, 255, 0.9);
+  --sc-border-grey: rgba(255, 255, 255, 0.15);
+  --sc-bg-grey_background: #252526;
+  --sc-divider-default: rgba(255, 255, 255, 0.1);
+}
+.sc-editor[data-sc-mode='markdown'][data-sc-theme] {
+  --sc-text-code: rgba(0, 0, 0, 0.9);
+  --sc-content-font-size: calc(14px * var(--sc-font-scale, 1));
+  --sc-content-line-height: 1.75;
+  --sc-content-font-weight-bold: 600;
+  --sc-heading-1-font-size: calc(20px * var(--sc-font-scale, 1));
+  --sc-heading-2-font-size: calc(18px * var(--sc-font-scale, 1));
+  --sc-heading-3-font-size: calc(16px * var(--sc-font-scale, 1));
+  --sc-heading-4-font-size: calc(14px * var(--sc-font-scale, 1));
+  --sc-heading-5-font-size: calc(14px * var(--sc-font-scale, 1));
+  --sc-heading-6-font-size: calc(14px * var(--sc-font-scale, 1));
+  --sc-heading-1-line-height: 1.75;
+  --sc-heading-2-line-height: 1.75;
+  --sc-heading-3-line-height: 1.75;
+  --sc-heading-4-line-height: 1.75;
+  --sc-heading-5-line-height: 1.75;
+  --sc-heading-6-line-height: 1.75;
+  --sc-page-title-line-height: 1.75;
+  --sc-heading-1-color: rgba(0, 0, 0, 0.9);
+  --sc-heading-2-color: rgba(0, 0, 0, 0.9);
+  --sc-heading-3-color: rgba(0, 0, 0, 0.9);
+  --sc-heading-4-color: rgba(0, 0, 0, 0.9);
+  --sc-heading-5-color: rgba(0, 0, 0, 0.9);
+  --sc-heading-6-color: rgba(0, 0, 0, 0.9);
+  --sc-heading-1-font-weight: 600;
+  --sc-heading-2-font-weight: 600;
+  --sc-heading-3-font-weight: 600;
+  --sc-heading-letter-spacing: normal;
+  --sc-link-color: #0088ff;
+  --sc-link-color-hover: #0088ff;
+  --sc-link-text-decoration: none;
+  --sc-inline-code-bg: #ebebeb;
+  --sc-inline-code-border-radius: 4px;
+  --sc-inline-code-padding: 0.15em 4px;
+  --sc-inline-code-font-size: calc(12px * var(--sc-font-scale, 1));
+  --sc-code-block-font-size: calc(14px * var(--sc-font-scale, 1));
+  --sc-code-block-bg: #ffffff;
+  --sc-code-block-border: 1px solid #ebebeb;
+  --sc-code-block-radius: 16px;
+  --sc-frontmatter-bg: #fafafa;
+  --sc-frontmatter-border: 1px solid #e5e5e5;
+  --sc-code-lang-font-size: var(--sc-menu-font-size);
+  --sc-quote-bg: transparent;
+  --sc-quote-text-color: rgba(0, 0, 0, 0.5);
+  --sc-quote-border-color: #ebebeb;
+  --sc-quote-border-radius: 0;
+  --sc-quote-border-width: 4px;
+  --sc-quote-padding: 0 calc(16px * var(--sc-font-scale, 1));
+  --sc-callout-radius: 10px;
+  --sc-md-table-cell-min: 5em;
+  --sc-table-selection-bg: rgba(2, 10, 29, 0.06);
+  --sc-table-selector-bg: #f7f7f7;
+  --sc-table-selector-active-bg: #ebebeb;
+  --sc-table-selector-selected-bg: rgba(0, 136, 255, 0.15);
+  --sc-table-selector-selected-hover-bg: rgba(0, 136, 255, 0.15);
+  --sc-block-gap: calc(12px * var(--sc-font-scale, 1));
+  --sc-block-gap-heading-before: calc(24px * var(--sc-font-scale, 1));
+  --sc-block-gap-heading-after: calc(8px * var(--sc-font-scale, 1));
+  --sc-block-gap-media: calc(12px * var(--sc-font-scale, 1));
+  --sc-block-gap-container: calc(12px * var(--sc-font-scale, 1));
+  --sc-block-gap-separator: calc(20px * var(--sc-font-scale, 1));
+  --sc-block-gap-table-before: calc(12px * var(--sc-font-scale, 1));
+  --sc-block-gap-table-after: calc(12px * var(--sc-font-scale, 1));
+  --sc-block-gap-inner: calc(4px * var(--sc-font-scale, 1));
+  --sc-block-padding-x: calc(16px * var(--sc-font-scale, 1));
+  --sc-block-padding-y: calc(14px * var(--sc-font-scale, 1));
+  --sc-block-radius: 16px;
+  --sc-block-indent: calc(20px * var(--sc-font-scale, 1));
+  --sc-divider-padding: 0;
+  --sc-page-body-padding-bottom: 16px;
+  --sc-page-padding-x: 16px;
+  --sc-menu-icon-color-active: var(--sc-ui-text);
+  --sc-menu-border-color: #e5e5e5;
+  --sc-menu-active-bg: #e5e5e5;
+  --sc-menu-check-color: #00c29a;
+  --sc-menu-separator-color: #e5e5e5;
+  --sc-toc-text-color: rgba(0, 0, 0, 0.6);
+  --sc-toc-hover-bg: rgba(0, 0, 0, 0.06);
+  --sc-toc-active-color: rgba(0, 0, 0, 0.9);
+  --sc-toc-flash-color: transparent;
+}
+:root[data-sc-color-scheme='dark'] .sc-editor[data-sc-mode='markdown'][data-sc-theme] {
+  --sc-text-code: rgba(255, 255, 255, 0.9);
+  --sc-inline-code-bg: rgba(200, 200, 200, 0.15);
+  --sc-code-block-bg: #1e1e1e;
+  --sc-code-block-border: 1px solid rgba(255, 255, 255, 0.12);
+  --sc-frontmatter-bg: #161822;
+  --sc-frontmatter-border: 1px solid rgba(255, 255, 255, 0.08);
+  --sc-quote-bg: transparent;
+  --sc-quote-text-color: rgba(255, 255, 255, 0.5);
+  --sc-quote-border-color: rgba(255, 255, 255, 0.15);
+  --sc-table-selection-bg: #2e2e2e;
+  --sc-table-selector-bg: #252526;
+  --sc-table-selector-active-bg: rgba(255, 255, 255, 0.15);
+  --sc-table-selector-selected-bg: rgba(0, 136, 255, 0.15);
+  --sc-table-selector-selected-hover-bg: rgba(0, 136, 255, 0.15);
+  --sc-link-color: #0088ff;
+  --sc-link-color-hover: #0088ff;
+  --sc-heading-1-color: rgba(255, 255, 255, 0.9);
+  --sc-heading-2-color: rgba(255, 255, 255, 0.9);
+  --sc-heading-3-color: rgba(255, 255, 255, 0.9);
+  --sc-heading-4-color: rgba(255, 255, 255, 0.9);
+  --sc-heading-5-color: rgba(255, 255, 255, 0.9);
+  --sc-heading-6-color: rgba(255, 255, 255, 0.9);
+  --sc-menu-separator-color: #383838;
+  --sc-menu-surface: #242424;
+  --sc-menu-border-color: #383838;
+  --sc-menu-active-bg: #383838;
+  --sc-toc-text-color: rgba(255, 255, 255, 0.7);
+  --sc-toc-hover-bg: rgba(255, 255, 255, 0.1);
+  --sc-toc-active-color: rgba(255, 255, 255, 0.9);
+}
+.sc-editor[data-sc-mode='markdown'] .sc-floating-toolbar[data-toolbar-type='text'] {
+  --sc-menu-surface: #ffffff;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-floating-toolbar-btn.sc-text-btn {
+  font-size: var(--sc-menu-font-size);
+}
+:root[data-sc-color-scheme='dark'] .sc-editor[data-sc-mode='markdown'] .sc-floating-toolbar[data-toolbar-type='text'] {
+  --sc-menu-surface: #2e2e2e;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-link-edit-title {
+  display: none;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-link-edit-input {
+  border-radius: 8px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-link-edit-btn {
+  border-radius: 8px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-link-edit-btn.is-cancel {
+  background: var(--sc-ui-bg);
+  border: 1px solid var(--sc-ui-border);
+  color: var(--sc-ui-text);
+}
+.sc-editor[data-sc-mode='markdown'] .sc-link-edit-input:focus {
+  border-color: #e5e5e5;
+  outline: none;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-link-edit-btn.is-confirm {
+  background: rgba(0, 0, 0, 0.9);
+  color: #ffffff;
+}
+@media (hover: hover) {
+  .sc-editor[data-sc-mode='markdown'] .sc-link-edit-btn.is-confirm:hover {
+    background: rgba(0, 0, 0, 0.75);
+  }
+}
+:root[data-sc-color-scheme='dark'] .sc-editor[data-sc-mode='markdown'] .sc-link-edit-btn.is-confirm {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1f1f1f;
+}
+@media (hover: hover) {
+  :root[data-sc-color-scheme='dark'] .sc-editor[data-sc-mode='markdown'] .sc-link-edit-btn.is-confirm:hover {
+    background: rgba(255, 255, 255, 0.75);
+  }
+}
+:root[data-sc-color-scheme='dark'] .sc-editor[data-sc-mode='markdown'] .sc-link-edit-input {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+:root[data-sc-color-scheme='dark'] .sc-editor[data-sc-mode='markdown'] .sc-link-edit-input:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.sc-editor[data-sc-mode='markdown'] .sc-link-edit-input.is-error,
+.sc-editor[data-sc-mode='markdown'] .sc-link-edit-input.is-error:focus {
+  border-color: var(--sc-ui-danger);
+}
+:root[data-sc-color-scheme='dark'] .sc-editor[data-sc-mode='markdown'] .sc-link-edit-input.is-error,
+:root[data-sc-color-scheme='dark'] .sc-editor[data-sc-mode='markdown'] .sc-link-edit-input.is-error:focus {
+  border-color: var(--sc-ui-danger);
+}
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-header1 {
+  margin-top: 20px;
+  margin-bottom: 16px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-header2 {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-header3 {
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-header4,
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-header5,
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-header6 {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-mark-link {
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-mark-link:hover {
+  color: var(--sc-link-color-hover);
+  text-decoration: underline;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-bulleted_list,
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-numbered_list {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-bulleted_list:has( + .sc-block:not(.sc-block-bulleted_list):not(.sc-block-numbered_list)),
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-numbered_list:has( + .sc-block:not(.sc-block-bulleted_list):not(.sc-block-numbered_list)),
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-bulleted_list:last-child,
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-numbered_list:last-child {
+  margin-bottom: 16px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper .sc-table-content {
+  max-width: 100%;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--sc-border-grey, #ebebeb);
+  table-layout: auto;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table td,
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table th {
+  word-break: break-word;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table td > .sc-block-children,
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table th > .sc-block-children {
+  min-width: var(--sc-md-table-cell-min, 5em);
+}
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table tr:first-child > td > .sc-block-children,
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table tr:first-child > th > .sc-block-children {
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table td,
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table th {
+  border-right: 1px solid var(--sc-border-grey, #ebebeb);
+  border-bottom: 1px solid var(--sc-border-grey, #ebebeb);
+  border-top: none;
+  border-left: none;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table td:last-child,
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table th:last-child {
+  border-right: none;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table tr:last-child > td,
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table tr:last-child > th {
+  border-bottom: none;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table tr:first-child > td,
+.sc-editor[data-sc-mode='markdown'] .sc-table-wrapper table tr:first-child > th {
+  background-color: var(--sc-bg-grey_background, #f7f7f7);
+  font-weight: 600;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-block.sc-block-image {
+  margin-top: 12px;
+  margin-bottom: 20px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-image-frame {
+  gap: 8px;
+}
+.sc-editor[data-sc-mode='markdown'] .sc-image-caption {
+  color: rgba(0, 0, 0, 0.5);
+}
+.sc-editor[data-sc-mode='markdown'] .sc-image-media img {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+/**
+ * Owner Picker —— 项目内处理人选择下拉的共享样式
+ *
+ * 用 `.wb-owner-picker__xxx` 独立命名空间，与 `project-plan-panel__owner-*`、
+ * `project-plan-cell-editor__owner-*` 完全脱钩；视觉对齐但作用域隔离。
+ *
+ * 这套样式同时服务于：
+ *   - 详情弹窗（CollabModal portal 内，trigger 旁向下 / 创建场景向上）
+ *   - 创建抽屉（drawer 内部 absolute / inline）
+ *   - 子待办创建表单（向上展开 portal）
+ *   - GRID 单元格内编辑器（CellEditorShell 已 portal 完毕，本组件走 inline）
+ *
+ * Chrome 仅在 `--portal` / `--inline` 模式下默认自带；调用方只负责给坐标。
+ */
+.wb-owner-picker {
+  width: 240px;
+  padding: 8px;
+  border: 1px solid var(--wb-dropdown-border-color);
+  border-radius: 10px;
+  background: var(--wb-dropdown-bg-color);
+  box-shadow: var(--wb-shadow-message-toolbar);
+  box-sizing: border-box;
+  /* portal 模式：通过 portal 挂到 body，需要 fixed 定位 + 高 z-index 盖住 CollabModal（10010） */
+  /*
+   * inline 模式：直接原地渲染，不画浮层定位。
+   * 使用场景：
+   *   - CellEditorShell 内（Shell 已 fixed + 定位完毕，本组件作为 children 铺满）
+   *   - 未来可能的内嵌场景（如表单字段下方常驻显示）
+   */
+}
+.wb-owner-picker--portal {
+  position: fixed;
+  z-index: 10020;
+}
+.wb-owner-picker--inline {
+  position: relative;
+  width: 100%;
+}
+.wb-owner-picker__search {
+  margin-bottom: 6px;
+}
+.wb-owner-picker__search input {
+  width: 100%;
+  height: 34px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: 1px solid var(--wb-border-card);
+  border-radius: 8px;
+  background: var(--wb-color-bg-input);
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+}
+.wb-owner-picker__search input:focus {
+  border-color: var(--wb-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--wb-border-focus) 14%, transparent);
+}
+.wb-owner-picker__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 180px;
+  overflow: auto;
+  /* 细滚动条：对齐详情弹窗 __owner-list / 项目统一 overlay 观感，
+       覆盖宿主全局 10px 粗滚动条（GRID cell-editor / portal 子待办共用本列表）。 */
+  scrollbar-width: thin;
+  scrollbar-color: var(--wb-scrollbar-thumb) transparent;
+}
+.wb-owner-picker__list::-webkit-scrollbar {
+  width: 4px;
+}
+.wb-owner-picker__list::-webkit-scrollbar-thumb {
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-scrollbar-thumb);
+}
+.wb-owner-picker__list label {
+  flex-shrink: 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  border-radius: 7px;
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.wb-owner-picker__list label:hover {
+  background: var(--wb-bg-hover);
+}
+.wb-owner-picker__list label[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.wb-owner-picker__list input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--wb-color-text-primary);
+  cursor: pointer;
+}
+.wb-owner-picker__empty {
+  padding: 10px 8px;
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  text-align: center;
+}
+.workbuddy-collab .project-plan-panel {
+  /* 隐藏的原生 date input，视觉不可见但 showPicker() 可唤起系统日期选择器。
+     *
+     * 默认锚点在 chip 底部（detail 场景向下展开）。
+     * openDirection='up' 场景由 due-picker.tsx 在 showPicker 前把 input
+     * 临时 fixed 到按钮顶边并拉满视口下方，强制日历向上展开、不遮挡 chip。
+     * 默认（auto）不改锚点：子待办菜单靠 CSS `left:100%` 向右开。
+     */
+}
+.workbuddy-collab .project-plan-panel__due-picker {
+  position: relative;
+}
+.workbuddy-collab .project-plan-panel__due-picker--create {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  overflow: visible;
+}
+.workbuddy-collab .project-plan-panel__due-picker--create .project-plan-panel__create-chip {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.workbuddy-collab .project-plan-panel__due-picker--detail {
+  display: block;
+}
+.workbuddy-collab .project-plan-panel__due-native-input {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+/**
+ * ProjectPlanPriorityPicker 默认样式（picker 自带）
+ *
+ * trigger 形态在右侧栏由 `&__side-row .project-plan-panel__field-picker` 控制，
+ * 这里只给一份「最小自洽」的默认（让非右侧栏调用方也能展示成 chip）。
+ *
+ * 菜单使用 portal 渲染到 body，因此必须用全局选择器（不带嵌套）写菜单样式，
+ * 否则父容器作用域规则不会作用到 body 下的浮层节点上。
+ */
+.project-plan-panel__priority-picker-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.project-plan-panel__priority-picker-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.project-plan-panel__priority-picker-text {
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.project-plan-panel__priority-picker-text--placeholder {
+  color: var(--wb-color-text-tertiary);
+}
+.project-plan-panel__priority-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+  padding: 8px;
+  border: 1px solid var(--wb-dropdown-border-color);
+  border-radius: 10px;
+  background: var(--wb-dropdown-bg-color);
+  box-shadow: var(--wb-shadow-message-toolbar);
+}
+.project-plan-panel__priority-none-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/**
+ * PriorityChip 样式 —— 优先级彩色标签。
+ *
+ * 背景 / 边框 / 文字色由内联 style（tagChipStyle）驱动，这里只管形状 / 尺寸 /
+ * 溢出省略，与 tags chip 视觉对齐。
+ */
+.wb-priority-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/**
+ * ProjectPlanStatusPicker 默认样式（picker 自带）
+ *
+ * 历史背景：picker 的 trigger / chevron 之前完全依赖各调用方（detail-modal /
+ * create-modal / subtodo-create-form / task-transfer-popover）各自写 inline-flex
+ * + align-items 居中。在 drawer 等没有特化样式覆盖的场景下，trigger 用浏览器
+ * 原生 button 的 inline-block 布局，svg icon + 文本 + chevron 三者基线对齐
+ * 视觉偏移（#56172 反馈）。
+ *
+ * 解决：在 picker 自带的 less 里给 trigger 一份**最小化的居中默认**，调用方仍可
+ * 通过 `__create-chip-row` / `__side-row` / `.task-transfer-popover` 等容器作用域
+ * 叠加形状（pill / 圆角等）覆盖，互不影响。
+ */
+.project-plan-panel__status-picker {
+  position: relative;
+  display: inline-flex;
+}
+.project-plan-panel__status-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.project-plan-panel__status-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.project-plan-panel__status-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.project-plan-panel__status-icon {
+  flex: 0 0 auto;
+}
+/**
+ * menu / option 的样式不在这里写：保持各调用方一贯做法——在自己的容器作用域 less
+ * 里给 `.project-plan-panel__status-menu` / `__status-option` 写定位 + chrome。
+ *
+ * 不要在 picker 自带 less 里写"全局兜底" menu 规则，否则会和已有的容器作用域规则
+ * 互相覆盖（依赖 css 加载顺序），出现新调用方写法不一致就翻车（#56172）。
+ *
+ * 真正的不一致用法（如 portal）应该改回 inline 模式，与其他调用方对齐。
+ */
+/**
+ * ProjectPlanTagsPicker 样式
+ *
+ * detail 变体：空态用 trigger 按钮（与 priority picker 对齐），非空态用 chip + 加号按钮。
+ * create 变体：保持原有 chip 触发器形态。
+ *
+ * 菜单使用 portal，故菜单样式必须写到根级选择器。
+ */
+.project-plan-panel__tags-picker-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.project-plan-panel__tags-picker-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.project-plan-panel__tags-area {
+  display: flex;
+  flex: 1 1 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.project-plan-panel__tags-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  cursor: pointer;
+}
+.project-plan-panel__tags-chip:hover:not(:disabled) {
+  background: var(--wb-bg-secondary);
+  border-color: var(--wb-border-default);
+}
+.project-plan-panel__tags-chip:disabled {
+  cursor: default;
+}
+.project-plan-panel__tags-chip--more {
+  flex-shrink: 0;
+  max-width: none;
+  color: var(--wb-color-text-tertiary);
+}
+.project-plan-panel__tags-chip-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.project-plan-panel__tags-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 100px;
+  background: transparent;
+  color: var(--wb-color-text-tertiary);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.project-plan-panel__tags-add-btn:hover {
+  background: var(--wb-bg-secondary);
+  color: var(--wb-color-text-primary);
+}
+.project-plan-panel__tags-picker-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 400;
+  text-align: left;
+}
+.project-plan-panel__tags-picker-text--placeholder {
+  color: var(--wb-color-text-tertiary);
+}
+.project-plan-panel__tags-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  max-width: 320px;
+  padding: 8px;
+  border: 1px solid var(--wb-dropdown-border-color);
+  border-radius: 10px;
+  background: var(--wb-dropdown-bg-color);
+  box-shadow: var(--wb-shadow-message-toolbar);
+}
+.project-plan-panel__tags-search input {
+  width: 100%;
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 1px solid var(--wb-border-input);
+  border-radius: 8px;
+  background: var(--wb-bg-popover);
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+}
+.project-plan-panel__tags-search input:hover {
+  border-color: var(--wb-color-border-primary);
+}
+.project-plan-panel__tags-search input:focus {
+  border-color: var(--wb-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--wb-color-border-secondary) 14%, transparent);
+}
+.project-plan-panel__tags-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--wb-scrollbar-thumb) transparent;
+}
+.project-plan-panel__tags-list::-webkit-scrollbar {
+  width: 4px;
+}
+.project-plan-panel__tags-list::-webkit-scrollbar-thumb {
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-scrollbar-thumb);
+}
+.project-plan-panel__tags-option {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 4px 0 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+.project-plan-panel__tags-option:hover:not(.project-plan-panel__tags-option--disabled) {
+  background: var(--wb-bg-hover);
+}
+.project-plan-panel__tags-option--active {
+  color: var(--wb-brand-primary);
+  font-weight: 600;
+}
+.project-plan-panel__tags-option--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.project-plan-panel__tags-option--editing {
+  cursor: default;
+  padding-right: 8px;
+}
+.project-plan-panel__tags-option--editing:hover {
+  background: transparent;
+}
+.project-plan-panel__tags-option-check {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-info);
+}
+.project-plan-panel__tags-option-chip {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.project-plan-panel__tags-empty {
+  padding: 12px 8px;
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  text-align: center;
+}
+.project-plan-panel__tags-option-more-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wb-color-text-tertiary);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.12s ease, background-color 0.12s ease;
+}
+.project-plan-panel__tags-option:hover .project-plan-panel__tags-option-more-btn,
+.project-plan-panel__tags-option-more-btn:focus-visible {
+  opacity: 1;
+}
+.project-plan-panel__tags-option-more-btn:hover {
+  background: var(--cb-hover-bg);
+  color: var(--wb-color-text-primary);
+}
+.project-plan-panel__tags-option-more-btn svg {
+  width: 18px;
+  height: 18px;
+}
+.project-plan-panel__tags-option-more-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 120px;
+  padding: 4px;
+  border: 1px solid var(--wb-dropdown-border-color);
+  border-radius: 8px;
+  background: var(--wb-dropdown-bg-color);
+  box-shadow: var(--wb-shadow-message-toolbar);
+}
+.project-plan-panel__tags-option-more-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.project-plan-panel__tags-option-more-item svg {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+}
+.project-plan-panel__tags-option-more-item:hover {
+  background: var(--wb-bg-hover);
+}
+.project-plan-panel__tags-option-more-item--danger {
+  color: var(--wb-status-error);
+}
+.project-plan-panel__tags-option-more-item--danger:hover {
+  background: color-mix(in srgb, var(--wb-status-error) 12%, var(--wb-bg-hover));
+}
+.project-plan-panel__tags-option-edit-input {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 22px;
+  box-sizing: border-box;
+  padding: 0 6px;
+  border: 1px solid var(--wb-border);
+  border-radius: 5px;
+  background: var(--cb-vscode-editor-background);
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  outline: none;
+}
+.project-plan-panel__tags-option-edit-input:focus {
+  border-color: var(--cb-info);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cb-info) 14%, transparent);
+}
+.project-plan-panel__tags-create {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 10px;
+  margin-top: 2px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--wb-bg-hover);
+  color: var(--wb-brand-primary);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.project-plan-panel__tags-create > span:last-child {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.project-plan-panel__tags-create:hover {
+  background: color-mix(in srgb, var(--wb-brand-primary) 12%, var(--wb-bg-hover));
+}
+.project-plan-panel__tags-create:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.project-plan-panel__tags-edit-row {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.project-plan-panel__tags-create-palette {
+  margin-top: 8px;
+  padding: 0 2px;
+}
+.project-plan-panel__tags-edit-swatch-btn {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: box-shadow 0.12s ease;
+}
+.project-plan-panel__tags-edit-swatch-btn:hover,
+.project-plan-panel__tags-edit-swatch-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cb-info) 24%, transparent);
+}
+.project-plan-panel__tags-edit-palette-pop {
+  padding: 8px;
+  border: 1px solid var(--wb-dropdown-border-color);
+  border-radius: 10px;
+  background: var(--wb-dropdown-bg-color);
+  box-shadow: var(--wb-shadow-message-toolbar);
+}
+.project-plan-panel__tags-create-area {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2px;
+}
+.project-plan-panel__tags-create-swatch {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid var(--wb-color-border-secondary);
+}

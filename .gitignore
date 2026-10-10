@@ -1,0 +1,11 @@
+node_modules/
+.breezell/
+# 抓包/日志/缓存（可能含令牌样本，不入库）
+re/cap-*.jsonl
+re/hook-traffic.jsonl
+re/*.state
+re/fresh_token.txt
+re/*.out
+re/*.log
+re/__pycache__/
+re/buildkey.json

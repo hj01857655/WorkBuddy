@@ -1,0 +1,16 @@
+{
+  "id": "global-search",
+  "name": "全局搜索",
+  "version": "0.0.1",
+  "description": "全局搜索 —— 独立操作系统窗口，跨任务/空间/项目/产物检索并跳转定位。",
+  "kind": "builtin",
+  "permissions": ["*"],
+
+  "ui": {
+    "entry": {
+      "title": "搜索",
+      "icon": "./assets/icon.svg",
+      "url": "./ui/assets/remoteEntry.js"
+    }
+  }
+}

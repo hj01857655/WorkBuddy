@@ -1,0 +1,802 @@
+/**
+ * Account Panel 样式
+ * 卡片视觉与 Settings V2 的 account / usage 面板保持一致。
+ */
+.account-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-5);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.account-panel__header,
+.account-panel__not-logged-in,
+.account-panel__credits-section,
+.account-panel__location-list {
+  background: var(--wb-bg-primary);
+  border: none;
+  border-radius: var(--wb-radius-xl);
+}
+.account-panel__header {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-4);
+  min-height: 64px;
+  padding: var(--wb-spacing-4) var(--wb-spacing-5);
+  box-sizing: border-box;
+  contain: layout style;
+}
+.account-panel__avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background: var(--wb-bg-tertiary);
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+.account-panel__avatar img {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+.account-panel__avatar .ambassador-avatar-wrapper {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 50%;
+  display: flex;
+}
+.account-panel__avatar .ambassador-avatar-wrapper .account-panel__avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wb-bg-tertiary);
+}
+.account-panel__avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--wb-color-text-primary);
+}
+.account-panel__user-info {
+  flex: 1;
+  min-width: 0;
+  min-height: 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.account-panel__username {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-3);
+  min-height: 18px;
+  margin-bottom: var(--wb-spacing-1);
+  overflow: hidden;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 500;
+  line-height: var(--wb-font-body-line-height);
+  white-space: nowrap;
+}
+.account-panel__username-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.account-panel__nickname-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--cb-text-secondary, #858699);
+  cursor: pointer;
+}
+.account-panel__nickname-edit:hover {
+  background: var(--cb-vscode-toolbar-hoverBackground, #3c3c3c);
+  color: var(--cb-text-primary, #d2d3e0);
+}
+.account-panel__nickname-editor {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.account-panel__nickname-input {
+  width: 180px;
+  height: 26px;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1px solid var(--cb-vscode-widget-border, #414141);
+  border-radius: 4px;
+  background: var(--vscode-input-background, transparent);
+  color: var(--cb-text-primary, #d2d3e0);
+  font-size: 12px;
+  outline: none;
+}
+.account-panel__nickname-input:focus {
+  border-color: var(--cb-focus-border, #6c4dff);
+}
+.account-panel__nickname-input--error {
+  border-color: var(--cb-error-foreground, #ee5757);
+}
+.account-panel__nickname-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.account-panel__nickname-action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.account-panel__nickname-action:disabled:hover {
+  background: transparent;
+}
+.account-panel__nickname-action--confirm {
+  color: var(--wb-color-text-success-default, #00b386);
+}
+.account-panel__nickname-action--confirm:hover:not(:disabled) {
+  background: var(--wb-bg-success-soft, #d8f3ec);
+}
+.account-panel__nickname-action--cancel {
+  color: var(--wb-color-text-tertiary, #8f959e);
+}
+.account-panel__nickname-action--cancel:hover:not(:disabled) {
+  background: var(--wb-color-bg-primary-hover, #f2f3f5);
+}
+.account-panel__nickname-error {
+  margin-top: 2px;
+  color: var(--cb-error-foreground, #ee5757);
+  font-size: 12px;
+  line-height: 16px;
+}
+.account-panel__email {
+  min-height: 18px;
+  overflow: hidden;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-panel__badge {
+  flex: 0 0 auto;
+}
+.account-panel__badge-slot {
+  display: inline-flex;
+  align-items: center;
+  min-width: 48px;
+  height: 18px;
+  flex: 0 0 48px;
+}
+.account-panel__manage-link {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--wb-spacing-2);
+  height: 32px;
+  padding: 0 var(--wb-spacing-4);
+  border: none;
+  border-radius: var(--wb-radius-lg);
+  background: var(--wb-bg-secondary);
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.account-panel__manage-link:hover {
+  background: var(--wb-bg-hover);
+}
+.account-panel__manage-link svg {
+  flex-shrink: 0;
+}
+.account-panel__loading {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--wb-color-text-secondary);
+}
+.account-panel__not-logged-in {
+  padding: var(--wb-spacing-8) var(--wb-spacing-6);
+  text-align: center;
+}
+.account-panel__not-logged-in p {
+  margin: 0 0 16px 0;
+  color: var(--wb-color-text-secondary);
+}
+.account-panel__login-btn {
+  height: 36px;
+  padding: 0 var(--wb-spacing-7);
+  background: var(--wb-color-text-primary);
+  border: none;
+  border-radius: var(--wb-radius-lg);
+  color: var(--wb-bg-primary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.account-panel__login-btn:hover {
+  background: var(--wb-color-text-secondary);
+}
+.account-panel__credits-section {
+  min-height: 184px;
+  padding: var(--wb-spacing-4) var(--wb-spacing-5);
+  box-sizing: border-box;
+  contain: layout style;
+}
+.account-panel__member-placeholder {
+  min-height: 160px;
+}
+.account-panel__placeholder-line {
+  border-radius: var(--wb-radius-sm);
+  background: color-mix(in srgb, var(--wb-color-text-primary) 8%, transparent);
+}
+.account-panel__placeholder-line--title {
+  width: 72px;
+  height: 20px;
+}
+.account-panel__placeholder-line--content {
+  width: 220px;
+  height: 28px;
+  margin: 18px 0;
+}
+.account-panel__placeholder-line--warning {
+  width: min(360px, 70%);
+  height: 36px;
+  margin-bottom: 14px;
+}
+.account-panel__edition-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wb-spacing-4);
+  min-height: 24px;
+}
+.account-panel__edition-label {
+  min-width: 0;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 500;
+  line-height: var(--wb-font-body-line-height);
+  overflow-wrap: anywhere;
+}
+.account-panel__edition-expiry {
+  margin-top: var(--wb-spacing-2);
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+  overflow-wrap: anywhere;
+}
+.account-panel__credits-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--wb-spacing-3);
+  min-height: 34px;
+}
+.account-panel__credits-label {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: var(--wb-spacing-3);
+  min-width: 0;
+  min-height: 28px;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+}
+.account-panel__credits-label svg {
+  color: var(--wb-color-text-secondary);
+}
+.account-panel__credits-value {
+  display: flex;
+  align-items: center;
+  flex-shrink: 1;
+  gap: var(--wb-spacing-2);
+  min-width: 0;
+  min-height: 28px;
+  font-variant-numeric: tabular-nums;
+}
+.account-panel__credits-number {
+  min-width: 92px;
+  color: var(--wb-color-text-primary);
+  font-family: 'DIN Alternate', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+.account-panel__credits-number--low {
+  color: var(--wb-text-danger);
+}
+.account-panel__credits-number--failed,
+.account-panel__credits-number--loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+  font-size: var(--wb-font-body-size);
+  font-weight: 500;
+}
+.account-panel__credits-number--failed {
+  color: var(--wb-color-text-primary);
+}
+.account-panel__credits-number--failed svg {
+  color: var(--wb-text-danger);
+}
+.account-panel__credits-number--loading {
+  color: var(--wb-color-text-secondary);
+}
+.account-panel__credits-number-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--wb-spacing-3);
+  min-width: 0;
+}
+.account-panel__credits-stale-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--wb-spacing-1) var(--wb-spacing-2);
+  border-radius: var(--wb-radius-sm);
+  background-color: var(--wb-status-warning-soft);
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-caption-size);
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.account-panel__credits-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-4);
+  margin: var(--wb-spacing-4) 0;
+  padding: var(--wb-spacing-4);
+  border-radius: var(--wb-radius-md);
+  background-color: var(--wb-status-warning-soft);
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-caption-size);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.account-panel__credits-warning svg {
+  flex-shrink: 0;
+  color: var(--wb-status-warning);
+}
+.account-panel__credits-warning--fetch-failed {
+  background-color: var(--wb-status-error-soft);
+}
+.account-panel__credits-warning--fetch-failed svg {
+  color: var(--wb-text-danger);
+}
+.account-panel__credits-warning--clickable {
+  cursor: pointer;
+  transition: background-color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.account-panel__credits-warning--clickable:hover {
+  background-color: color-mix(in srgb, var(--wb-status-warning) 18%, transparent);
+}
+.account-panel__credits-warning-text {
+  min-width: 0;
+}
+.account-panel__credits-warning-link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.account-panel__credits-hint {
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+}
+.account-panel__view-details-btn {
+  min-width: 64px;
+  height: 28px;
+  margin-left: var(--wb-spacing-4);
+  padding: 0 var(--wb-spacing-4);
+  border: none;
+  border-radius: var(--wb-radius-md);
+  background-color: var(--wb-bg-secondary);
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-caption-size);
+  cursor: pointer;
+  transition: background-color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.account-panel__view-details-btn:hover {
+  background-color: var(--wb-bg-hover);
+}
+.account-panel__enterprise-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+.account-panel__enterprise-contact {
+  font-size: 12px;
+  color: var(--wb-color-text-secondary);
+}
+.account-panel__plan-divider {
+  height: 1px;
+  margin: var(--wb-spacing-4) 0;
+  background-color: var(--wb-border-subtle);
+}
+.account-panel__plan-card {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--wb-spacing-5);
+  min-height: 62px;
+  padding: var(--wb-spacing-4) 0;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--wb-border-subtle);
+}
+.account-panel__plan-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.account-panel__plan-info {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--wb-spacing-2);
+  min-width: 0;
+}
+.account-panel__plan-name {
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.account-panel__plan-date {
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  overflow-wrap: anywhere;
+}
+.account-panel__plan-usage {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--wb-spacing-2);
+  min-width: 104px;
+}
+.account-panel__plan-usage-row {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-3);
+}
+.account-panel__plan-usage-label {
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+}
+.account-panel__plan-usage-value {
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-caption-size);
+}
+.account-panel__plan-usage-value--highlight {
+  font-weight: 600;
+}
+.account-panel__plan-usage-value--low {
+  color: var(--wb-text-danger);
+}
+.account-panel__details {
+  display: flex;
+  flex-direction: column;
+}
+.account-panel__info-row {
+  display: flex;
+  align-items: center;
+  padding: var(--wb-spacing-4) 0;
+  border-bottom: 1px solid var(--wb-border-subtle);
+}
+.account-panel__info-row:last-child {
+  border-bottom: none;
+}
+.account-panel__info-label {
+  width: 140px;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+}
+.account-panel__info-value {
+  flex: 1;
+  min-width: 0;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-caption-size);
+  overflow-wrap: anywhere;
+}
+.account-panel__actions-footer {
+  width: 100%;
+}
+.account-panel__sign-out {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--wb-spacing-5);
+  border: none;
+  border-radius: var(--wb-radius-xl);
+  background: var(--wb-bg-secondary);
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.account-panel__sign-out:hover {
+  background: var(--wb-bg-hover);
+}
+.account-panel__location-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-spacing-3);
+}
+.account-panel__location-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.account-panel__location-title {
+  padding-left: var(--wb-spacing-3);
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 400;
+  line-height: var(--wb-font-body-line-height);
+}
+.account-panel__location-subtitle {
+  padding-left: var(--wb-spacing-3);
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.account-panel__location-list {
+  overflow: hidden;
+}
+.account-panel__location-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wb-spacing-4);
+  padding: var(--wb-spacing-4) var(--wb-spacing-5);
+  border-bottom: 1px solid var(--wb-border-subtle);
+}
+.account-panel__location-row:last-of-type {
+  border-bottom: none;
+}
+.account-panel__location-info {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--wb-spacing-1);
+  min-width: 0;
+}
+.account-panel__location-name {
+  font-size: var(--wb-font-body-size);
+  font-weight: 500;
+  color: var(--wb-color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-panel__location-contact {
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+  color: var(--wb-color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-panel__location-actions {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: var(--wb-spacing-3);
+}
+.account-panel__location-default-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--wb-spacing-1) var(--wb-spacing-3);
+  border-radius: var(--wb-radius-full);
+  background: var(--wb-bg-secondary);
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: 18px;
+  white-space: nowrap;
+}
+.account-panel__location-set-default-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: 18px;
+  cursor: pointer;
+  transition: color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+  white-space: nowrap;
+}
+.account-panel__location-set-default-btn:hover {
+  color: var(--wb-color-text-primary);
+}
+.account-panel__location-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--wb-radius-sm);
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  transition: background var(--wb-motion-duration-fast) var(--wb-motion-easing-standard), color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.account-panel__location-icon-btn:hover {
+  background: var(--wb-bg-tertiary);
+  color: var(--wb-color-text-primary);
+}
+.account-panel__location-icon-btn--danger:hover {
+  background: var(--wb-status-error-soft);
+  color: var(--wb-text-danger);
+}
+.account-panel__location-empty-row {
+  padding: var(--wb-spacing-4) var(--wb-spacing-5);
+  border-bottom: 1px solid var(--wb-border-subtle);
+}
+.account-panel__location-empty {
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+}
+.account-panel__location-add-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--wb-spacing-3) var(--wb-spacing-5);
+  border: none;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.account-panel__location-add-row:hover {
+  color: var(--wb-color-text-primary);
+}
+@media (max-width: 720px) {
+  .account-panel {
+    gap: var(--wb-spacing-4);
+  }
+  .account-panel__header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: var(--wb-spacing-4);
+  }
+  .account-panel__user-info {
+    flex: 1 1 calc(100% - 52px);
+  }
+  .account-panel__manage-link {
+    justify-content: center;
+    width: 100%;
+    margin-left: 0;
+  }
+  .account-panel__credits-section {
+    padding: var(--wb-spacing-4);
+  }
+  .account-panel__edition-header,
+  .account-panel__credits-value,
+  .account-panel__credits-number-wrapper,
+  .account-panel__location-actions {
+    flex-wrap: wrap;
+  }
+  .account-panel__credits-value {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .account-panel__credits-number {
+    min-width: 0;
+  }
+  .account-panel__credits-warning {
+    align-items: flex-start;
+  }
+  .account-panel__plan-card {
+    flex-direction: column;
+  }
+  .account-panel__plan-usage {
+    align-items: stretch;
+    width: 100%;
+  }
+  .account-panel__plan-usage-row {
+    justify-content: space-between;
+  }
+  .account-panel__location-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .account-panel__location-actions {
+    justify-content: flex-end;
+    width: 100%;
+  }
+}
+/**
+ * LocationEditModal 内容区（设计稿 475:3047）
+ * 布局：左标签右值两栏，行间 border-bottom 分隔（与 PoiLocationFormCard 对齐）
+ */
+.poi-location-modal {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.poi-location-modal__banner {
+  margin-bottom: 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--wb-status-error-soft);
+  color: var(--wb-status-error);
+  font-size: 12px;
+  line-height: 18px;
+}
+.poi-location-modal__field {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+}
+.poi-location-modal__field > .wb-cascader,
+.poi-location-modal__field > .wb-input,
+.poi-location-modal__field > .wb-input-wrapper,
+.poi-location-modal__field > .poi-location-modal__field-value {
+  flex: 1;
+  min-width: 0;
+}
+.poi-location-modal__label {
+  flex-shrink: 0;
+  width: 70px;
+  padding-top: 6px;
+  color: var(--wb-color-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+.poi-location-modal__field-value {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.poi-location-modal__field-value > .wb-input,
+.poi-location-modal__field-value > .wb-input-wrapper {
+  width: 100%;
+}
+.poi-location-modal__error {
+  color: var(--wb-status-error);
+  font-size: 12px;
+  line-height: 17px;
+}

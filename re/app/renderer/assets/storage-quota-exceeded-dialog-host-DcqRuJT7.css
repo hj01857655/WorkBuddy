@@ -1,0 +1,25 @@
+/**
+ * StorageQuotaExceededDialogHost 样式
+ *
+ * 仅有一处 —— 遮罩 z-index 跨系统抬升。
+ *
+ * ⚠️ 特例说明（务必读完再改，不要照抄到普通弹窗）：
+ * 超容弹窗（20010）会在「产物分享弹窗」流程中被触发（分享到知识空间命中容量超限，
+ * 见 use-share-file.ts）。而产物分享弹窗是老 cb-chat-ui 系的静态 CSS 浮层，overlay
+ * 固定 z-index = var(--cb-z-index-modal-confirm)（真实值 100001，其内部二级确认遮罩
+ * 100005），**不参与** wb-components 的 useFloatingLayer LIFO 栈。
+ *
+ * 本弹窗用的是 wb-components Modal（走 useFloatingLayer，base 1100），运行时分配值远低于
+ * 100001，因此被分享弹窗盖住。这属于「wb 栈内浮层要盖住一个不在 wb 栈里的老浮层」的
+ * 跨系统场景 —— 无法通过 LIFO 栈自然解决（两套体系互不感知）。
+ *
+ * 合规做法（对齐 agent-ui 规则 R7「禁止写死魔法数字 z-index」）：
+ * 不凭空写数字，而是**复用**分享弹窗那套既有的最高档语义 token
+ * `--cb-z-index-modal-confirm`，在其之上 +5，稳定盖过分享弹窗本体(100001)与其二级遮罩(100005)。
+ * overlay 的 z-index 是 wb Modal 内联 style（优先级最高），必须 !important 才能覆盖。
+ *
+ * 治本方向（后续可选）：让产物分享弹窗也接入 useFloatingLayer，两弹窗同栈后本覆盖即可删除。
+ */
+.storage-quota-modal-overlay {
+  z-index: calc(var(--cb-z-index-modal-confirm, 100001) + 5) !important;
+}

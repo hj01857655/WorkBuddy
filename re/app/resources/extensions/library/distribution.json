@@ -1,0 +1,22 @@
+{
+  "$schema": "https://schemas.workbuddy.ai/extension-distribution.v1.json",
+  "extensionId": "library",
+  "version": "0.0.1",
+  "kind": "builtin",
+  "grantedPermissions": [
+    "*"
+  ],
+  "trustedUrls": [
+    "https://www.workbuddy.cn/space"
+  ],
+  "processPolicy": {
+    "server": null,
+    "renderer": null
+  },
+  "rollout": {
+    "strategy": "full",
+    "percentage": 100
+  },
+  "status": "active",
+  "resident": true
+}

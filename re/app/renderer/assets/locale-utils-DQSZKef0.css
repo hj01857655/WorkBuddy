@@ -1,0 +1,66 @@
+/* ExpandableText — 设计稿锁定项见 expandable-text.tsx 头注释（ardot 220:161 / 220:178） */
+.expandable-text {
+  position: relative;
+  min-width: 0;
+  /* 设计稿：正文 12px Regular、行高 20px、text-secondary */
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-line-height-5);
+  font-weight: var(--wb-font-caption-weight);
+  color: var(--wb-color-text-secondary);
+  /* 隐藏测量元素：单行固有宽度与容器宽度对比判定溢出，不参与布局 */
+  /* 设计稿：「展开」按钮前 20px 文字渐变淡出。
+       用 mask 而非底色渐变，hover 底 / dark 主题下均安全 */
+}
+.expandable-text__measurer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.expandable-text__row {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+  min-width: 0;
+}
+.expandable-text__content {
+  margin: 0;
+  word-break: break-word;
+}
+.expandable-text__content.is-clamped {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.expandable-text__content.is-expanded {
+  white-space: pre-wrap;
+}
+.expandable-text__row.has-toggle .expandable-text__content.is-clamped {
+  mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent 100%);
+}
+.expandable-text__toggle {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+  /* 设计稿：按钮文字黑 50% */
+  color: var(--wb-color-text-tertiary);
+  font-weight: var(--wb-font-weight-400);
+  font-size: var(--wb-font-caption-size);
+  /* 展开态：跟在文本末尾同行 */
+}
+.expandable-text__toggle:hover {
+  color: var(--wb-color-text-secondary);
+}
+.expandable-text__toggle.is-inline {
+  margin-left: var(--wb-spacing-3);
+}

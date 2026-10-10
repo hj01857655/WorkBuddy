@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WorkBuddy</title>
+  <!--
+    首屏 account snapshot 早期消费（inline IIFE，parse 即执行）：
+    - 主进程 loadFile 通过 ?accountSnapshot=<encoded> 注入上一次登录快照
+    - 这里立即解出并挂到 window.__initialAccount，供 main.tsx 顶部同步调用
+      accountService.setAccount(...)，让骨架屏拆除逻辑跳过等 daemon getAccount(≈2.6s) 的窗口
+    - 契约来自 packages/workbuddy-app/src/shared/account-snapshot.ts；
+      为压体积不 import，query key / window key / version 硬编码，改契约时**必须**
+      同步这里（尤其 ACCOUNT_SNAPSHOT_VERSION —— 若写侧写入新版但这里仍拒收旧版，
+      account 快 hydrate 会失效，且产品配置 IIFE 依赖 __initialAccount 做 scope 校验，
+      两条冷启动快路径会同时熄火）。
+    - 解析失败 / 无 query 一律 no-op；不影响正常 getAccount 流程
+  -->
+  <script>
+    (function () {
+      try {
+        var raw = new URLSearchParams(location.search).get('accountSnapshot');
+        if (!raw) { return; }
+        var snapshot = JSON.parse(decodeURIComponent(raw));
+        if (snapshot && snapshot.version === 1 && typeof snapshot.uid === 'string' && snapshot.uid) {
+          window.__initialAccount = snapshot;
+        }
+      } catch (e) { /* silent */ }
+    })();
+  </script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body,
+    #root {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Base body styles — match VS Code theme-injection.ts + online WorkBuddy
+     *
+     * 背景兜底刻意**不跟随** prefers-color-scheme：WorkBuddy 的默认主题是 IDE Light，
+     * 且皮肤（个性主题）与系统明暗完全解耦。跟随系统会让「Windows 系统深色 + 用户实际用
+     * 浅色皮肤」的组合在骨架屏拆除到皮肤 CSS 生效之间闪一帧 #1e1e1e 深色 #93057。
+     * 真正的明暗由 ThemeManager / skin-manager 在 module 执行期同步写 class 决定。
+     */
+    html { background-color: #ffffff; }
+    body {
+      background-color: var(--vscode-editor-background, inherit);
+      color: var(--vscode-editor-foreground, #3b3b3b);
+      font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif);
+      font-size: var(--vscode-font-size, 13px);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Light theme: supplement missing font variables */
+    body[data-vscode-theme-name="IDE Light"] {
+      --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      --vscode-font-size: 13px;
+      --vscode-editor-font-family: Menlo, Monaco, "Courier New", monospace;
+      --vscode-editor-font-size: 14px;
+    }
+
+    /* Scrollbar styles */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--vscode-scrollbarSlider-background, rgba(100, 100, 100, 0.4));
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--vscode-scrollbarSlider-hoverBackground, rgba(100, 100, 100, 0.7));
+    }
+
+    ::-webkit-scrollbar-thumb:active {
+      background-color: var(--vscode-scrollbarSlider-activeBackground, rgba(0, 0, 0, 0.6));
+    }
+
+    /* === Skeleton Screen Styles（参照真实 UI 布局） === */
+    :root {
+      --sk-bg: #ffffff;
+      --sk-titlebar-bg: #f5f5f5;
+      --sk-sidebar-bg: #f7f7f8;
+      --sk-content-bg: #ffffff;
+      --sk-statusbar-bg: #f8f8f8;
+      --sk-titlebar-h: 38px;
+      --sk-sidebar-w: 220px;
+      --sk-statusbar-h: 22px;
+      --sk-shimmer-color: rgba(0, 0, 0, 0.04);
+      --sk-text-placeholder: rgba(0, 0, 0, 0.06);
+      --sk-border-color: rgba(0, 0, 0, 0.06);
+    }
+
+    #skeleton-root {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-color: var(--sk-bg);
+    }
+
+    /* 设置独立窗首屏：HTML parse 后即可绘制，不等待 SDK / i18n / React bundle。
+       它不是设置内容骨架，只提供稳定底色、可拖拽区和轻量加载反馈。 */
+    #skeleton-root.sk-settings-loading {
+      background: var(--wb-bg-secondary, var(--wb-color-bg-primary, #ffffff));
+      color-scheme: light;
+    }
+
+    .sk-settings-titlebar {
+      -webkit-app-region: drag;
+      align-items: center;
+      display: flex;
+      flex: 0 0 32px;
+      justify-content: flex-end;
+      min-height: 32px;
+      padding: 0 8px;
+    }
+
+    .sk-settings-close {
+      -webkit-app-region: no-drag;
+      align-items: center;
+      background: transparent;
+      border: 0;
+      border-radius: var(--wb-radius-2, 6px);
+      color: var(--wb-color-text-secondary, #646a73);
+      cursor: pointer;
+      display: inline-flex;
+      font: 18px/1 sans-serif;
+      height: 24px;
+      justify-content: center;
+      padding: 0;
+      width: 24px;
+    }
+
+    .sk-settings-close:hover {
+      background: var(--wb-color-fill-hover, rgba(0, 0, 0, 0.06));
+    }
+
+    .sk-settings-loading-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      padding: 20px 8px;
+    }
+
+    .sk-settings-loading-nav {
+      box-sizing: border-box;
+      display: flex;
+      flex: 0 0 200px;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 12px;
+    }
+
+    .sk-settings-loading-content {
+      box-sizing: border-box;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+      padding: 0 12px;
+    }
+
+    .sk-settings-loading-line,
+    .sk-settings-loading-card {
+      animation: sk-settings-pulse 1.2s ease-in-out infinite alternate;
+      background: var(--wb-color-fill-secondary, rgba(0, 0, 0, 0.055));
+      border-radius: var(--wb-radius-2, 6px);
+    }
+
+    .sk-settings-loading-line {
+      height: 26px;
+      width: 88%;
+    }
+
+    .sk-settings-loading-line:first-child {
+      height: 26px;
+      margin-bottom: 8px;
+      width: 42%;
+    }
+
+    .sk-settings-loading-nav .sk-settings-loading-line:first-child {
+      height: 26px;
+      margin-bottom: 10px;
+      width: 42%;
+    }
+
+    .sk-settings-loading-card {
+      height: 72px;
+      width: 100%;
+    }
+
+    @keyframes sk-settings-pulse {
+      from { opacity: 0.55; }
+      to { opacity: 1; }
+    }
+
+    #skeleton-root.sk-settings-loading--dark {
+      background: var(--wb-bg-secondary, var(--wb-color-bg-primary, #1f1f1f));
+      color-scheme: dark;
+    }
+
+    .sk-settings-loading--dark .sk-settings-close {
+      color: var(--wb-color-text-secondary, #b7bac0);
+    }
+
+    .sk-settings-loading--dark .sk-settings-close:hover {
+      background: var(--wb-color-fill-hover, rgba(255, 255, 255, 0.08));
+    }
+
+    .sk-settings-loading--dark .sk-settings-loading-line,
+    .sk-settings-loading--dark .sk-settings-loading-card {
+      background: var(--wb-color-fill-secondary, rgba(255, 255, 255, 0.08));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sk-settings-loading-line,
+      .sk-settings-loading-card {
+        animation: none;
+      }
+    }
+
+    /* 全局搜索独立窗首屏（800×640 命令面板）：HTML parse 后即绘制，
+       版式对齐 GlobalSearchPanel（顶部 titlebar + 搜索输入框占位 + 空态 spinner），
+       避免沿用主窗 sidebar+content 骨架在小窗里挤成畸形。 */
+    #skeleton-root.sk-global-search-loading {
+      background: var(--wb-bg-content, #ffffff);
+      color-scheme: light;
+    }
+
+    .sk-global-search-titlebar {
+      -webkit-app-region: drag;
+      flex: 0 0 20px;
+      height: 20px;
+    }
+
+    .sk-global-search-input {
+      -webkit-app-region: no-drag;
+      align-self: center;
+      background: rgba(0, 0, 0, 0.04);
+      border-radius: 8px;
+      flex: 0 0 40px;
+      height: 40px;
+      margin: 8px 16px 0;
+      width: calc(100% - 32px);
+    }
+
+    .sk-global-search-body {
+      align-items: center;
+      display: flex;
+      flex: 1;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .sk-global-search-spinner {
+      animation: sk-spin 0.8s linear infinite;
+      border: 2px solid rgba(0, 0, 0, 0.12);
+      border-radius: 50%;
+      border-top-color: #646a73;
+      height: 20px;
+      width: 20px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #skeleton-root.sk-global-search-loading {
+        background: var(--wb-bg-content, #1f1f1f);
+        color-scheme: dark;
+      }
+
+      .sk-global-search-input {
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .sk-global-search-spinner {
+        border-color: rgba(255, 255, 255, 0.16);
+        border-top-color: #b7bac0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sk-global-search-spinner {
+        animation: none;
+      }
+    }
+
+    /* 骨架 titlebar 需要 drag，否则 Windows/Linux(frame:false) 骨架存活期间窗口无法拖动。
+       macOS hiddenInset 兼容：__removeSkeleton 中先清除 drag 再删除元素，避免重算异常。 */
+    .sk-titlebar {
+      height: var(--sk-titlebar-h);
+      background-color: var(--sk-titlebar-bg);
+      flex-shrink: 0;
+      -webkit-app-region: drag;
+    }
+
+    .sk-body { display: flex; flex: 1; min-height: 0; }
+
+    .sk-sidebar {
+      width: var(--sk-sidebar-w);
+      background-color: var(--sk-sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      padding: 12px 10px;
+      gap: 4px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--sk-border-color);
+    }
+
+    .sk-sidebar-btn { height: 36px; border-radius: 8px; background-color: var(--sk-text-placeholder); margin-bottom: 8px; }
+    .sk-sidebar-item { height: 28px; border-radius: 6px; }
+    .sk-sidebar-section { height: 20px; width: 60%; border-radius: 4px; background-color: var(--sk-text-placeholder); margin-top: 16px; margin-bottom: 4px; }
+    .sk-sidebar-chat { height: 24px; border-radius: 4px; background-color: var(--sk-text-placeholder); width: 85%; }
+
+    .sk-content {
+      flex: 1;
+      background-color: var(--sk-content-bg);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .sk-content-title { width: 200px; height: 32px; border-radius: 6px; background-color: var(--sk-text-placeholder); }
+    .sk-content-tags { display: flex; gap: 12px; }
+    .sk-content-tag { width: 80px; height: 32px; border-radius: 16px; background-color: var(--sk-text-placeholder); }
+    .sk-content-input { width: min(560px, 80%); height: 120px; border-radius: 12px; border: 1px solid var(--sk-border-color); background-color: var(--sk-bg); }
+
+    .sk-shimmer {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, var(--sk-shimmer-color) 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: sk-shimmer-move 1.5s infinite ease-in-out;
+      pointer-events: none;
+    }
+
+    @keyframes sk-shimmer-move {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .sk-statusbar {
+      height: var(--sk-statusbar-h);
+      background-color: var(--sk-statusbar-bg);
+      flex-shrink: 0;
+    }
+
+    #sk-overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.3);
+      z-index: 100000;
+    }
+
+    .sk-overlay-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 24px;
+      border-radius: 8px;
+      background-color: var(--sk-bg);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .sk-spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--sk-shimmer-color);
+      border-top-color: #666;
+      border-radius: 50%;
+      animation: sk-spin 0.8s linear infinite;
+    }
+
+    @keyframes sk-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #sk-overlay-text {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+    }
+
+    #sk-overlay-retry {
+      display: none;
+      padding: 6px 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      color: #333;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    #sk-overlay-retry:hover {
+      background: #f5f5f5;
+    }
+
+    .sk-fade-out {
+      opacity: 0;
+      transition: opacity 50ms ease-out;
+    }
+
+    /* === Office 独立窗冷启动 Loading（Ardot 3753:20）=== */
+    #skeleton-root.sk-office-cold-start {
+      background: var(--wb-color-bg-secondary-default, #ffffff);
+    }
+
+    /* Loading 期间 header 与内容区同色，避免拆骨架时闪一次灰色 chrome */
+    #skeleton-root.sk-office-cold-start .sk-titlebar {
+      height: 48px;
+      background: var(--wb-color-bg-secondary-default, #ffffff);
+    }
+
+    #skeleton-root.sk-office-cold-start .sk-body,
+    #skeleton-root.sk-office-cold-start .sk-sidebar,
+    #skeleton-root.sk-office-cold-start .sk-statusbar,
+    #skeleton-root.sk-office-cold-start #sk-overlay {
+      display: none !important;
+    }
+
+    .sk-office-loading {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--wb-color-bg-secondary-default, #ffffff);
+    }
+
+    .sk-office-loading__stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      padding-bottom: 4px;
+    }
+
+    .sk-office-loading__hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sk-office-loading__mascot {
+      width: 130px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sk-office-loading__mascot img {
+      width: 130px;
+      height: 140px;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .sk-office-loading__text {
+      margin: 0;
+      height: 42px;
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 42px;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.9);
+      white-space: nowrap;
+    }
+
+    .sk-office-loading__subtext {
+      margin: 0;
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
+    }
+
+    .sk-office-loading__track {
+      position: relative;
+      width: 340px;
+      height: 6px;
+      border-radius: 100px;
+      background: #ebebeb;
+      overflow: hidden;
+    }
+
+    .sk-office-loading__bar {
+      height: 100%;
+      width: 0;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.9);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      animation: sk-office-progress-grow 2.4s ease-out forwards;
+    }
+
+    @keyframes sk-office-progress-grow {
+      0% { width: 0; }
+      100% { width: 85%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sk-office-loading__bar {
+        animation: none;
+        width: 44%;
+      }
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-hssxxRNp.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/rolldown-runtime-V4kyJ4NV.js">
+  <link rel="modulepreload" crossorigin href="./assets/ui-ardot-OEUzH9ni.js">
+  <link rel="modulepreload" crossorigin href="./assets/builtin-window-apps-BR1bS1dM.js">
+  <link rel="stylesheet" crossorigin href="./assets/lib-chat-ui-Dh_IZX7U.css">
+  <link rel="stylesheet" crossorigin href="./assets/ui-docs-viewer-vyeRSI5f.css">
+</head>
+
+<body>
+  <!-- Skeleton DOM: visible immediately on HTML parse, removed by React on mount.
+       布局参照真实 UI：宽侧边栏（导航+会话列表占位）+ 主内容区（品牌+输入框占位）。 -->
+  <div id="skeleton-root">
+    <div class="sk-titlebar"></div>
+    <div class="sk-body">
+      <div class="sk-sidebar">
+        <!-- 新建任务按钮 -->
+        <div class="sk-sidebar-btn"></div>
+        <!-- 导航项（助理/项目/专家/自动化/更多） -->
+        <div class="sk-sidebar-item"></div>
+        <div class="sk-sidebar-item"></div>
+        <div class="sk-sidebar-item"></div>
+        <div class="sk-sidebar-item"></div>
+        <div class="sk-sidebar-item"></div>
+        <!-- 任务分组 -->
+        <div class="sk-sidebar-section"></div>
+        <div class="sk-sidebar-chat"></div>
+        <div class="sk-sidebar-chat"></div>
+        <div class="sk-sidebar-chat"></div>
+        <div class="sk-sidebar-chat"></div>
+        <!-- 空间分组 -->
+        <div class="sk-sidebar-section"></div>
+        <div class="sk-sidebar-chat"></div>
+        <div class="sk-sidebar-chat"></div>
+      </div>
+      <div class="sk-content">
+        <!-- 品牌标题 -->
+        <div class="sk-content-title"></div>
+        <!-- 场景标签（日常办公/代码开发/设计创意） -->
+        <div class="sk-content-tags">
+          <div class="sk-content-tag"></div>
+          <div class="sk-content-tag"></div>
+          <div class="sk-content-tag"></div>
+        </div>
+        <!-- 输入框占位 -->
+        <div class="sk-content-input"></div>
+        <div class="sk-shimmer"></div>
+      </div>
+    </div>
+    <div class="sk-statusbar"></div>
+    <div id="sk-overlay">
+      <div class="sk-overlay-content">
+        <div class="sk-spinner"></div>
+        <div id="sk-overlay-text"></div>
+        <button id="sk-overlay-retry"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="root"></div>
+  <script src="./skeleton/skeleton-bootstrap.js"></script>
+</body>
+
+</html>

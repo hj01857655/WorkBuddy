@@ -1,0 +1,352 @@
+/**
+ * DocumentUploadDock — 文档上传浮窗
+ *
+ * 设计要点：
+ * - 浮窗容器：position:fixed，默认右下角；可拖动 / 可 resize
+ * - 颜色 token 统一走 --cb-* 前缀（见 cb-chat-ui 样式规范）
+ * - 不在最外层使用 margin（避免 BFC 外溢）
+ * - 折叠态只展示圆形进度 + x/total
+ */
+.document-upload-dock {
+  position: fixed;
+  z-index: 10100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--wb-home-bg-primary);
+  border: 1px solid var(--wb-border-default);
+  border-radius: 12px;
+  box-shadow: var(--wb-shadow-medium);
+  -webkit-app-region: no-drag;
+}
+.document-upload-dock--collapsed {
+  height: auto !important;
+}
+.document-upload-dock--dragging,
+.document-upload-dock--resizing {
+  user-select: none;
+}
+.document-upload-dock__header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  min-height: 56px;
+  cursor: grab;
+  border-bottom: 1px solid var(--wb-border-weak);
+}
+.document-upload-dock--collapsed .document-upload-dock__header {
+  border-bottom: none;
+}
+.document-upload-dock--dragging .document-upload-dock__header {
+  cursor: grabbing;
+}
+.document-upload-dock__header-summary {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.document-upload-dock__header-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--wb-color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.document-upload-dock__header-title-speed {
+  color: var(--wb-color-text-primary);
+  font-weight: 400;
+  margin-left: 4px;
+}
+.document-upload-dock__header-icon {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.document-upload-dock__header-subtitle {
+  font-size: 12px;
+  color: var(--wb-color-text-secondary);
+}
+.document-upload-dock__header-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.document-upload-dock__icon-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.document-upload-dock__icon-btn:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.document-upload-dock__retry-all-btn {
+  flex: 0 0 auto;
+  height: 24px;
+  padding: 0 10px;
+  background: transparent;
+  border: 1px solid var(--wb-border-default);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--wb-color-text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.document-upload-dock__retry-all-btn:hover {
+  background: var(--wb-bg-hover);
+}
+.document-upload-dock__breadcrumb {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  overflow-x: auto;
+  background: var(--wb-bg-popover);
+  border-bottom: 1px solid var(--wb-border-weak);
+  font-size: 12px;
+  color: var(--wb-color-text-secondary);
+  white-space: nowrap;
+}
+.document-upload-dock__breadcrumb-item {
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  color: var(--wb-color-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.document-upload-dock__breadcrumb-item:hover {
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-hover);
+}
+.document-upload-dock__breadcrumb-item--current {
+  color: var(--wb-color-text-primary);
+  font-weight: 500;
+  cursor: default;
+}
+.document-upload-dock__breadcrumb-item--current:hover {
+  background: transparent;
+}
+.document-upload-dock__breadcrumb-sep {
+  color: var(--wb-color-text-tertiary);
+}
+.document-upload-dock__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.document-upload-dock__row {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--wb-border-weak);
+}
+.document-upload-dock__row:last-child {
+  border-bottom: none;
+}
+.document-upload-dock__row--folder {
+  cursor: pointer;
+}
+.document-upload-dock__row--folder:hover {
+  background: var(--wb-bg-hover);
+}
+.document-upload-dock__row--openable {
+  cursor: pointer;
+}
+.document-upload-dock__row--openable:hover {
+  background: var(--wb-bg-hover);
+}
+.document-upload-dock__row-icon {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-color-text-secondary);
+}
+.document-upload-dock__row-icon--success {
+  color: var(--wb-status-success-muted);
+}
+.document-upload-dock__row-icon--failed {
+  color: var(--wb-status-error);
+}
+.document-upload-dock__row-icon--folder {
+  color: var(--wb-text-action);
+}
+.document-upload-dock__row-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.document-upload-dock__row-name {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wb-color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.document-upload-dock__row-status {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--wb-color-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.document-upload-dock__row-status--failed {
+  color: var(--wb-status-error);
+}
+.document-upload-dock__row-status-prefix-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+  vertical-align: -2px;
+  color: var(--wb-color-text-secondary);
+}
+.document-upload-dock__row-progress {
+  display: none;
+}
+.document-upload-dock__row-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.document-upload-dock__row:hover .document-upload-dock__row-actions,
+.document-upload-dock__row:focus-within .document-upload-dock__row-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+.document-upload-dock__empty {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  color: var(--wb-color-text-tertiary);
+  font-size: 13px;
+}
+.document-upload-dock__resize-handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+  opacity: 0.4;
+  transition: opacity 0.15s ease;
+}
+.document-upload-dock__resize-handle::after {
+  content: '';
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--wb-color-text-secondary);
+  border-bottom: 2px solid var(--wb-color-text-secondary);
+  border-bottom-right-radius: 2px;
+}
+.document-upload-dock__resize-handle:hover {
+  opacity: 0.8;
+}
+.document-upload-dock--collapsed .document-upload-dock__resize-handle {
+  display: none;
+}
+.document-upload-dock__row-link {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  color: var(--wb-text-action);
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+.document-upload-dock__row-link:hover {
+  text-decoration: underline;
+}
+.document-upload-dock__row-link:focus-visible {
+  outline: 1px solid var(--wb-border-action);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.document-upload-dock__row-status-sep {
+  color: var(--wb-color-text-secondary);
+}
+.document-upload-dock__password-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.document-upload-dock__password-filename {
+  color: var(--wb-color-text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+  word-break: break-all;
+}
+.document-upload-dock__password-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--wb-border-input);
+  border-radius: 6px;
+  background: var(--wb-bg-popover);
+  color: var(--wb-color-text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.document-upload-dock__password-input:hover {
+  border-color: var(--wb-border-popover-strong);
+}
+.document-upload-dock__password-input:focus {
+  border-color: var(--wb-border-popover-strong);
+  box-shadow: var(--wb-shadow-focus-ring);
+}
+.document-upload-dock__password-input::placeholder {
+  color: var(--wb-color-text-placeholder);
+  opacity: 1;
+}
+.document-upload-dock__tooltip {
+  z-index: 10101;
+}

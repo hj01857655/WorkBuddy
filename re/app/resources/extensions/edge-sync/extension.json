@@ -1,0 +1,14 @@
+{
+  "id": "edge-sync",
+  "name": "Edge Sync",
+  "version": "0.0.1",
+  "description": "端云一体同步 —— 把本地 Conversation 事件推到云端 + 云端指令下发到本地。含 debug 面板：连接状态 / 事件流 / mapping 表 / 手工命令。",
+  "kind": "builtin",
+  "permissions": ["*"],
+
+  "service": {
+    "entry": "./server/index.cjs",
+    "process": "fork",
+    "activationEvents": ["onStartup"]
+  }
+}

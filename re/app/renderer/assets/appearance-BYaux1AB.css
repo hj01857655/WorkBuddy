@@ -1,0 +1,285 @@
+/**
+ * 外观设置页样式（按 ardot「平铺分组列表」149:1520 还原）
+ *
+ * 颜色统一走 --wb-* 语义 token；卡片渐变是「皮肤示意色」，本身不跟主题变，保留字面色兜底。
+ */
+.appearance-panel {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% + 20px);
+  margin-bottom: -20px;
+  overflow: hidden;
+  box-sizing: border-box;
+  color: var(--wb-text-strong);
+}
+.appearance-panel--loading,
+.appearance-panel--empty {
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-text-medium);
+  font-size: 13px;
+}
+.appearance-panel__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  margin-left: 4px;
+  flex-direction: column;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+.appearance-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+.appearance-preview {
+  flex-shrink: 0;
+  width: 100%;
+  max-height: 72%;
+  aspect-ratio: 2 / 1;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  padding-top: 7.3%;
+  border-radius: 12px;
+  background: linear-gradient(to bottom, var(--wb-todo-menu-bg-active), color-mix(in srgb, var(--wb-todo-menu-bg-active) 70%, transparent));
+  overflow: hidden;
+}
+.appearance-preview__image {
+  width: 77%;
+  border-radius: 8px 8px 0 0;
+  object-fit: cover;
+  object-position: top;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+.appearance-preview__image--empty {
+  background: var(--wb-bg-primary);
+}
+.appearance-preview__loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--wb-bg-primary) 35%, transparent);
+  cursor: progress;
+}
+.appearance-list__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-top: 24px;
+  padding-bottom: 12px;
+}
+.appearance-list__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wb-text-strong);
+}
+.appearance-list__desc {
+  font-size: 12px;
+  color: var(--wb-text-medium);
+}
+.appearance-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--wb-border-default) transparent;
+}
+.appearance-list::-webkit-scrollbar {
+  width: 4px;
+}
+.appearance-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.appearance-list::-webkit-scrollbar-thumb {
+  background: var(--wb-border-default);
+  border-radius: 2px;
+}
+.appearance-panel__load-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--wb-border-default);
+  border-radius: 8px;
+  background: var(--wb-bg-card);
+  color: var(--wb-text-medium);
+  font-size: 13px;
+}
+.appearance-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  padding: 4px 4px 0 4px;
+  gap: 12px 8px;
+}
+.appearance-card-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 110px;
+  max-width: 166px;
+}
+.appearance-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  transition: outline-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+.appearance-card--light {
+  background-color: #EBEBEB;
+  box-shadow: inset 0 0 0 1px #e6e8ed;
+}
+.appearance-card--dark {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+.appearance-card--trial {
+  cursor: pointer;
+}
+.appearance-card:not(.appearance-card--selected):hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+.appearance-card--light:not(.appearance-card--selected):hover {
+  box-shadow: inset 0 0 0 1px #e6e8ed, 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+.appearance-card--selected {
+  outline: 2px solid var(--wb-color-text-solid, #000);
+  outline-offset: 2px;
+}
+.appearance-card--coming-soon {
+  cursor: default;
+  background-color: #EBEBEB;
+  outline-offset: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.appearance-card--coming-soon:hover {
+  box-shadow: none;
+}
+.appearance-card__name {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--wb-text-strong);
+  text-align: center;
+}
+.appearance-card--selected ~ .appearance-card__name {
+  font-weight: 600;
+}
+.appearance-card__coming-soon-text {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.3);
+}
+.dark .appearance-card--selected,
+[data-cb-theme='dark'] .appearance-card--selected {
+  outline-color: var(--wb-color-text-on-bg-default, #fff);
+}
+.appearance-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 100px;
+  font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 18px;
+}
+.appearance-badge--free,
+.appearance-badge--pro {
+  background: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.7);
+}
+.appearance-badge--advanced {
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
+.appearance-badge--ultimate {
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffd989;
+}
+.appearance-badge--validity {
+  height: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-weight: 400;
+}
+.appearance-preview .appearance-badge--validity {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+.appearance-card .appearance-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+/**
+ * 底部付费引导条样式（按 ardot 389:480 还原）：贴底白条 + 顶部投影分层。
+ * 颜色统一走 --wb-* 语义 token。
+ */
+.appearance-upgrade-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 24px;
+  background: var(--wb-bg-card);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.08);
+  animation: appearance-upgrade-bar-in 0.2s ease;
+}
+.appearance-upgrade-bar__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.appearance-upgrade-bar__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 21px;
+  color: var(--wb-text-strong);
+}
+.appearance-upgrade-bar__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.appearance-upgrade-bar__desc {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--wb-text-weak);
+}
+.appearance-upgrade-bar__btn {
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+@keyframes appearance-upgrade-bar-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

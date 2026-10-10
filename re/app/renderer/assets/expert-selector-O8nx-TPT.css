@@ -1,0 +1,184 @@
+.expert-selector {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+.expert-selector__btn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 24px;
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  outline: none;
+  /* 箭头旋转动画，与 model selector 一致 */
+}
+.expert-selector__btn .wb-button__content > svg:last-child {
+  transition: transform 0.42s cubic-bezier(0.25, 0.8, 0.3, 1);
+  transform-origin: center;
+}
+.expert-selector__btn[aria-expanded="true"] .wb-button__content > svg:last-child {
+  transform: rotate(180deg);
+}
+/* Avatar styles */
+.expert-selector__avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.expert-selector__avatar--small {
+  width: 18px;
+  height: 18px;
+}
+.expert-selector__avatar--medium {
+  width: 24px;
+  height: 24px;
+}
+.expert-selector__avatar.wb-avatar--fallback {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--wb-text-white);
+}
+/* Label group: dual-line display (profession + identity name) in selected button */
+.expert-selector__label-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0;
+}
+.expert-selector__label {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* 主文本规格：14px/22px，#000 90%(text-primary)，PingFang SC */
+  color: var(--wb-color-text-primary);
+  font-family: "PingFang SC";
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 22px;
+  text-decoration-line: none;
+}
+.expert-selector__label-identity {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--wb-color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px;
+}
+/* Dropdown */
+.expert-selector__dropdown {
+  z-index: 1000;
+  background: var(--wb-dropdown-bg-color);
+  border: 0.5px solid var(--wb-border-popover);
+  border-radius: var(--wb-radius-lg, 16px);
+  box-shadow: var(--wb-shadow-popover);
+  padding: var(--wb-spacing-2, 8px);
+  min-width: 200px;
+  max-width: 280px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+.expert-selector__list {
+  display: flex;
+  flex-direction: column;
+}
+.expert-selector__section-title {
+  font-size: 11px;
+  color: var(--wb-color-text-tertiary);
+  padding: 6px 10px 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.expert-selector__divider {
+  height: 1px;
+  background: var(--wb-border-subtle);
+  margin: 4px 8px;
+}
+.expert-selector__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px var(--wb-spacing-2, 8px);
+  min-height: 32px;
+  border-radius: var(--wb-radius-md, 8px);
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.expert-selector__item:hover {
+  background: var(--wb-dropdown-item-hover-bg-color);
+}
+.expert-selector__item--selected {
+  background: var(--wb-bg-secondary);
+  color: var(--wb-color-text-primary);
+}
+.expert-selector__item--disabled {
+  cursor: not-allowed;
+  color: var(--wb-color-text-tertiary);
+  pointer-events: none;
+}
+.expert-selector__item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+/* Profession: primary text in expert item (consistent with chat area expert selector) */
+.expert-selector__item-profession {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  color: var(--wb-color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.expert-selector__item--selected .expert-selector__item-profession {
+  font-weight: 600;
+}
+/* Name: secondary text (English identity name) in expert item */
+.expert-selector__item-name {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 12px;
+  color: var(--wb-color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  max-width: 180px;
+}
+/* Description: 多行描述，最多两行（automation-form 复用弹窗时使用，
+   行业语料 / 简介型文本——比 identity name 字号略大、行高更舒展）。
+   容器 .expert-selector__item-info 已用 flex:1 + min-width:0 + overflow:hidden
+   保证 info 子元素能正确换行；这里再加 line-clamp:2 控制最多两行。 */
+.expert-selector__item-description {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 15px;
+  color: var(--wb-color-text-tertiary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}

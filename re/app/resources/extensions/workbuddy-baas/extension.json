@@ -1,0 +1,17 @@
+{
+  "id": "workbuddy-baas",
+  "name": "Genie BaaS",
+  "version": "0.0.1",
+  "description": "Genie BaaS builtin extension for miniprogram preview and cloud service integration.",
+  "ui": {
+    "entry": {
+      "title": "Genie BaaS",
+      "url": "./ui/assets/remoteEntry.js"
+    }
+  },
+  "service": {
+    "entry": "./server/index.cjs",
+    "process": "fork",
+    "activationEvents": []
+  }
+}

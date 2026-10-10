@@ -1,0 +1,2654 @@
+/* TODO: 此样式文件已超过 400 行，后续按 header/detail/grid/modal 区域拆分。 */
+/* ================================================
+   Connector Panel – WorkBuddy V2 style
+   ================================================ */
+.connector-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--wb-home-bg-secondary);
+}
+.connector-panel .workbuddy-topbar.ec-topbar {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding: 0 24px;
+  flex-shrink: 0;
+  background: var(--wb-home-bg-secondary);
+  -webkit-app-region: drag;
+}
+.connector-panel .ec-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  -webkit-app-region: no-drag;
+}
+.connector-panel .ec-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  min-width: 0;
+  -webkit-app-region: no-drag;
+}
+.connector-panel .ec-topbar__right > .wb-button {
+  flex: 0 0 auto;
+}
+/* 搜索框容器：对齐技能/专家页（固定 220px，窄屏让步）。
+ * 输入框视觉由 foundation Input.Search 默认态提供（圆角 8px、medium 高度）。 */
+.connector-panel .ec-search-wrapper {
+  position: relative;
+  width: 220px;
+  min-width: 120px;
+  flex: 0 1 220px;
+}
+@media (max-width: 540px) {
+  .connector-panel .ec-search-wrapper {
+    width: 100%;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+}
+.connector-panel-detail-wrapper {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.connector-panel-detail-wrapper .connectors-panel {
+  padding: 0;
+}
+.connector-panel-detail-wrapper .connectors-panel .connectors-panel__detail-header {
+  padding: 16px 0 12px;
+}
+.connector-panel-detail-wrapper .connectors-panel .connectors-panel__scroll-content {
+  padding: 12px 40px;
+}
+.connector-panel-detail-wrapper .connectors-panel .connectors-panel__detail-card {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+}
+.connector-panel-detail-wrapper .connectors-panel .connectors-panel__action-buttons {
+  margin-bottom: 20px;
+}
+.connector-panel-detail-wrapper .connectors-panel .connectors-panel__action-buttons .connectors-panel__btn {
+  padding: 8px 16px;
+}
+.connector-panel-detail-wrapper .connectors-panel .connectors-panel__section-divider {
+  margin: 12px 0;
+}
+.connector-panel-detail-wrapper .connectors-panel .connectors-panel__danger-zone {
+  padding: 16px;
+}
+.connector-panel-detail-wrapper .connectors-panel .connectors-panel__intermediate-alert {
+  padding: 14px;
+}
+.connector-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 24px 14px;
+  flex-wrap: wrap;
+}
+.connector-panel-heading {
+  min-width: 260px;
+}
+.connector-panel-title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.33;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+}
+.connector-panel-subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--wb-color-text-secondary);
+}
+.connector-panel-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.connector-panel-modal-toolbar {
+  padding: 8px 24px 12px;
+}
+.connector-panel-search {
+  width: 320px;
+  min-width: 220px;
+}
+.connector-panel-search .cb-search-input {
+  width: 100%;
+}
+.connector-panel-search .cb-search-input .cb-search-input__input {
+  height: 36px;
+  border-radius: 10px;
+}
+.connector-panel-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 24px 24px;
+  scrollbar-width: thin;
+}
+/* 官方内置 / 企业连接器 Tab 栏（Issue #50329）：视觉对齐技能页 segment tab（20px 加粗、下划线态由颜色区分）。 */
+.connector-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 4px 0 16px;
+}
+.connector-tab-item {
+  padding: 0 0 4px;
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--wb-color-text-tertiary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.12s ease;
+}
+.connector-tab-item:hover {
+  color: var(--wb-color-text-secondary);
+}
+.connector-tab-item--active {
+  color: var(--wb-color-text-primary);
+}
+.connector-tab-item--active:hover {
+  color: var(--wb-color-text-primary);
+}
+.connector-section {
+  margin-bottom: 28px;
+}
+.connector-section:last-child {
+  margin-bottom: 0;
+}
+.connector-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.connector-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wb-color-text-secondary);
+}
+.connector-section-count {
+  font-size: 12px;
+  color: var(--wb-color-text-tertiary);
+}
+.connector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
+  gap: 12px;
+  padding-top: 4px;
+}
+.connector-card {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-rows: 28px auto;
+  row-gap: 8px;
+  align-items: start;
+  align-content: start;
+  min-height: 88px;
+  padding: 16px 16px 12px;
+  border: 1px solid var(--wb-border-card-static);
+  border-radius: 16px;
+  background: var(--wb-bg-card);
+  box-shadow: var(--wb-shadow-card-soft);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+.connector-card:hover {
+  border-color: var(--wb-border-default);
+  background: var(--wb-bg-card-hover);
+  box-shadow: var(--wb-shadow-card-soft);
+}
+.connector-card--skeleton {
+  pointer-events: none;
+  cursor: default;
+}
+.connector-card--incompatible {
+  opacity: 0.55;
+}
+.connector-card--incompatible:hover {
+  border-color: var(--wb-border-default);
+  background: var(--wb-bg-card);
+  transform: none;
+  box-shadow: none;
+}
+.connector-card-icon {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  overflow: hidden;
+}
+.connector-card-main {
+  display: contents;
+}
+.connector-card-name-row {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.connector-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.connector-card-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--wb-status-success);
+}
+.connector-card-status-dot--connected {
+  background: var(--wb-status-success);
+}
+.connector-card-status-dot--connecting {
+  background: var(--wb-status-warning);
+  animation: connector-status-pulse 1.2s ease-in-out infinite;
+}
+.connector-card-status-dot--unauthorized {
+  background: var(--wb-status-warning);
+}
+.connector-card-status-dot--error {
+  background: var(--wb-status-error);
+}
+.connector-card-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--wb-color-text-secondary);
+  background: var(--wb-bg-hover);
+  white-space: nowrap;
+}
+.connector-card-desc {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 18px;
+  color: var(--wb-color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.connector-card-action {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0;
+  margin-right: 4px;
+}
+.connector-connect-btn {
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.connector-connect-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.connector-connect-btn .connector-connect-btn__icon-loading {
+  color: var(--wb-color-text-secondary);
+}
+.connector-connect-btn .connector-connect-btn__icon-add {
+  color: var(--wb-color-text-secondary);
+}
+.connector-connect-btn .connector-connect-btn__icon-refresh {
+  color: var(--wb-color-text-secondary);
+}
+.connector-connect-btn--try {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+.connector-connect-btn .connector-connect-btn__icon-try {
+  width: 16px;
+  height: 16px;
+  color: var(--wb-color-text-secondary);
+}
+.connector-connect-btn:hover:not(:disabled) .connector-connect-btn__icon-try {
+  color: var(--wb-color-text-primary);
+}
+.connector-connect-btn:hover:not(:disabled) {
+  background: var(--wb-palette-gray-5);
+}
+.connector-connect-btn:hover:not(:disabled) .connector-connect-btn__icon-add {
+  color: var(--wb-color-text-primary);
+}
+.connector-connect-btn--try,
+.connector-connect-btn--try:hover:not(:disabled) {
+  background: transparent;
+}
+.connector-connect-btn--try:hover:not(:disabled) {
+  background: var(--wb-palette-gray-5);
+}
+.connector-connect-btn:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.connector-connect-btn--loading .connector-connect-btn__loading-wrapper svg {
+  animation: connector-spin 1s linear infinite;
+}
+.connector-connect-btn .connector-connect-btn__loading-wrapper,
+.connector-connect-btn .connector-connect-btn__cancel-wrapper {
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 16px;
+}
+.connector-connect-btn .connector-connect-btn__loading-wrapper {
+  display: inline-flex;
+}
+.connector-connect-btn .connector-connect-btn__cancel-wrapper {
+  display: none;
+}
+.connector-connect-btn--cancellable {
+  cursor: pointer;
+}
+.connector-connect-btn--cancellable:hover:not(:disabled) {
+  background: var(--wb-palette-gray-5);
+  color: var(--wb-color-text-primary);
+}
+.connector-connect-btn--cancellable:hover:not(:disabled) .connector-connect-btn__loading-wrapper {
+  display: none;
+}
+.connector-connect-btn--cancellable:hover:not(:disabled) .connector-connect-btn__cancel-wrapper {
+  display: inline-flex;
+}
+.connector-toggle {
+  position: relative;
+  width: 40px;
+  height: 24px;
+  border: none;
+  border-radius: 999px;
+  background: var(--wb-bg-tertiary);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 0;
+}
+.connector-toggle--checked {
+  background: var(--wb-status-success);
+}
+.connector-toggle--checked .connector-toggle-thumb {
+  transform: translateX(16px);
+}
+.connector-toggle--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.connector-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--wb-bg-primary);
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
+}
+.connector-panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--wb-color-text-secondary);
+}
+.connector-panel-empty svg {
+  opacity: 0.4;
+  margin-bottom: 16px;
+}
+.connector-panel-empty-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 8px;
+  color: var(--wb-color-text-primary);
+}
+.connector-panel-empty-desc {
+  font-size: 13px;
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.5;
+}
+.connector-skeleton {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--wb-border-subtle) 50%, transparent) 25%, var(--wb-bg-hover) 50%, color-mix(in srgb, var(--wb-border-subtle) 50%, transparent) 75%);
+  background-size: 200% 100%;
+  animation: connector-skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+.connector-skeleton--icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.connector-skeleton--name {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  width: 120px;
+  height: 14px;
+}
+.connector-skeleton--desc {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  width: 180px;
+  height: 12px;
+  margin-top: 2px;
+}
+.connector-skeleton--action {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+@keyframes connector-skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+@keyframes connector-status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.75);
+  }
+}
+@keyframes connector-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 1279px) {
+  .connector-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 991px) {
+  .connector-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 575px) {
+  .connector-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 1024px) {
+  .connector-panel-toolbar {
+    width: 100%;
+  }
+  .connector-panel-search {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+}
+/* ================================================
+   Connector Detail Modal
+   ================================================ */
+.connector-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: connector-detail-fade-in 0.15s ease-out;
+}
+/**
+ * Windows / Linux 桌面壳：顶部 30px 是自绘窗口控件区（.workbuddy-window-controls，z-index 10001）。
+ * 该控件按钮 background 透明、容器背景走 --wb-sidebar-bg，与遮罩叠加会让用户观感上"三个按钮颜色变了"。
+ * 让遮罩从 30px 起始，既不覆盖控件区也不遮挡拖拽热区（issue：Windows 弹连接器详情弹窗右上角按钮变色）。
+ * macOS 走原生 traffic light，不占 DOM，无需此偏移。
+ */
+body[data-electron-desktop="true"][data-platform="windows"] .connector-detail-overlay,
+body[data-electron-desktop="true"]:not([data-platform="mac"]):not([data-platform="windows"]) .connector-detail-overlay {
+  top: var(--wb-desktop-menubar-height, 30px);
+}
+.connector-detail-modal {
+  position: relative;
+  width: 380px;
+  max-width: 90%;
+  background: var(--wb-bg-card);
+  border: 1px solid var(--wb-border-default);
+  border-radius: 16px;
+  padding: 32px 28px 24px;
+  box-shadow: var(--wb-shadow-dialog);
+  text-align: center;
+  animation: connector-detail-slide-in 0.2s ease-out;
+}
+.connector-detail-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.connector-detail-close:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.connector-detail-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  overflow: hidden;
+}
+.connector-detail-icon img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+.connector-detail-name {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+}
+.connector-detail-desc {
+  margin: 0 0 20px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--wb-color-text-secondary);
+}
+.connector-detail-version-banner {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--wb-status-warning);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--wb-status-warning) 10%, transparent);
+  color: var(--wb-color-text-primary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.connector-detail-headers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+  text-align: left;
+}
+.connector-detail-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--wb-color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.connector-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  margin-right: 4px;
+}
+.connector-edit-btn:hover {
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-hover);
+}
+.connector-detail-empty-config {
+  font-size: 13px;
+  color: var(--wb-color-text-tertiary);
+  text-align: center;
+  padding: 12px 0;
+  margin: 0;
+}
+.connector-detail-header-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.connector-detail-header-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--wb-color-text-secondary);
+  text-transform: capitalize;
+}
+.connector-detail-header-input {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--wb-border-input);
+  border-radius: 8px;
+  background: var(--wb-bg-input-inset);
+  color: var(--wb-color-text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.connector-detail-header-input::placeholder {
+  color: var(--wb-color-text-tertiary);
+}
+.connector-detail-header-input:focus {
+  border-color: var(--wb-border-input);
+}
+.connector-detail-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.connector-detail-btn {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+.connector-detail-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.connector-detail-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+}
+.connector-detail-btn--primary {
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+}
+.connector-detail-btn--primary:hover {
+  background: var(--wb-button-primary-bg-hover);
+}
+.connector-detail-btn--secondary {
+  background: var(--wb-bg-card);
+  border: 1px solid var(--wb-border-default);
+  color: var(--wb-color-text-primary);
+}
+.connector-detail-btn--secondary:hover {
+  background: var(--wb-bg-hover);
+  border-color: var(--wb-border-default);
+}
+.connector-detail-btn--try-standalone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  border: 1px solid var(--wb-button-primary-bg);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wb-button-primary-bg);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.connector-detail-btn--try-standalone:hover {
+  background: color-mix(in srgb, var(--wb-button-primary-bg) 10%, transparent);
+}
+.connector-manage-wrapper {
+  position: relative;
+}
+.connector-manage-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 140px;
+  background: var(--wb-bg-card);
+  border: 1px solid var(--wb-border-default);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  z-index: 100;
+  padding: 4px;
+  overflow: hidden;
+}
+.connector-manage-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--wb-color-text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.connector-manage-menu-item:hover {
+  background: var(--wb-bg-hover);
+}
+.connector-manage-menu-item--danger {
+  color: var(--wb-status-error);
+}
+.connector-manage-menu-item--danger:hover {
+  background: color-mix(in srgb, var(--wb-status-error) 10%, transparent);
+}
+.connector-detail-btn--reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  border: 1px solid #ff313f;
+  border-radius: 6px;
+  background: transparent;
+  color: #ff313f;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.connector-detail-btn--reset:hover:not(:disabled) {
+  background: rgba(255, 49, 63, 0.1);
+}
+.connector-detail-btn--reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.connector-detail-expand {
+  padding-top: 12px;
+}
+.connector-detail-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  color: var(--wb-color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.connector-detail-expand-btn:hover {
+  color: var(--wb-color-text-primary);
+}
+.connector-detail-expand-btn svg {
+  stroke: currentColor;
+}
+.connector-detail-tools {
+  margin-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  text-align: left;
+}
+.connector-detail-tool-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+.connector-detail-tool-item:hover {
+  background: var(--wb-bg-hover);
+}
+.connector-detail-tool-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wb-color-text-primary);
+}
+.connector-detail-tool-desc {
+  font-size: 12px;
+  color: var(--wb-color-text-secondary);
+  line-height: 1.4;
+}
+.connector-detail-modal--connected {
+  width: min(630px, 50vw);
+  min-width: 550px;
+  max-width: calc(100vw - 32px);
+  max-height: min(640px, calc(100vh - 48px));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 0.5px solid var(--wb-color-border-solid);
+  border-radius: 24px;
+  text-align: center;
+  --connector-detail-modal-bg: var(--wb-bg-card);
+}
+.connector-detail-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 48px 0 24px;
+  scrollbar-width: none;
+}
+.connector-detail-modal-body::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+.connector-detail-modal-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 108px;
+  --connector-fade-solid: 48px;
+  background: linear-gradient(to bottom, var(--connector-detail-modal-bg) 0%, var(--connector-detail-modal-bg) var(--connector-fade-solid), color-mix(in srgb, var(--connector-detail-modal-bg) 0%, transparent) 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  z-index: 1;
+}
+.connector-detail-modal-fade.is-visible {
+  opacity: 1;
+}
+.connector-detail-modal-bottom-fade {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--connector-detail-modal-bg) 0%, transparent) 0%, var(--connector-detail-modal-bg) 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  z-index: 1;
+}
+.connector-detail-modal-bottom-fade.is-visible {
+  opacity: 1;
+}
+.connector-detail-modal--connected .connector-detail-close {
+  top: 16px;
+  right: 16px;
+}
+.connector-detail-modal--connected .connector-detail-name {
+  margin: 20px 24px 12px;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+.connector-detail-modal--connected .connector-detail-desc {
+  margin: 0 auto 12px;
+  margin-bottom: 20px;
+  padding: 0 48px;
+  font-size: 14px;
+  line-height: 22px;
+  color: color-mix(in srgb, var(--wb-color-text-primary) 90%, transparent);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.connector-detail-modal--connected .connector-detail-version-banner {
+  margin: 0 24px 16px;
+  text-align: left;
+}
+.connector-detail-modal--connected .connector-detail-actions {
+  margin: 0 0 32px;
+  gap: 12px;
+}
+.connector-detail-modal--connected .connector-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.connector-detail-modal--connected .connector-detail-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.connector-detail-modal--connected .connector-detail-btn--try {
+  border: 0;
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+}
+.connector-detail-modal--connected .connector-detail-btn--try svg {
+  color: var(--wb-button-primary-fg);
+}
+.connector-detail-modal--connected .connector-detail-btn--try:hover:not(:disabled) {
+  background: var(--wb-button-primary-bg-hover);
+}
+.connector-detail-modal--connected .connector-detail-btn--try-loading {
+  background: var(--wb-connector-detail-try-loading-bg);
+  color: var(--wb-palette-white-100);
+}
+.connector-detail-modal--connected .connector-detail-btn--try-loading svg {
+  color: var(--wb-palette-white-100);
+  animation: connector-spin 1s linear infinite;
+}
+.connector-detail-modal--connected .connector-detail-btn--try-loading:hover:not(:disabled) {
+  background: var(--wb-connector-detail-try-loading-bg);
+  opacity: 1;
+}
+.connector-detail-modal--connected .connector-detail-btn--reset {
+  border: 1px solid var(--wb-button-secondary-border);
+  background: var(--wb-button-secondary-bg);
+  color: var(--wb-button-secondary-fg);
+}
+.connector-detail-modal--connected .connector-detail-btn--reset svg {
+  color: var(--wb-button-secondary-fg);
+}
+.connector-detail-modal--connected .connector-detail-btn--reset:hover:not(:disabled) {
+  background: var(--wb-button-secondary-bg-hover);
+}
+.connector-detail-modal--connected .connector-detail-expand {
+  padding: 32px 0 0;
+  text-align: left;
+}
+.connector-detail-modal--connected .connector-detail-expand-btn {
+  width: 100%;
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--wb-color-text-primary);
+  transition: color 0.15s ease;
+}
+.connector-detail-modal--connected .connector-detail-expand-btn svg {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.connector-detail-modal--connected .connector-detail-expand-btn:hover:not(:disabled) {
+  color: var(--wb-color-text-secondary);
+}
+.connector-detail-modal--connected .connector-detail-expand-btn:hover:not(:disabled) svg {
+  color: var(--wb-color-text-secondary);
+}
+.connector-detail-modal--connected .connector-detail-tools-wrapper {
+  position: relative;
+  margin: 12px 24px 0;
+  padding: 8px 16px;
+  border-radius: 24px;
+  background: var(--wb-palette-gray-2);
+}
+.connector-detail-modal--connected .connector-detail-tools {
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.connector-detail-modal--connected .connector-detail-tools::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+.connector-detail-modal--connected .connector-detail-modal-body:hover ~ .connector-detail-modal-scroll-thumb,
+.connector-detail-modal--connected .connector-detail-modal-scroll-thumb:hover,
+.connector-detail-modal--connected .connector-detail-modal-scroll-thumb.is-dragging,
+.connector-detail-modal--connected .connector-detail-tools-wrapper:hover .connector-detail-tools-scroll-thumb,
+.connector-detail-modal--connected .connector-detail-tools-scroll-thumb:hover,
+.connector-detail-modal--connected .connector-detail-tools-scroll-thumb.is-dragging {
+  opacity: 1;
+}
+.connector-detail-modal--connected .connector-detail-modal-scroll-thumb,
+.connector-detail-modal--connected .connector-detail-tools-scroll-thumb {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  width: 4px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  touch-action: none;
+  transition: opacity 0.15s ease, transform 0.1s ease-out;
+}
+.connector-detail-modal--connected .connector-detail-modal-scroll-thumb.is-dragging,
+.connector-detail-modal--connected .connector-detail-tools-scroll-thumb.is-dragging {
+  transition: opacity 0.15s ease;
+}
+.connector-detail-modal--connected .connector-detail-tool-item {
+  padding: 10px 0;
+  border-radius: 0;
+}
+.connector-detail-modal--connected .connector-detail-tool-item:hover {
+  background: transparent;
+}
+.connector-detail-modal--connected .connector-detail-tool-desc {
+  color: var(--wb-color-text-tertiary);
+}
+.connector-detail-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.connector-detail-flow-avatar {
+  display: inline-flex;
+  width: 68px;
+  height: 68px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.connector-detail-flow-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.connector-detail-flow-avatar--connector {
+  color: var(--wb-color-text-primary);
+  font-size: 28px;
+  font-weight: 600;
+}
+.connector-detail-flow-avatar--connector img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.connector-detail-flow-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.connector-detail-flow-icon span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--wb-connector-detail-flow-dot-bg);
+}
+.connector-detail-examples {
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px;
+}
+.connector-detail-examples-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--wb-color-text-primary);
+}
+.connector-detail-examples-title svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  color: var(--wb-color-text-secondary);
+}
+.connector-detail-example {
+  display: flex;
+  width: 100%;
+  min-height: 46px;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 0.5px solid transparent;
+  border-radius: 16px;
+  background: var(--wb-palette-gray-2);
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.connector-detail-example span {
+  flex: 1;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.connector-detail-example svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  color: currentColor;
+}
+.connector-detail-example + .connector-detail-example {
+  margin-top: 12px;
+}
+.connector-detail-example:hover:not(:disabled) {
+  border-color: var(--wb-color-border-solid);
+  background: var(--wb-palette-gray-3);
+}
+.connector-detail-example:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+@media (max-width: 640px) {
+  .connector-detail-modal--connected {
+    max-height: calc(100vh - 32px);
+  }
+  .connector-detail-modal--connected .connector-detail-flow {
+    gap: 14px;
+  }
+  .connector-detail-modal--connected .connector-detail-flow-avatar {
+    width: 56px;
+    height: 56px;
+  }
+  .connector-detail-modal--connected .connector-detail-examples {
+    padding: 0 16px;
+  }
+}
+@keyframes connector-detail-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes connector-detail-slide-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.connector-detail-repos-hint {
+  font-size: 13px;
+  color: var(--wb-color-text-secondary);
+  margin: 12px 0;
+}
+.connector-detail-repos {
+  margin: 12px 0;
+}
+.connector-detail-repos-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--wb-color-text-primary);
+}
+.connector-detail-repos-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.connector-detail-repos-item {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--wb-bg-secondary);
+  font-size: 13px;
+  color: var(--wb-color-text-primary);
+  word-break: break-all;
+}
+/* issue: #57374 主题切换时禁用 background transition，避免闪烁 */
+:root.theme-switching .connector-card,
+body.theme-switching .connector-card,
+:root.theme-switching .connector-connect-btn,
+body.theme-switching .connector-connect-btn,
+:root.theme-switching .connector-detail-tool-item,
+body.theme-switching .connector-detail-tool-item {
+  transition: none;
+}
+/* ================================================
+   Connector Detail Modal 深色模式适配
+   ================================================= */
+:root.dark .connector-detail-modal--connected,
+:root.cb-dark .connector-detail-modal--connected,
+:root .dark .connector-detail-modal--connected,
+:root .cb-dark .connector-detail-modal--connected,
+.cbChat.dark .connector-detail-modal--connected {
+  --connector-detail-modal-bg: var(--wb-bg-primary);
+  background: var(--connector-detail-modal-bg);
+}
+:root.dark .connector-detail-btn--try-loading,
+:root.cb-dark .connector-detail-btn--try-loading,
+:root .dark .connector-detail-btn--try-loading,
+:root .cb-dark .connector-detail-btn--try-loading,
+.cbChat.dark .connector-detail-btn--try-loading {
+  background: var(--wb-connector-detail-try-loading-bg);
+  color: var(--wb-color-text-primary);
+}
+:root.dark .connector-detail-btn--try-loading svg,
+:root.cb-dark .connector-detail-btn--try-loading svg,
+:root .dark .connector-detail-btn--try-loading svg,
+:root .cb-dark .connector-detail-btn--try-loading svg,
+.cbChat.dark .connector-detail-btn--try-loading svg {
+  color: var(--wb-color-text-primary);
+}
+:root.dark .connector-detail-btn--try-loading:hover:not(:disabled),
+:root.cb-dark .connector-detail-btn--try-loading:hover:not(:disabled),
+:root .dark .connector-detail-btn--try-loading:hover:not(:disabled),
+:root .cb-dark .connector-detail-btn--try-loading:hover:not(:disabled),
+.cbChat.dark .connector-detail-btn--try-loading:hover:not(:disabled) {
+  background: var(--wb-connector-detail-try-loading-bg);
+  opacity: 1;
+}
+:root.dark .connector-detail-example,
+:root.cb-dark .connector-detail-example,
+:root .dark .connector-detail-example,
+:root .cb-dark .connector-detail-example,
+.cbChat.dark .connector-detail-example {
+  background: var(--wb-palette-gray-2);
+  color: var(--wb-color-text-primary);
+}
+:root.dark .connector-detail-example:hover:not(:disabled),
+:root.cb-dark .connector-detail-example:hover:not(:disabled),
+:root .dark .connector-detail-example:hover:not(:disabled),
+:root .cb-dark .connector-detail-example:hover:not(:disabled),
+.cbChat.dark .connector-detail-example:hover:not(:disabled) {
+  border-color: var(--wb-color-border-solid);
+  background: var(--wb-bg-hover-light);
+}
+:root.dark .connector-detail-examples-title,
+:root.cb-dark .connector-detail-examples-title,
+:root .dark .connector-detail-examples-title,
+:root .cb-dark .connector-detail-examples-title,
+.cbChat.dark .connector-detail-examples-title {
+  color: var(--wb-palette-white-90);
+}
+:root.dark .connector-detail-examples-title svg,
+:root.cb-dark .connector-detail-examples-title svg,
+:root .dark .connector-detail-examples-title svg,
+:root .cb-dark .connector-detail-examples-title svg,
+.cbChat.dark .connector-detail-examples-title svg {
+  color: inherit;
+}
+.teams-container.is-mobile .connector-panel .workbuddy-topbar.ec-topbar,
+.teams-container.is-mobile .connector-panel-content {
+  padding-inline: var(--wb-spacing-5);
+}
+body.wb-mobile-layout .connector-detail-modal-overlay {
+  inset: auto;
+  top: var(--wb-mobile-container-top, 0);
+  left: var(--wb-mobile-container-left, 0);
+  width: var(--wb-mobile-container-width, 100vw);
+  height: var(--wb-mobile-container-height, 100dvh);
+}
+body.wb-mobile-layout .connector-detail-modal--connected {
+  width: calc(var(--wb-mobile-container-width, 100vw) - var(--wb-spacing-8));
+  min-width: 0;
+  max-width: none;
+  max-height: calc(var(--wb-mobile-container-height, 100dvh) - var(--wb-spacing-8));
+}
+/**
+ * Connectors Panel 样式
+ * 基于 prototype settings.html Connectors Page & GitHub Detail Page 样式
+ * 使用 BEM 命名规范：.connectors-panel 为块名
+ * 使用 cb-chat-ui 全局变量（与 AccountPanel.less、GeneralSettingsPanel.less 对齐）
+ */
+/* ==================== Block: connectors-panel ==================== */
+.connectors-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  /* ==================== Element: title ==================== */
+  /* ==================== Element: section ==================== */
+  /* ==================== Element: section-title (category header) ==================== */
+  /* ==================== Element: card ==================== */
+  /* ==================== Element: card-row ==================== */
+  /* ==================== Element: card-left ==================== */
+  /* ==================== Element: card-label ==================== */
+  /* ==================== Element: card-desc ==================== */
+  /* ==================== Element: card-status ==================== */
+  /* ==================== Element: logo ==================== */
+  /* 亮色模式样式 */
+  /* ==================== Element: info ==================== */
+  /* ==================== Element: name ==================== */
+  /* ==================== Element: desc ==================== */
+  /* ==================== Element: status ==================== */
+  /* ==================== Element: status-dot ==================== */
+  /* ==================== Element: arrow ==================== */
+  /* ==================== Detail Page Elements ==================== */
+  /* ==================== Element: detail-header ==================== */
+  /* ==================== Element: back-btn ==================== */
+  /* ==================== Element: detail-title ==================== */
+  /* ==================== Element: detail-card ==================== */
+  /* 亮色模式：详情页样式 */
+  /* ==================== Element: detail-info ==================== */
+  /* ==================== Element: detail-name ==================== */
+  /* ==================== Element: detail-desc ==================== */
+  /* ==================== Element: detail-status ==================== */
+  /* ==================== Section Elements (Detail Page) ==================== */
+  /* ==================== Element: section-header ==================== */
+  /* ==================== Element: section-divider ==================== */
+  /* ==================== Button Elements ==================== */
+  /* ==================== Element: btn ==================== */
+  /* ==================== Repository Elements ==================== */
+  /* ==================== Element: repo-list ==================== */
+  /* ==================== Element: repo-item ==================== */
+  /* ==================== Element: repo-icon ==================== */
+  /* ==================== Element: repo-name ==================== */
+  /* ==================== Element: repo-remove ==================== */
+  /* ==================== Element: repo-hint ==================== */
+  /* ==================== Other Elements ==================== */
+  /* ==================== Element: connect-desc ==================== */
+  /* ==================== Element: action-buttons ==================== */
+  /* ==================== Element: danger-zone ==================== */
+  /* ==================== Element: danger-desc ==================== */
+  /* ==================== Intermediate State Elements ==================== */
+  /* ==================== Element: intermediate-alert ==================== */
+  /* ==================== Element: intermediate-icon ==================== */
+  /* ==================== Element: intermediate-content ==================== */
+  /* ==================== Element: intermediate-title ==================== */
+  /* ==================== Element: intermediate-desc ==================== */
+}
+.connectors-panel__title {
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--cb-text-primary, #d2d3e0);
+  margin: 0 0 14px 0;
+  padding: 0 48px 14px 0;
+  border-bottom: 1px solid var(--cb-vscode-panel-border, #3c3c3c);
+}
+.connectors-panel__scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 2px 12px 0;
+  scrollbar-color: transparent transparent;
+  scrollbar-width: var(--cb-scrollbar-width, thin);
+}
+.connectors-panel__scroll-content:hover {
+  scrollbar-color: var(--cb-vscode-scrollbarSlider-background) transparent;
+}
+.connectors-panel__scroll-content::-webkit-scrollbar {
+  width: 8px;
+}
+.connectors-panel__scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.connectors-panel__scroll-content::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 4px;
+}
+.connectors-panel__scroll-content:hover::-webkit-scrollbar-thumb {
+  background-color: var(--cb-vscode-scrollbarSlider-background);
+}
+.connectors-panel__scroll-content:hover::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cb-vscode-scrollbarSlider-hoverBackground);
+}
+.connectors-panel__section {
+  margin-bottom: 24px;
+}
+.connectors-panel__section:last-child {
+  margin-bottom: 0;
+}
+.connectors-panel__section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cb-text-secondary, #858699);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+.connectors-panel__card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.connectors-panel__card-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--cb-settings-card-background, var(--cb-card-background, var(--cb-secondary-bg, #2d2d2d)));
+  border-radius: 4px;
+  cursor: pointer;
+}
+.connectors-panel__card-left {
+  flex: 1;
+  min-width: 0;
+}
+.connectors-panel__card-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cb-text-primary, #d2d3e0);
+  margin-bottom: 4px;
+}
+.connectors-panel__card-desc {
+  font-size: 12px;
+  color: var(--cb-text-secondary, #858699);
+  line-height: 1.4;
+}
+.connectors-panel__card-status {
+  font-size: 12px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.connectors-panel__card-status--connected {
+  color: var(--cb-success-color, #28b894);
+}
+.connectors-panel__card-status--disconnected {
+  color: var(--cb-text-secondary, #858699);
+}
+.connectors-panel__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.connectors-panel__logo svg {
+  width: 24px;
+  height: 24px;
+}
+.connectors-panel__logo--github {
+  background: #171717;
+  color: #ffffff;
+}
+.connectors-panel__logo--cnb {
+  background: #171717;
+}
+.connectors-panel__logo--gongfeng {
+  background: #171717;
+}
+.connectors-panel__logo--figma {
+  background: #1e1e1e;
+}
+body.light .connectors-panel {
+  /* 列表项 */
+  /* 图标容器 - 亮色模式 */
+}
+body.light .connectors-panel__logo--github {
+  background: #ffffff;
+  border: 1px solid #d4d4d4;
+  color: #24292e;
+}
+body.light .connectors-panel__logo--gongfeng {
+  background: #ffffff;
+  border: 1px solid #d4d4d4;
+}
+body.light .connectors-panel__logo--cnb {
+  background: #ffffff;
+  border: 1px solid #d4d4d4;
+}
+body.light .connectors-panel__logo--figma {
+  background: #e5e5e5;
+}
+.connectors-panel__info {
+  flex: 1;
+  min-width: 0;
+}
+.connectors-panel__name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cb-text-primary, #d2d3e0);
+  line-height: 18px;
+  margin-bottom: 2px;
+}
+.connectors-panel__desc {
+  font-size: 12px;
+  color: var(--cb-text-secondary, #858699);
+  line-height: 18px;
+  margin-bottom: 2px;
+}
+.connectors-panel__status {
+  font-size: 12px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.connectors-panel__status--connected {
+  color: var(--cb-success-color, #28b894);
+}
+.connectors-panel__status--disconnected {
+  color: var(--cb-text-secondary, #858699);
+}
+.connectors-panel__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.connectors-panel__status--connected .connectors-panel__status-dot {
+  background: var(--cb-success-color, #28b894);
+}
+.connectors-panel__status--disconnected .connectors-panel__status-dot {
+  background: var(--cb-text-secondary, #858699);
+}
+.connectors-panel__arrow {
+  color: var(--cb-text-secondary, #858699);
+  flex-shrink: 0;
+}
+.connectors-panel__arrow svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+.connectors-panel__detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+.connectors-panel__back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--cb-text-secondary, #858699);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.connectors-panel__back-btn:hover {
+  background: var(--cb-hover-bg, rgba(255, 255, 255, 0.05));
+  color: var(--cb-text-primary, #d2d3e0);
+}
+.connectors-panel__back-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+.connectors-panel__detail-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cb-text-primary, #d2d3e0);
+}
+.connectors-panel__detail-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  min-height: 56px;
+  background: var(--cb-settings-card-background, var(--cb-card-background, var(--cb-secondary-bg, #2d2d2d)));
+  border: 1px solid var(--cb-settings-card-border, var(--cb-vscode-panel-border, #3c3c3c));
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+.connectors-panel__detail-info {
+  flex: 1;
+}
+.connectors-panel__detail-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cb-text-primary, #d2d3e0);
+  line-height: 18px;
+  margin-bottom: 2px;
+}
+.connectors-panel__detail-desc {
+  font-size: 12px;
+  color: var(--cb-text-secondary, #858699);
+  line-height: 18px;
+  margin-bottom: 2px;
+}
+.connectors-panel__detail-status {
+  font-size: 12px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.connectors-panel__detail-status--connected {
+  color: var(--cb-success-color, #28b894);
+}
+.connectors-panel__detail-status--disconnected {
+  color: var(--cb-text-secondary, #858699);
+}
+.connectors-panel__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.connectors-panel__section-divider {
+  height: 1px;
+  background: var(--cb-vscode-panel-border, #3c3c3c);
+  margin: 16px 0;
+}
+.connectors-panel__btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+.connectors-panel__btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+}
+.connectors-panel__btn--outline {
+  padding: 4px 12px;
+  height: 28px;
+  border: none;
+  background-color: var(--vscode-input-background);
+  color: var(--cb-text-primary, #a0a0a0);
+  transition: opacity 0.15s;
+}
+.connectors-panel__btn--outline:hover {
+  opacity: 0.8;
+}
+.connectors-panel__btn--primary {
+  padding: 4px 12px;
+  background-color: var(--vscode-input-background);
+  color: var(--cb-text-primary, #a0a0a0);
+  transition: opacity 0.15s;
+}
+.connectors-panel__btn--primary:hover {
+  opacity: 0.8;
+}
+.connectors-panel__btn--try {
+  background: var(--cb-success-color, #28b894);
+  color: var(--cb-button-primary-foreground, #ffffff);
+}
+.connectors-panel__btn--secondary {
+  background: var(--cb-vscode-editor-background, #1e1e1e);
+  border: none;
+  color: var(--cb-text-primary, #d2d3e0);
+}
+.connectors-panel__btn--secondary:hover {
+  background: var(--cb-hover-bg, rgba(255, 255, 255, 0.05));
+}
+.connectors-panel__btn--danger {
+  background-color: var(--vscode-input-background);
+  color: var(--cb-text-primary, #a0a0a0);
+}
+.connectors-panel__btn--danger:hover {
+  background: var(--cb-error-foreground, #ef4444);
+  color: var(--cb-button-primary-foreground, #ffffff);
+}
+.connectors-panel__repo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.connectors-panel__repo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--cb-settings-card-background, var(--cb-secondary-bg, #2d2d2d));
+  border: 1px solid var(--cb-settings-card-border, var(--cb-vscode-panel-border, #3c3c3c));
+  border-radius: 6px;
+}
+.connectors-panel__repo-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--cb-text-secondary, #858699);
+}
+.connectors-panel__repo-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+.connectors-panel__repo-name {
+  flex: 1;
+  font-size: 12px;
+  color: var(--cb-text-primary, #d2d3e0);
+}
+.connectors-panel__repo-remove {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--cb-text-secondary, #858699);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s, color 0.15s;
+}
+.connectors-panel__repo-remove:hover {
+  background: var(--cb-hover-bg, rgba(255, 255, 255, 0.05));
+  color: var(--cb-error-foreground, #ef4444);
+}
+.connectors-panel__repo-remove svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+.connectors-panel__repo-hint {
+  font-size: 12px;
+  color: var(--cb-text-secondary, #858699);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.connectors-panel__connect-desc {
+  font-size: 12px;
+  color: var(--cb-text-secondary, #858699);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.connectors-panel__action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.connectors-panel__action-buttons .connectors-panel__btn {
+  flex: 1;
+  justify-content: center;
+  padding: 10px 12px;
+}
+.connectors-panel__danger-zone {
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+}
+.connectors-panel__danger-desc {
+  font-size: 12px;
+  color: var(--cb-text-secondary, #858699);
+  line-height: 1.5;
+  margin: 8px 0 12px 0;
+}
+.connectors-panel__intermediate-alert {
+  background: rgba(40, 184, 148, 0.1);
+  border: 1px solid rgba(40, 184, 148, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+}
+.connectors-panel__intermediate-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--cb-success-color, #28b894);
+}
+.connectors-panel__intermediate-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.connectors-panel__intermediate-content {
+  flex: 1;
+}
+.connectors-panel__intermediate-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cb-text-primary, #d2d3e0);
+  margin-bottom: 4px;
+}
+.connectors-panel__intermediate-desc {
+  font-size: 12px;
+  color: var(--cb-text-secondary, #858699);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+/**
+ * MCP Modal Styles – WorkBuddy V2 Design
+ * 参考 docs/mcp-config 设计截图
+ */
+.mcp-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 蒙层颜色统一走 foundation token，不再自定义颜色与背景模糊（#49111） */
+  background-color: var(--wb-color-mask-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: mcp-modal-fade-in 0.15s ease-out;
+}
+/**
+ * Windows / Linux 桌面壳：顶部 30px 是自绘窗口控件区（.workbuddy-window-controls，z-index 10001）。
+ * 该控件的按钮 background 透明、容器背景走 --wb-sidebar-bg，与遮罩叠加会让用户观感上"三个按钮颜色变了"。
+ * 让遮罩从 30px 起始，既不覆盖控件区，也不遮挡拖拽热区，从根本上规避视觉串色（issue: Windows 弹模态框右上角按钮变色）。
+ * macOS 走原生 traffic light，不占 DOM，故不需要此偏移。
+ */
+body[data-electron-desktop="true"][data-platform="windows"] .mcp-modal-overlay,
+body[data-electron-desktop="true"]:not([data-platform="mac"]):not([data-platform="windows"]) .mcp-modal-overlay {
+  top: var(--wb-desktop-menubar-height, 30px);
+}
+.mcp-modal {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 640px;
+  height: 80vh;
+  max-height: 700px;
+  min-height: 400px;
+  background-color: var(--wb-bg-primary);
+  border: 1px solid var(--wb-border-default);
+  border-radius: 16px;
+  box-shadow: var(--wb-shadow-lg);
+  overflow: hidden;
+  animation: mcp-modal-slide-in 0.2s ease-out;
+}
+.mcp-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--wb-border-default);
+  flex-shrink: 0;
+  gap: 16px;
+}
+.mcp-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.mcp-modal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.mcp-modal-header-text {
+  flex: 1;
+  min-width: 0;
+}
+.mcp-modal-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--wb-color-text-primary) 3%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--wb-color-text-secondary);
+}
+.mcp-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mcp-modal-subtitle {
+  font-size: 12px;
+  color: var(--wb-color-text-secondary);
+  margin: 2px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mcp-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+.mcp-modal-close:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.mcp-modal-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.mcp-modal-body .mcp-panel {
+  height: 100%;
+}
+.mcp-modal-body .mcp-panel-search {
+  padding: 16px 24px 12px;
+}
+.mcp-modal-body .mcp-panel-section-header {
+  padding: 0 24px 12px;
+}
+.mcp-modal-body .mcp-panel-content {
+  padding: 0 24px 24px;
+}
+.mcp-modal-body .mcp-panel-empty {
+  padding: 32px 24px;
+}
+.mcp-modal-body .mcp-panel-modal-actions {
+  display: none;
+}
+@keyframes mcp-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes mcp-modal-slide-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+/* [沉淀判定] 这是 MCP 管理页专用的 mcp.json 编辑视图，不抽到 wb-components。 */
+.mcp-config-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.mcp-config-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--wb-spacing-4) var(--wb-spacing-6);
+  border-bottom: 1px solid var(--wb-border-default);
+  flex-shrink: 0;
+  gap: var(--wb-spacing-4);
+}
+.mcp-config-editor-header-actions {
+  display: flex;
+  gap: var(--wb-spacing-2);
+}
+.mcp-config-editor-back {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+  padding: var(--wb-spacing-1) 0;
+  background: transparent;
+  border: none;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+  line-height: var(--wb-font-caption-line-height);
+  cursor: pointer;
+  transition: color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.mcp-config-editor-back:hover {
+  color: var(--wb-color-text-primary);
+}
+.mcp-config-editor-back svg {
+  flex-shrink: 0;
+}
+.mcp-config-editor-path {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+  padding: var(--wb-spacing-2) var(--wb-spacing-6);
+  background: color-mix(in srgb, var(--wb-color-text-primary) 4%, transparent);
+  font-size: var(--wb-font-caption-size);
+  color: var(--wb-color-text-primary);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.mcp-config-editor-path-label {
+  flex-shrink: 0;
+  color: var(--wb-color-text-secondary);
+}
+.mcp-config-editor-path-value {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+}
+.mcp-config-editor-unsaved {
+  flex-shrink: 0;
+  padding: 2px var(--wb-spacing-2);
+  background: color-mix(in srgb, var(--wb-warning) 15%, transparent);
+  color: var(--wb-warning);
+  border-radius: 999px;
+  font-size: var(--wb-font-caption-size);
+  font-weight: 500;
+}
+.mcp-config-editor-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.mcp-config-editor-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-caption-size);
+}
+.mcp-config-editor-monaco-wrapper {
+  flex: 1;
+  min-height: 300px;
+  overflow: hidden;
+}
+@media (max-width: 560px) {
+  .mcp-config-editor-header,
+  .mcp-config-editor-path {
+    padding-inline: var(--wb-spacing-4);
+  }
+}
+/* ================================================
+   MCP Panel – WorkBuddy V2 Design System
+   Unified with Skills page styling
+   ================================================ */
+.mcp-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.mcp-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.mcp-panel-header-left {
+  flex: 1;
+}
+.mcp-panel-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.mcp-panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: var(--wb-color-text-primary);
+}
+.mcp-panel-subtitle {
+  font-size: 13px;
+  margin: 0;
+  color: var(--wb-color-text-secondary);
+  line-height: 1.5;
+}
+.mcp-panel-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px 0;
+  flex-shrink: 0;
+}
+.mcp-panel-search {
+  padding: 0 24px 12px;
+  flex-shrink: 0;
+}
+.mcp-panel-search .cb-search-input {
+  width: 100%;
+}
+.mcp-panel-search .cb-search-input .cb-search-input__input {
+  height: 34px;
+  border-radius: 999px;
+}
+.mcp-panel-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.mcp-panel-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px 12px;
+  flex-shrink: 0;
+}
+.mcp-panel-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--wb-color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mcp-panel-status-summary {
+  font-size: 12px;
+  color: var(--wb-color-text-secondary);
+  margin-left: auto;
+  padding-right: 24px;
+}
+.mcp-panel-status-summary .status-count-error {
+  color: var(--wb-error);
+}
+.mcp-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 24px 24px;
+  scrollbar-width: thin;
+}
+.mcp-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mcp-panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--wb-color-text-secondary);
+}
+.mcp-panel-empty svg {
+  opacity: 0.4;
+  margin-bottom: 16px;
+}
+.mcp-panel-empty-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 8px;
+  color: var(--wb-color-text-primary);
+}
+.mcp-panel-empty-desc {
+  font-size: 13px;
+  margin: 0 0 16px;
+  max-width: 280px;
+  line-height: 1.5;
+}
+/* ---------- MCP Server Item ---------- */
+.mcp-item {
+  border-radius: 12px;
+  transition: background 0.15s ease;
+}
+.mcp-item:hover {
+  background: var(--wb-bg-hover);
+}
+.mcp-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.mcp-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--wb-color-text-primary) 6%, transparent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-text-white);
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.mcp-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.mcp-item-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--wb-color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mcp-item-meta {
+  font-size: 12px;
+  color: var(--wb-color-text-secondary);
+  margin-top: 1px;
+}
+.mcp-item-meta-extra {
+  color: var(--wb-color-text-tertiary);
+}
+.mcp-item-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--wb-color-text-primary) 6%, transparent);
+  color: var(--wb-color-text-secondary);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.mcp-item-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.mcp-item-status--connecting {
+  animation: mcp-status-pulse 1.2s ease-in-out infinite;
+}
+.mcp-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.mcp-item-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  border-radius: 8px;
+  opacity: 0.6;
+  transition: all 0.15s;
+}
+.mcp-item-action:hover {
+  opacity: 1;
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.mcp-item-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+.mcp-item-action--spinning svg {
+  animation: mcp-spin 1s linear infinite;
+}
+.mcp-item-error {
+  margin: 0 14px 10px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--wb-error) 10%, transparent);
+  border-radius: 8px;
+}
+.mcp-item-error-content {
+  font-size: 12px;
+  color: var(--wb-error);
+  line-height: 1.4;
+  word-break: break-word;
+  margin-bottom: 8px;
+  max-height: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.mcp-item-error-actions {
+  display: flex;
+  gap: 16px;
+}
+.mcp-item-error-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--wb-color-text-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.mcp-item-error-link:hover {
+  color: var(--wb-color-text-primary);
+}
+.mcp-item-error-link svg {
+  width: 12px;
+  height: 12px;
+}
+.mcp-item-auth {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 12px;
+}
+.mcp-item-auth-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--wb-warning);
+}
+.mcp-item-auth-text {
+  font-size: 13px;
+  color: var(--wb-color-text-secondary);
+  flex: 1;
+}
+.mcp-item-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 2px 14px 12px;
+}
+.mcp-item-tool {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--wb-color-text-primary) 5%, transparent);
+  color: var(--wb-color-text-primary);
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, opacity 0.15s;
+}
+.mcp-item-tool:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--wb-color-text-primary) 10%, transparent);
+}
+.mcp-item-tool:disabled {
+  cursor: not-allowed;
+}
+.mcp-item-tool--disabled {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+.mcp-item-tool--disabled:hover:not(:disabled) {
+  opacity: 0.6;
+}
+.mcp-item-tool--toggling {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.mcp-item-tool--readonly {
+  cursor: default;
+}
+.mcp-item-tool--readonly:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--wb-color-text-primary) 5%, transparent);
+}
+.mcp-item--skeleton .mcp-item-header {
+  cursor: default;
+}
+.mcp-item--skeleton .mcp-item-header:hover {
+  background: none;
+}
+/* ---------- Toggle Switch ---------- */
+.mcp-toggle {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  border: none;
+  border-radius: 999px;
+  background: var(--wb-color-bg-primary-active);
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+.mcp-toggle--checked {
+  background: var(--wb-success);
+}
+.mcp-toggle--checked .mcp-toggle-thumb {
+  transform: translateX(16px);
+}
+.mcp-toggle--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.mcp-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--wb-text-white);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+/* ---------- Chevron ---------- */
+.mcp-chevron {
+  flex-shrink: 0;
+  color: var(--wb-color-text-secondary);
+  opacity: 0.6;
+  transition: transform 0.2s ease;
+}
+.mcp-chevron--expanded {
+  transform: rotate(90deg);
+}
+/* ---------- Skeleton ---------- */
+.mcp-skeleton-block {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--wb-color-text-primary) 6%, transparent) 25%, var(--wb-bg-hover) 50%, color-mix(in srgb, var(--wb-color-text-primary) 6%, transparent) 75%);
+  background-size: 200% 100%;
+  animation: mcp-skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+.mcp-skeleton-block--chevron {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+.mcp-skeleton-block--icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+.mcp-skeleton-block--name {
+  width: 120px;
+  height: 14px;
+}
+.mcp-skeleton-block--badge {
+  width: 40px;
+  height: 16px;
+  border-radius: 4px;
+}
+.mcp-skeleton-block--tools {
+  width: 80px;
+  height: 12px;
+  margin-left: auto;
+}
+.mcp-skeleton-block--toggle {
+  width: 38px;
+  height: 22px;
+  border-radius: 999px;
+}
+@keyframes mcp-skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+@keyframes mcp-status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.75);
+  }
+}
+@keyframes mcp-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* ---------- Installed Badge ---------- */
+.mcp-installed-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--wb-color-text-primary) 6%, transparent);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--wb-color-text-secondary);
+}
+/* ---------- Tools Limit Warning ---------- */
+.mcp-tools-warning {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 24px 12px;
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--wb-warning) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--wb-warning) 30%, transparent);
+  border-radius: 8px;
+}
+.mcp-tools-warning-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+}
+.mcp-tools-warning-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.mcp-tools-warning-text {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--wb-color-text-primary);
+}
+.mcp-tools-warning-text strong {
+  font-weight: 600;
+}
+.mcp-tools-warning-text p {
+  margin: 2px 0 0;
+  color: var(--wb-color-text-secondary);
+}
+.mcp-tools-warning-dismiss {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.mcp-tools-warning-dismiss:hover {
+  background: color-mix(in srgb, var(--wb-color-text-primary) 6%, transparent);
+  color: var(--wb-color-text-primary);
+}
+/* ================================================
+   MCP Security: Approval Card
+   ================================================ */
+.mcp-item-approval {
+  margin: 0 14px 8px 56px;
+  padding: 8px 10px;
+  background: color-mix(in srgb, var(--wb-warning) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--wb-warning) 20%, transparent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mcp-item-approval-text {
+  font-size: 12px;
+  color: var(--wb-color-text-secondary);
+  line-height: 1.4;
+  flex: 1;
+}
+.mcp-item-approval-actions {
+  flex-shrink: 0;
+}
+.mcp-item-approval-btn {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+}
+.mcp-item-approval-btn--approve {
+  background: var(--wb-bg-action);
+  color: var(--wb-text-white);
+}
+.mcp-item-approval-btn--approve:hover {
+  opacity: 0.85;
+}

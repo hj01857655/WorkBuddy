@@ -1,0 +1,175 @@
+.cloud-assistant-upgrade-banner-wrap {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px var(--wb-spacing-12) var(--wb-spacing-3);
+}
+/*
+ * 设计稿（ardot 节点 2311:67，904×75.54）：
+ *   - 容器：#F2F2F2 填充 + 同色描边 + 圆角 15.86，padding 12
+ *   - 左侧头像：51.54×51.54，圆角 12.95，头像与文案间距 15
+ *   - 中间标题：PingFang SC Medium 16/22，色 rgba(0,0,0,0.9)
+ *   - 中间副标题：PingFang SC Regular 12/20，色 rgba(0,0,0,0.5)
+ *   - 标题与副标题间距 3.96
+ *   - 右侧按钮：89×30，圆角 8，黑底白字，PingFang SC Medium 14/14.87，padding 8/16
+ * 说明：卡片与按钮尺寸不在 foundation Card/Button 标准档内，这里只对该业务营销条做局部精调。
+ * 颜色使用语义 token / 主题 token，确保 Claw 暗色主题下文案和容器对比度正确。
+ */
+.cloud-assistant-upgrade-banner {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 904px;
+  min-height: 76px;
+  margin: 0 auto;
+  padding: var(--wb-spacing-4);
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid var(--wb-border-subtle);
+  border-radius: var(--wb-radius-2xl);
+  background: color-mix(in srgb, var(--wb-bg-secondary) 70%, var(--wb-bg-tertiary));
+  font-family: 'PingFang SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.cloud-assistant-upgrade-banner__icon {
+  flex: 0 0 auto;
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 13px;
+  /* 头像为设计稿图片节点的重建：浅薄荷底 + 人物透明 PNG，保持 51.54px 头像观感。 */
+  background: var(--wb-palette-brand-3);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.cloud-assistant-upgrade-banner__icon-image {
+  width: 52px;
+  height: 52px;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.cloud-assistant-upgrade-banner__copy {
+  flex: 0 1 493px;
+  display: flex;
+  min-width: 0;
+  max-width: 493px;
+  flex-direction: column;
+  gap: var(--wb-spacing-2);
+}
+.cloud-assistant-upgrade-banner__copy h2,
+.cloud-assistant-upgrade-banner__copy p {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cloud-assistant-upgrade-banner__copy h2 {
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-h3-size);
+  line-height: 22px;
+  font-weight: 500;
+}
+.cloud-assistant-upgrade-banner__copy p {
+  color: var(--wb-color-text-tertiary);
+  font-size: var(--wb-font-caption-size);
+  line-height: 20px;
+  font-weight: var(--wb-font-caption-weight);
+}
+.cloud-assistant-upgrade-banner__button.wb-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 89px;
+  height: 30px;
+  margin-left: auto;
+  padding: 0 var(--wb-spacing-5);
+  box-sizing: border-box;
+  border: 0;
+  border-radius: var(--wb-radius-lg);
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+  font-family: inherit;
+  font-size: var(--wb-font-body-size);
+  line-height: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--wb-motion-duration-fast) var(--wb-motion-easing-standard), color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard), opacity var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.cloud-assistant-upgrade-banner__button.wb-button:hover:not(:disabled) {
+  background: var(--wb-button-primary-bg-hover);
+}
+.cloud-assistant-upgrade-banner__button.wb-button:focus-visible {
+  outline: 2px solid var(--wb-border-focus);
+  outline-offset: 2px;
+}
+.cloud-assistant-upgrade-banner__button.wb-button:disabled {
+  background: var(--wb-button-primary-bg-disabled);
+  color: var(--wb-button-primary-fg-disabled);
+  cursor: progress;
+  opacity: 1;
+}
+.cloud-assistant-open-team-loading-overlay.wb-modal__overlay {
+  z-index: var(--wb-colleagues-layer-promo-loading, 1003);
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: none;
+}
+.cloud-assistant-open-team-loading-modal.wb-modal {
+  max-width: 100%;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--wb-palette-white-100);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.32), 0 8px 16px rgba(0, 0, 0, 0.16);
+}
+.cloud-assistant-open-team-loading-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-10px);
+}
+.cloud-assistant-open-team-loading.wb-loading {
+  gap: 26px;
+  color: rgba(0, 0, 0, 0.76);
+}
+.cloud-assistant-open-team-loading .wb-loading__spinner {
+  width: 68px;
+  height: 68px;
+  color: #25dab6;
+}
+.cloud-assistant-open-team-loading .wb-loading__tip {
+  color: rgba(0, 0, 0, 0.76);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+  text-align: center;
+}
+@media (max-width: 720px) {
+  .cloud-assistant-upgrade-banner-wrap {
+    padding: 10px var(--wb-spacing-5) var(--wb-spacing-2);
+  }
+  .cloud-assistant-upgrade-banner {
+    min-height: 64px;
+    gap: var(--wb-spacing-4);
+    border-radius: var(--wb-radius-xl);
+  }
+  .cloud-assistant-upgrade-banner__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+  }
+  .cloud-assistant-upgrade-banner__icon-image {
+    width: 34px;
+  }
+  .cloud-assistant-upgrade-banner__button.wb-button {
+    min-width: 82px;
+    padding: 0 var(--wb-spacing-4);
+  }
+}

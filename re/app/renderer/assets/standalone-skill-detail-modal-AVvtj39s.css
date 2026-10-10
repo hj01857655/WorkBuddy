@@ -1,0 +1,956 @@
+/* 本弹窗唯一样式；禁止全局 .ec-modal-* / .skillhub-install-btn；开关用 wb-switch token */
+@keyframes sm-skill-detail-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sm-skill-detail-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes sm-skill-detail-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.sm-skill-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--wb-color-mask-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: sm-skill-detail-overlay-in 0.15s ease;
+  /* title-row: name（左）+ switch/close（右） */
+  /* 详情页启用/禁用开关已改用组件库 <Switch size="large" />（34×20），样式由 wb-switch-* token 承担。 */
+  /* 已安装状态未确定时的主按钮骨架占位（#103026） */
+  /* 对齐 skills 详情页 .skill-detail-more-btn：32 等高、无描边、hover 底色 */
+  /* 四个 section 的标题行（基本信息 / 概述 / 试试这样用 / 使用案例）统一距下方内容 16px。
+       注意：title 与 header 常挂在同一节点，title 不得用 margin 简写盖掉 header 的 margin-bottom。 */
+  /* 设计稿 Search 折叠态：30×30；浅色 icon 70%，深色见下方主题块 */
+  /* 设计稿 Search 组件：W Fixed 240 / H Fixed 30。
+       浅色底走 bg-primary-default，深色底在下方主题块覆盖为 --wb-bg-tertiary。 */
+  /* 概述正文区固定 400px：内容不足时留白撑住高度，超出时内部滚动，
+       避免不同技能的概述长短不一导致弹窗高度跳变。 */
+}
+.sm-skill-detail-overlay .sm-skill-detail-card {
+  background: var(--wb-bg-primary);
+  border-radius: 16px;
+  width: 520px;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--wb-shadow-dialog-md);
+  position: relative;
+  overflow: hidden;
+  animation: sm-skill-detail-card-in 0.2s ease forwards;
+  /* 尺寸与技能菜单下的弹窗（.ec-modal-card.is-skill-view）保持一致 */
+  /* 弹窗高度自适应时，预览区靠 min-height 撑出可视高度 */
+  /*
+         * 案例二级页沿用技能页锁定的高度，若预览区仍吃 min-height 会顶出容器，
+         * 底部「查看详情 / 做同款」被裁掉（#102447）。此处让预览区可压缩，
+         * 并收紧内边距与间距，把空间让给底部操作区。
+         */
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view {
+  width: min(640px, calc(100vw - 40px));
+  max-width: min(640px, calc(100vw - 40px));
+  height: auto;
+  border-radius: 24px;
+  max-height: calc(100vh - 112px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .dc-case-preview-body {
+  min-height: calc(var(--wb-spacing-12) * 6);
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view.is-case-view {
+  /* 技能页很矮时锁定高度会挤扁预览区，兜一个最小高度（仍受 max-height 约束） */
+  min-height: min(560px, calc(100vh - 112px));
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view.is-case-view .dc-case-preview {
+  padding-bottom: 16px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view.is-case-view .dc-case-preview-body {
+  min-height: calc(var(--wb-spacing-12) * 2);
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view.is-case-view .dc-case-preview-footer {
+  margin-top: 12px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-view {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.sm-skill-detail-overlay .sm-skill-detail-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sm-skill-detail-overlay .sm-skill-detail-header {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+  flex-shrink: 0;
+  padding: 24px 24px 0 24px;
+  z-index: 2;
+}
+.sm-skill-detail-overlay .sm-skill-detail-icon-wrap {
+  flex-shrink: 0;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sm-skill-detail-overlay .sm-skill-detail-icon-wrap > img,
+.sm-skill-detail-overlay .sm-skill-detail-icon-wrap > span {
+  width: 100%;
+  height: 100%;
+  border-radius: 50% !important;
+}
+.sm-skill-detail-overlay .sm-skill-detail-header-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-title-row h2 {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 20px;
+  font-weight: 600;
+  /* 浅色走语义主色；深色稿覆写为白 90%（见下方主题块） */
+  color: var(--wb-color-text-primary);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sm-skill-detail-overlay .sm-skill-detail-secondary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-close {
+  position: static;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: var(--wb-radius-md);
+  background: transparent;
+  /* CloseIcon 是单一实心 path，可用半透明色 */
+  color: var(--wb-color-text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.sm-skill-detail-overlay .sm-skill-detail-close svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  color: inherit;
+}
+.sm-skill-detail-overlay .sm-skill-detail-close:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.sm-skill-detail-overlay .sm-skill-detail-toggle {
+  flex-shrink: 0;
+  align-self: center;
+}
+.sm-skill-detail-overlay .sm-skill-detail-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-action-row:empty {
+  display: none;
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn-skeleton {
+  box-sizing: border-box;
+  display: inline-block;
+  width: 96px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--wb-border-subtle) 50%, transparent) 25%, var(--wb-bg-hover) 50%, color-mix(in srgb, var(--wb-border-subtle) 50%, transparent) 75%);
+  background-size: 200% 100%;
+  animation: sm-skill-detail-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn {
+  box-sizing: border-box;
+  height: 32px;
+  padding: 0 24px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  /* v4 主按钮（安装 / 去试试）：设计稿浅色黑 90%，hover 减淡到 75% */
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  /* path 已 fill="currentColor"，随按钮 color 变（浅色白字 / 深色黑字） */
+  color: inherit;
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn--primary {
+  border: none;
+  background: var(--wb-palette-black-90);
+  color: var(--wb-text-white);
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn--primary:hover:not(:disabled) {
+  background: var(--wb-palette-black-75);
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn--update {
+  background: transparent;
+  border: 1px solid var(--wb-status-success);
+  color: var(--wb-status-success);
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn--update:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--wb-status-success) 10%, transparent);
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn--installing {
+  border: none;
+  background: var(--wb-button-primary-bg-disabled);
+  color: var(--wb-button-primary-fg-disabled);
+  cursor: not-allowed;
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn--installing:disabled {
+  opacity: 1;
+}
+.sm-skill-detail-overlay .sm-skill-detail-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.sm-skill-detail-overlay .sm-skill-detail-more {
+  position: relative;
+  flex-shrink: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-more-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--wb-color-text-secondary);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.sm-skill-detail-overlay .sm-skill-detail-more-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-more-btn:hover {
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-hover);
+}
+.sm-skill-detail-overlay .sm-skill-detail-more-btn.is-open {
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-hover);
+}
+.sm-skill-detail-overlay .sm-skill-detail-scroll-shell {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.sm-skill-detail-overlay .sm-skill-detail-scroll-body {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 0 24px 24px 24px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sm-skill-detail-overlay .sm-skill-detail-scroll-body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-scroll-body > * {
+  flex-shrink: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-scroll-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: calc(var(--wb-spacing-9) + var(--wb-spacing-2));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--wb-motion-duration-sm) var(--wb-motion-easing-standard);
+}
+.sm-skill-detail-overlay .sm-skill-detail-scroll-fade-top {
+  top: 0;
+  background: linear-gradient(180deg, var(--wb-bg-primary) 0%, transparent 100%);
+}
+.sm-skill-detail-overlay .sm-skill-detail-scroll-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(0deg, var(--wb-bg-primary) 0%, transparent 100%);
+}
+.sm-skill-detail-overlay .sm-skill-detail-scroll-shell.has-top-fade .sm-skill-detail-scroll-fade-top,
+.sm-skill-detail-overlay .sm-skill-detail-scroll-shell.has-bottom-fade .sm-skill-detail-scroll-fade-bottom {
+  opacity: 1;
+}
+.sm-skill-detail-overlay .sm-skill-detail-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 20px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-intro:not(:has(*)) {
+  display: none;
+}
+.sm-skill-detail-overlay .sm-skill-detail-desc-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-desc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  /* 设计稿指定 #000000 90%；palette 不随主题翻转，深色模式在下方覆写为 white-90 */
+  color: var(--wb-palette-black-90);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.sm-skill-detail-overlay .sm-skill-detail-desc--clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.sm-skill-detail-overlay .sm-skill-detail-desc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--wb-color-text-tertiary);
+  cursor: pointer;
+  align-self: flex-start;
+  transition: color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.sm-skill-detail-overlay .sm-skill-detail-desc-toggle svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.sm-skill-detail-overlay .sm-skill-detail-desc-toggle.is-expanded svg {
+  transform: rotate(180deg);
+}
+.sm-skill-detail-overlay .sm-skill-detail-desc-toggle:hover {
+  color: var(--wb-color-text-secondary);
+}
+.sm-skill-detail-overlay .sm-skill-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 24px;
+  /* 底色对齐「试试这样用」item（--wb-bg-secondary），随主题；勿用 palette-gray-3（深色不对） */
+  background: var(--wb-bg-secondary);
+  color: var(--wb-color-text-secondary);
+  /* 对齐 wb-components Tag tone="warning"，走同一套 token 才能跟随深色主题 */
+}
+.sm-skill-detail-overlay .sm-skill-detail-chip svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-chip--api-key {
+  background: var(--wb-tag-warning-bg);
+  color: var(--wb-tag-warning-color-text);
+  border: 1px solid rgba(192, 65, 0, 0.2);
+}
+.sm-skill-detail-overlay .sm-skill-detail-section-header {
+  margin-bottom: 16px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  color: var(--wb-color-text-primary);
+}
+.sm-skill-detail-overlay .sm-skill-detail-section-title-icon {
+  display: inline-flex;
+  color: var(--wb-color-text-primary);
+}
+.sm-skill-detail-overlay .sm-skill-detail-examples {
+  margin: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-examples-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-examples--disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+.sm-skill-detail-overlay .sm-skill-detail-examples-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  box-sizing: border-box;
+  min-height: 46px;
+  padding: 14px 20px;
+  background: var(--wb-bg-secondary);
+  /* 静态态描边透明占位，hover 才显色，避免边框引起布局抖动 */
+  border: 0.5px solid transparent;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  /* 设计稿：示例文案 黑 70% */
+  color: var(--wb-palette-black-70);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.sm-skill-detail-overlay .sm-skill-detail-examples-card:hover:not(:disabled) {
+  background: var(--wb-bg-hover-light);
+  border-color: var(--wb-color-border-solid);
+}
+.sm-skill-detail-overlay .sm-skill-detail-examples-card:disabled {
+  cursor: not-allowed;
+}
+.sm-skill-detail-overlay .sm-skill-detail-examples-text {
+  flex: 1;
+  min-width: 0;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.sm-skill-detail-overlay .sm-skill-detail-examples-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--wb-color-text-tertiary);
+}
+.sm-skill-detail-overlay .sm-skill-detail-examples-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-cases {
+  margin: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-list {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: flex-start;
+  gap: 14px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: calc(var(--wb-spacing-12) * 2 + var(--wb-spacing-6) + var(--wb-spacing-3));
+  padding: 0;
+  box-sizing: border-box;
+  border: 0.5px solid var(--wb-color-border-solid);
+  border-radius: var(--wb-radius-2xl);
+  background: var(--wb-bg-primary);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard), background-color var(--wb-motion-duration-fast) var(--wb-motion-easing-standard);
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-card:hover {
+  border-color: var(--wb-color-border-solid);
+  /* hover 底色与示例卡片同 token */
+  background: var(--wb-bg-hover-light);
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-cover {
+  display: flex;
+  width: 100%;
+  height: calc(var(--wb-spacing-12) + var(--wb-spacing-8) + var(--wb-spacing-1));
+  flex-shrink: 0;
+  background: var(--wb-bg-secondary);
+  overflow: hidden;
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--wb-bg-secondary), var(--wb-bg-hover));
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-info {
+  flex-shrink: 0;
+  display: flex;
+  min-height: calc(var(--wb-spacing-10) + var(--wb-spacing-3) + var(--wb-spacing-1));
+  padding: calc(var(--wb-spacing-3) + var(--wb-spacing-1)) var(--wb-spacing-4);
+  box-sizing: border-box;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: var(--wb-spacing-1);
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-title {
+  align-self: stretch;
+  color: var(--wb-color-text-primary);
+  font-family: var(--wb-font-family, "PingFang SC");
+  text-align: left;
+  font-size: var(--wb-font-body-size);
+  font-weight: 600;
+  font-style: normal;
+  text-decoration-line: none;
+  line-height: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sm-skill-detail-overlay .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-subtitle {
+  align-self: stretch;
+  color: var(--wb-color-text-secondary);
+  font-family: var(--wb-font-family, "PingFang SC");
+  font-size: var(--wb-font-caption-size);
+  font-weight: 400;
+  font-style: normal;
+  text-decoration-line: none;
+  line-height: 17px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sm-skill-detail-overlay .sm-skill-detail-basic {
+  margin: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-basic-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 12px;
+  box-sizing: border-box;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: var(--wb-bg-secondary);
+}
+.sm-skill-detail-overlay .sm-skill-detail-basic-bar:empty {
+  display: none;
+}
+.sm-skill-detail-overlay .sm-skill-detail-basic-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  width: 50%;
+}
+.sm-skill-detail-overlay .sm-skill-detail-basic-label {
+  flex: none;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--wb-color-text-tertiary);
+}
+.sm-skill-detail-overlay .sm-skill-detail-basic-value {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--wb-color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+  /* overview 自身 flex gap 已承担标题行与下方内容间距，避免与 section-header 叠成 32px */
+  margin-bottom: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-header .sm-skill-detail-section-title {
+  flex-shrink: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  box-sizing: border-box;
+  height: 28px;
+  padding: 2px;
+  border: none;
+  border-radius: 8px;
+  background: var(--wb-palette-gray-3);
+}
+.sm-skill-detail-overlay .sm-skill-detail-lang-btn {
+  box-sizing: border-box;
+  height: 24px;
+  min-width: 28px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+}
+.sm-skill-detail-overlay .sm-skill-detail-lang-btn.is-active {
+  background: var(--wb-bg-primary);
+  color: var(--wb-color-text-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 6px;
+  color: rgba(0, 0, 0, 0.7);
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-icon-btn:hover:not(:disabled) {
+  background: #f2f2f2;
+  color: rgba(0, 0, 0, 0.9);
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box {
+  flex-shrink: 0;
+  width: 240px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .sm-skill-detail-overview-search-input,
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .wb-input {
+  width: 100%;
+  height: 30px;
+  background: var(--wb-color-bg-primary-default, #f2f2f2);
+  border: none;
+  border-radius: 8px;
+  box-shadow: none;
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .sm-skill-detail-overview-search-input:hover,
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .wb-input:hover,
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .sm-skill-detail-overview-search-input:focus,
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .wb-input:focus,
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .sm-skill-detail-overview-search-input:focus-within,
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .wb-input:focus-within {
+  border: none;
+  box-shadow: none;
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .wb-input__icon-button {
+  transition: background-color var(--wb-motion-duration-fast, 0.15s) ease, color var(--wb-motion-duration-fast, 0.15s) ease;
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-box .wb-input__icon-button:hover:not(:disabled) {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-counter {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wb-color-text-tertiary);
+  padding: 0 2px;
+  white-space: nowrap;
+}
+.sm-skill-detail-overlay .sm-skill-detail-overview-search-counter--empty {
+  color: var(--wb-error-foreground);
+}
+.sm-skill-detail-overlay .sm-skill-detail-translation-notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  margin: 0;
+  background: rgba(0, 122, 204, 0.08);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground, #6b7280);
+  flex-shrink: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-preview-shell {
+  position: relative;
+  border-radius: 16px;
+  background: var(--wb-bg-secondary);
+  overflow: hidden;
+}
+.sm-skill-detail-overlay .sm-skill-detail-preview,
+.sm-skill-detail-overlay .sm-skill-detail-overview-body {
+  position: relative;
+  background: transparent;
+  border-radius: 0;
+  padding: 24px;
+  margin-top: 0;
+  box-sizing: border-box;
+  height: 400px;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sm-skill-detail-overlay .sm-skill-detail-preview::-webkit-scrollbar,
+.sm-skill-detail-overlay .sm-skill-detail-overview-body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-preview mark[data-overview-hit],
+.sm-skill-detail-overlay .sm-skill-detail-overview-body mark[data-overview-hit] {
+  background: #ffe58f;
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-preview mark[data-overview-hit].is-current,
+.sm-skill-detail-overlay .sm-skill-detail-overview-body mark[data-overview-hit].is-current {
+  background: #ffa500;
+  outline: 2px solid #ffa500;
+}
+.sm-skill-detail-overlay .sm-skill-detail-preview-thumb {
+  position: absolute;
+  top: 0;
+  right: 2px;
+  width: 4px;
+  border-radius: 12px;
+  background: var(--wb-palette-gray-4);
+  pointer-events: none;
+  z-index: 2;
+}
+.sm-skill-detail-overlay .sm-skill-detail-preview-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--wb-bg-secondary) 0%, transparent) 0%, var(--wb-bg-secondary) 86%);
+  transition: opacity var(--wb-motion-duration-sm) var(--wb-motion-easing-standard);
+}
+.sm-skill-detail-overlay .sm-skill-detail-preview-fade.is-visible {
+  opacity: 1;
+}
+.sm-skill-detail-overlay .sm-skill-detail-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+  margin: 0;
+}
+.sm-skill-detail-overlay .sm-skill-detail-skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--wb-border-subtle) 50%, transparent) 25%, var(--wb-bg-hover) 50%, color-mix(in srgb, var(--wb-border-subtle) 50%, transparent) 75%);
+  background-size: 200% 100%;
+  animation: sm-skill-detail-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+.sm-skill-detail-overlay .sm-skill-detail-skeleton-line--title {
+  width: 40%;
+  height: 20px;
+  margin-bottom: 6px;
+}
+.sm-skill-detail-overlay .sm-skill-detail-skeleton-line--full {
+  width: 100%;
+}
+.sm-skill-detail-overlay .sm-skill-detail-skeleton-line--medium {
+  width: 72%;
+}
+.sm-skill-detail-overlay .sm-skill-detail-skeleton-line--short {
+  width: 45%;
+}
+/* 深色主题：概述搜索对齐 skills 详情页（#100211 / PR #100877） */
+body.vscode-dark,
+body[data-vscode-theme-kind="vscode-dark"],
+[data-theme="dark"],
+.dark {
+  /* 主按钮反相：白 75% 底 + 黑 90% 文字/icon，hover 提亮到白 90% */
+  /* 深色：案例标题 / 副标题 */
+  /* 深色稿：API Key chip 描边跟随 orange-9 深色值 */
+}
+body.vscode-dark .sm-skill-detail-btn--primary,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-btn--primary,
+[data-theme="dark"] .sm-skill-detail-btn--primary,
+.dark .sm-skill-detail-btn--primary {
+  background: var(--wb-palette-white-75);
+  color: var(--wb-palette-black-90);
+}
+body.vscode-dark .sm-skill-detail-btn--primary:hover:not(:disabled),
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-btn--primary:hover:not(:disabled),
+[data-theme="dark"] .sm-skill-detail-btn--primary:hover:not(:disabled),
+.dark .sm-skill-detail-btn--primary:hover:not(:disabled) {
+  background: var(--wb-palette-white-90);
+}
+body.vscode-dark .sm-skill-detail-overview-search-icon-btn,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-overview-search-icon-btn,
+[data-theme="dark"] .sm-skill-detail-overview-search-icon-btn,
+.dark .sm-skill-detail-overview-search-icon-btn {
+  color: rgba(255, 255, 255, 0.7);
+}
+body.vscode-dark .sm-skill-detail-overview-search-icon-btn:hover:not(:disabled),
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-overview-search-icon-btn:hover:not(:disabled),
+[data-theme="dark"] .sm-skill-detail-overview-search-icon-btn:hover:not(:disabled),
+.dark .sm-skill-detail-overview-search-icon-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+body.vscode-dark .sm-skill-detail-overview-search-box .wb-input,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-overview-search-box .wb-input,
+[data-theme="dark"] .sm-skill-detail-overview-search-box .wb-input,
+.dark .sm-skill-detail-overview-search-box .wb-input,
+body.vscode-dark .sm-skill-detail-overview-search-box .sm-skill-detail-overview-search-input,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-overview-search-box .sm-skill-detail-overview-search-input,
+[data-theme="dark"] .sm-skill-detail-overview-search-box .sm-skill-detail-overview-search-input,
+.dark .sm-skill-detail-overview-search-box .sm-skill-detail-overview-search-input {
+  background: var(--wb-bg-tertiary);
+}
+body.vscode-dark .sm-skill-detail-section-title,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-section-title,
+[data-theme="dark"] .sm-skill-detail-section-title,
+.dark .sm-skill-detail-section-title {
+  color: var(--wb-palette-white-90);
+}
+body.vscode-dark .sm-skill-detail-section-title .sm-skill-detail-section-title-icon,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-section-title .sm-skill-detail-section-title-icon,
+[data-theme="dark"] .sm-skill-detail-section-title .sm-skill-detail-section-title-icon,
+.dark .sm-skill-detail-section-title .sm-skill-detail-section-title-icon {
+  color: var(--wb-palette-white-90);
+}
+body.vscode-dark .sm-skill-detail-title-row h2,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-title-row h2,
+[data-theme="dark"] .sm-skill-detail-title-row h2,
+.dark .sm-skill-detail-title-row h2 {
+  color: var(--wb-palette-white-90);
+}
+body.vscode-dark .sm-skill-detail-desc,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-desc,
+[data-theme="dark"] .sm-skill-detail-desc,
+.dark .sm-skill-detail-desc {
+  color: var(--wb-palette-white-90);
+}
+body.vscode-dark .sm-skill-detail-examples-card,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-examples-card,
+[data-theme="dark"] .sm-skill-detail-examples-card,
+.dark .sm-skill-detail-examples-card {
+  color: var(--wb-palette-white-90);
+}
+body.vscode-dark .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-title,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-title,
+[data-theme="dark"] .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-title,
+.dark .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-title {
+  color: var(--wb-palette-white-90);
+}
+body.vscode-dark .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-subtitle,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-subtitle,
+[data-theme="dark"] .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-subtitle,
+.dark .sm-skill-detail-card.is-skill-view .sm-skill-detail-case-subtitle {
+  color: var(--wb-palette-white-70);
+}
+body.vscode-dark .sm-skill-detail-chip--api-key,
+body[data-vscode-theme-kind="vscode-dark"] .sm-skill-detail-chip--api-key,
+[data-theme="dark"] .sm-skill-detail-chip--api-key,
+.dark .sm-skill-detail-chip--api-key {
+  border-color: rgba(241, 133, 77, 0.2);
+}

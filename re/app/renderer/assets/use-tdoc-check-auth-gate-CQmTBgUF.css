@@ -1,0 +1,869 @@
+/* ============================================================
+ * Tencent Docs AuthGuide Styles
+ *
+ * AuthGuide 组件（授权引导页 + 授权中 webview）自带样式。
+ *
+ * 为什么独立成文件并由组件自行 import：
+ *   AuthGuide 会被 TencentDocsPanel（资料库面板）、FolderPickerModal（上云）、
+ *   DocSelectorModal（@提及选择腾讯文档）等多处复用。这些样式原先只写在
+ *   tencent-docs-panel.less 里，只有挂载过资料库面板的窗口才会加载。Office
+ *   独立窗口从不挂载资料库面板，导致 AuthGuide 的品牌 logo 无尺寸约束、以原图
+ *   撑满弹窗（issue: Office 腾讯文档授权弹窗异常）。收敛到组件自带样式后，任何
+ *   渲染 AuthGuide 的场景都拿到完整样式，与 ima 的 ImaLibraryAuthEntry 同口径。
+ * ============================================================ */
+.tencent-docs-auth-guide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  padding: 24px;
+  overflow: auto;
+}
+.tencent-docs-auth-guide__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 520px;
+  gap: 20px;
+}
+/* ---- 顶部品牌图标区：WB  >>>  腾讯文档 ---- */
+.tencent-docs-auth-guide__brands {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.tencent-docs-auth-guide__brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.tencent-docs-auth-guide__brand-icon img,
+.tencent-docs-auth-guide__brand-icon svg {
+  display: block;
+}
+.tencent-docs-auth-guide__brand-icon--wb {
+  background: var(--wb-brand-primary-subtle);
+  padding: 8px;
+}
+.tencent-docs-auth-guide__brand-icon--wb img {
+  width: 40px;
+  height: 40px;
+}
+.tencent-docs-auth-guide__brand-icon--tdoc {
+  background: var(--wb-bg-info);
+  padding: 8px;
+}
+.tencent-docs-auth-guide__brand-icon--tdoc img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+.tencent-docs-auth-guide__connect-arrows {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  color: var(--wb-color-text-tertiary);
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 600;
+  user-select: none;
+}
+.tencent-docs-auth-guide__connect-arrow {
+  display: inline-block;
+  line-height: 1;
+  opacity: 0.25;
+  animation: tdoc-auth-arrow-flow 1.6s ease-in-out infinite;
+}
+.tencent-docs-auth-guide__connect-arrow--1 {
+  animation-delay: 0s;
+}
+.tencent-docs-auth-guide__connect-arrow--2 {
+  animation-delay: 0.2s;
+}
+.tencent-docs-auth-guide__connect-arrow--3 {
+  animation-delay: 0.4s;
+}
+@keyframes tdoc-auth-arrow-flow {
+  0% {
+    opacity: 0.25;
+    transform: translateX(-2px);
+    color: var(--wb-color-text-tertiary);
+  }
+  40% {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--wb-brand-bright);
+  }
+  70% {
+    opacity: 0.5;
+    transform: translateX(1px);
+    color: var(--wb-brand-soft);
+  }
+  100% {
+    opacity: 0.25;
+    transform: translateX(-2px);
+    color: var(--wb-color-text-tertiary);
+  }
+}
+/* ---- 标题 ---- */
+.tencent-docs-auth-guide__title {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--wb-color-text-primary);
+}
+/* ---- 描述文案 ---- */
+.tencent-docs-auth-guide__desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--wb-color-text-secondary);
+  max-width: 440px;
+}
+.tencent-docs-auth-guide__desc strong {
+  color: inherit;
+  font-weight: inherit;
+}
+/* ---- 权限卡片 ---- */
+.tencent-docs-auth-guide__permissions {
+  width: 100%;
+  padding: 20px 24px;
+  border-radius: 6px;
+  background: var(--wb-bg-secondary);
+  border: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.tencent-docs-auth-guide__permissions-title {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--wb-color-text-tertiary);
+  line-height: 1.4;
+}
+.tencent-docs-auth-guide__permissions-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.tencent-docs-auth-guide__permission-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.tencent-docs-auth-guide__permission-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--wb-color-text-primary);
+  margin-top: 2px;
+}
+.tencent-docs-auth-guide__permission-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.tencent-docs-auth-guide__permission-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--wb-color-text-primary);
+  line-height: 1.4;
+}
+.tencent-docs-auth-guide__permission-desc {
+  font-size: 12px;
+  color: var(--wb-color-text-tertiary);
+  line-height: 1.5;
+}
+/* ---- 错误提示 ---- */
+.tencent-docs-auth-guide__error {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--wb-bg-error-subtle);
+  color: var(--wb-status-error);
+  font-size: 12px;
+  line-height: 1.4;
+  width: 100%;
+}
+/* ---- 主行动按钮（黑色主按钮） ---- */
+.tencent-docs-auth-guide__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 24px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+}
+.tencent-docs-auth-guide__btn:hover:not(:disabled) {
+  background: var(--wb-button-primary-bg-hover);
+}
+.tencent-docs-auth-guide__btn:active:not(:disabled) {
+  background: var(--wb-button-primary-bg-active);
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.tencent-docs-auth-guide__btn-label {
+  line-height: 1;
+}
+.tencent-docs-auth-guide__btn--loading {
+  opacity: 0.75;
+}
+.tencent-docs-auth-guide__btn--loading:hover:not(:disabled) {
+  background: var(--wb-control-selected-bg);
+}
+/* ---- 底部隐私提示 ---- */
+.tencent-docs-auth-guide__footer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--wb-color-text-tertiary);
+  line-height: 1.4;
+  margin-top: 4px;
+}
+.tencent-docs-auth-guide__footer svg {
+  color: var(--wb-brand-bright);
+  flex-shrink: 0;
+}
+.tencent-docs-auth-guide__spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: tdoc-spin 0.6s linear infinite;
+}
+@keyframes tdoc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* ---- Dark Mode（对齐乐享授权页） ---- */
+.cb-dark .tencent-docs-auth-guide__title,
+.dark .tencent-docs-auth-guide__title {
+  color: var(--wb-color-text-primary);
+}
+.cb-dark .tencent-docs-auth-guide__permissions,
+.dark .tencent-docs-auth-guide__permissions {
+  background: var(--wb-bg-secondary);
+}
+.cb-dark .tencent-docs-auth-guide__permission-icon,
+.dark .tencent-docs-auth-guide__permission-icon {
+  color: var(--wb-color-text-primary);
+}
+.cb-dark .tencent-docs-auth-guide__permission-label,
+.dark .tencent-docs-auth-guide__permission-label {
+  color: var(--wb-color-text-primary);
+}
+.cb-dark .tencent-docs-auth-guide__btn,
+.dark .tencent-docs-auth-guide__btn {
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+}
+.cb-dark .tencent-docs-auth-guide__btn:hover:not(:disabled),
+.dark .tencent-docs-auth-guide__btn:hover:not(:disabled) {
+  background: var(--wb-button-primary-bg-hover);
+}
+.cb-dark .tencent-docs-auth-guide__btn:active:not(:disabled),
+.dark .tencent-docs-auth-guide__btn:active:not(:disabled) {
+  background: var(--wb-button-primary-bg-active);
+}
+.cb-dark .tencent-docs-auth-guide__btn--loading:hover:not(:disabled),
+.dark .tencent-docs-auth-guide__btn--loading:hover:not(:disabled) {
+  background: var(--wb-button-primary-bg-hover);
+}
+/* ============================================================
+ * Auth Webview (in-page authorization via Electron webview)
+ * ============================================================ */
+.tencent-docs-auth-webview-container {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.tencent-docs-auth-webview {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+/* ============================================================
+ * 腾讯文档文件列表（VirtualList）自带样式。
+ *
+ * 这些规则原本住在 tencent-docs-panel.less 里，只有主窗腾讯文档面板挂载时才会被
+ * import。结果是复用 VirtualList 的其它场景——FolderPickerModal（上传目录选择）、
+ * DocSelector、Office 独立窗的上传弹窗——列表行拿不到 display:flex，整张表塌成
+ * 纯文本堆叠（#67931）。改由 file-list/index.tsx 自己 import，谁用谁带。
+ * ============================================================ */
+/* ---- File List Container ---- */
+.tdoc-file-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.tdoc-file-list__body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.tdoc-file-list__body > div {
+  height: 100% !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.tdoc-file-list__body > div::-webkit-scrollbar {
+  display: none;
+}
+/* ---- File List Header ---- */
+.tdoc-file-list-header {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  border-bottom: none;
+  flex-shrink: 0;
+  padding-left: 48px;
+  padding-right: 24px;
+  position: relative;
+  box-sizing: border-box;
+}
+.tdoc-file-list-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 48px;
+  right: 0;
+  height: 0.5px;
+  background: var(--wb-border-subtle);
+}
+.tdoc-file-list-header__checkbox-cell {
+  width: 24px;
+  margin-left: -24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tdoc-file-list-header__checkbox-cell .cb-checkbox {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.tdoc-file-list-header__checkbox-cell .cb-checkbox .cb-checkbox__box {
+  border-radius: 4px;
+  width: 16px;
+  height: 16px;
+  border-color: var(--wb-checkbox-border-default);
+}
+.tdoc-file-list-header__checkbox-cell .cb-checkbox .cb-checkbox__box::after {
+  width: 4px;
+  height: 8px;
+  border-width: 0 1.5px 1.5px 0;
+  transform: translate(-50%, -55%) rotate(45deg);
+}
+.tdoc-file-list-header__checkbox-cell .cb-checkbox.cb-checkbox--checked .cb-checkbox__box {
+  background: var(--wb-control-checkbox-selected-bg);
+  border-color: var(--wb-control-checkbox-selected-bg);
+}
+.tdoc-file-list-header__checkbox-cell .cb-checkbox.cb-checkbox--checked .cb-checkbox__box::after {
+  border-color: var(--wb-control-checkbox-selected-fg);
+}
+.tdoc-file-list-header__checkbox-cell .cb-checkbox:hover .cb-checkbox__box {
+  border-color: var(--wb-checkbox-border-hover);
+}
+.tdoc-file-list-header:hover .tdoc-file-list-header__checkbox-cell .cb-checkbox {
+  opacity: 1;
+}
+.tdoc-file-list-header__cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: normal;
+  color: var(--wb-color-text-secondary);
+  min-width: 0;
+  overflow: hidden;
+}
+.tdoc-file-list-header__cell:first-child,
+.tdoc-file-list-header__checkbox-cell + .tdoc-file-list-header__cell {
+  padding-left: 0;
+}
+.tdoc-file-list-header__cell:last-child {
+  padding-right: 0;
+}
+.tdoc-file-list-header__cell--sortable {
+  cursor: pointer;
+}
+.tdoc-file-list-header__cell--sortable:hover {
+  color: var(--wb-color-text-secondary);
+}
+.tdoc-file-list-header__cell--right {
+  justify-content: flex-end;
+}
+.tdoc-file-list-header__cell--center {
+  justify-content: center;
+  text-align: center;
+}
+.tdoc-file-list-header__label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tdoc-file-list-header__cell:has(.tdoc-time-sort-dropdown) {
+  overflow: visible;
+}
+.tdoc-file-list-header__label:has(.tdoc-time-sort-dropdown) {
+  overflow: visible;
+}
+.tdoc-file-list-header__sort-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--wb-color-text-secondary);
+}
+/* ---- File Type Icon ---- */
+.tdoc-file-type-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-text-on-primary);
+  font-weight: 600;
+  line-height: 1;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+.tdoc-file-type-icon--folder {
+  background: transparent;
+}
+/* ---- File List Item ---- */
+.tdoc-file-list-item {
+  display: flex;
+  align-items: center;
+  padding-left: 48px;
+  padding-right: 24px;
+  height: 57px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  border-bottom: none;
+  position: relative;
+}
+.tdoc-file-list-item::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 48px;
+  right: 0;
+  height: 0.5px;
+  background: var(--wb-border-subtle);
+}
+.tdoc-file-list-item:hover {
+  background: var(--wb-bg-hover);
+}
+.tdoc-file-list-item:hover .tdoc-file-list-item__checkbox-cell .cb-checkbox {
+  opacity: 1;
+}
+.tdoc-file-list-item--selected {
+  background: var(--wb-bg-hover);
+}
+.tdoc-file-list-item--checked {
+  background: var(--wb-bg-active);
+}
+.tdoc-file-list-item--checked::after {
+  background: transparent;
+}
+.tdoc-file-list-item--checked .tdoc-file-list-item__checkbox-cell .cb-checkbox {
+  opacity: 1;
+}
+.tdoc-file-list-item--folder .tdoc-file-list-item__name {
+  font-weight: 500;
+}
+.tdoc-file-list-item__cell {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+.tdoc-file-list-item__cell:first-child,
+.tdoc-file-list-item__checkbox-cell + .tdoc-file-list-item__cell {
+  padding-left: 0;
+}
+.tdoc-file-list-item__cell:last-child {
+  padding-right: 0;
+}
+.tdoc-file-list-item__cell--right {
+  justify-content: flex-end;
+}
+.tdoc-file-list-item__cell--center {
+  justify-content: center;
+  text-align: center;
+}
+.tdoc-file-list-item__checkbox-cell {
+  width: 24px;
+  margin-left: -24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tdoc-file-list-item__checkbox-cell .cb-checkbox {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.tdoc-file-list-item__checkbox-cell .cb-checkbox .cb-checkbox__box {
+  border-radius: 4px;
+  width: 16px;
+  height: 16px;
+  border-color: var(--wb-checkbox-border-default);
+}
+.tdoc-file-list-item__checkbox-cell .cb-checkbox .cb-checkbox__box::after {
+  width: 4px;
+  height: 8px;
+  border-width: 0 1.5px 1.5px 0;
+  transform: translate(-50%, -55%) rotate(45deg);
+}
+.tdoc-file-list-item__checkbox-cell .cb-checkbox.cb-checkbox--checked .cb-checkbox__box {
+  background: var(--wb-control-checkbox-selected-bg);
+  border-color: var(--wb-control-checkbox-selected-bg);
+}
+.tdoc-file-list-item__checkbox-cell .cb-checkbox.cb-checkbox--checked .cb-checkbox__box::after {
+  border-color: var(--wb-control-checkbox-selected-fg);
+}
+.tdoc-file-list-item__checkbox-cell .cb-checkbox:hover .cb-checkbox__box {
+  border-color: var(--wb-checkbox-border-hover);
+}
+.tdoc-file-list-item__checkbox-cell .cb-checkbox.cb-checkbox--disabled {
+  opacity: 0;
+  cursor: default;
+}
+.tdoc-file-list-item__checkbox-cell .cb-checkbox.cb-checkbox--disabled .cb-checkbox__box {
+  border-color: var(--wb-checkbox-border-default);
+  background: var(--wb-checkbox-bg-default);
+  cursor: default;
+}
+.tdoc-file-list-item:hover .tdoc-file-list-item__checkbox-cell .cb-checkbox.cb-checkbox--disabled {
+  opacity: 1;
+}
+.tdoc-file-list-item__name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.tdoc-file-list-item__name {
+  font-size: 14px;
+  color: var(--wb-color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+.tdoc-file-list-item__actions {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.tdoc-file-list-item:hover .tdoc-file-list-item__actions {
+  display: inline-flex;
+}
+.tdoc-file-list-item__action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--wb-color-text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tdoc-file-list-item__action-btn:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.tdoc-file-list-item__add-task-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  /* 图标用 currentColor，跟随 --wb-icon-primary：浅色 rgba(0,0,0,0.9)，暗色 ≈ #FFF，自动适配 */
+  color: var(--wb-icon-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.tdoc-file-list-item__add-task-btn:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-icon-primary);
+}
+.tdoc-file-list-item:hover .tdoc-file-list-item__add-task-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+.tdoc-file-list-item__checkbox-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tdoc-file-list-item__text {
+  font-size: 13px;
+  color: var(--wb-color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tdoc-file-list-item__text--right {
+  text-align: right;
+  width: 100%;
+}
+.tdoc-file-list-item:focus-visible {
+  outline: 2px solid var(--wb-border-action);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+/* ---- Loading More ---- */
+.tdoc-file-list__loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  font-size: 12px;
+  color: var(--wb-color-text-tertiary);
+}
+.tdoc-file-list__loading-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--wb-border-default);
+  border-top-color: var(--wb-color-text-secondary);
+  border-radius: 50%;
+  animation: tdoc-spin 0.6s linear infinite;
+}
+@keyframes tdoc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* ---- Error State ---- */
+.tdoc-file-list__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 12px;
+  padding: 48px 24px;
+}
+.tdoc-file-list__error-icon {
+  font-size: 36px;
+  opacity: 0.7;
+}
+.tdoc-file-list__error-message {
+  font-size: 13px;
+  color: var(--wb-color-text-secondary);
+  text-align: center;
+}
+.tdoc-file-list__error-retry {
+  padding: 6px 20px;
+  border: 1px solid var(--wb-border-default);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wb-color-text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tdoc-file-list__error-retry:hover {
+  background: var(--wb-bg-hover);
+  border-color: var(--wb-border-hover);
+}
+/* ---- Empty State ---- */
+.tdoc-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 8px;
+  padding: 48px 24px;
+  /*
+   * 「列表为空」+ 有 CTA 的增强版：
+   *   - 图标更大（视觉重心下沉，类似示意图里的纸飞机+文件夹插画）
+   *   - 标题更醒目
+   *   - 描述行字号略大
+   *   - 整体上下间距更宽，避免与按钮粘连
+   */
+}
+.tdoc-empty-state__icon {
+  font-size: 40px;
+  /*
+     * 同时承载 emoji（no-results 仍走 emoji）与 PNG 插画（no-files
+     * 替换成 figma 给的纸张插画），需要让两种内容共用居中容器。
+     * 这里**不**在容器上设 opacity；emoji 子元素自己挂半透明，PNG
+     * 插画保持原色（自带柔和阴影/渐变，再叠透明会泛灰）。
+     */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.tdoc-empty-state__icon-img {
+  /*
+     * figma 插画自带柔和阴影 / 渐变，已经是「成品图」，不要叠 opacity，
+     * 否则会泛灰看起来像加载中。这里用宽度控制视觉尺寸，高度自适应。
+     */
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+}
+.tdoc-empty-state__icon-emoji {
+  /* emoji 走原来的半透明视觉（与历史保持一致） */
+  display: inline-block;
+  opacity: 0.5;
+}
+.tdoc-empty-state__title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--wb-color-text-secondary);
+}
+.tdoc-empty-state__desc {
+  font-size: 12px;
+  color: var(--wb-color-text-tertiary);
+}
+.tdoc-empty-state__actions {
+  /*
+     * CTA 按钮组：水平居中、按钮间距 12px。
+     * 复用 .tencent-docs-panel__create-btn / .tencent-docs-panel__upload-btn
+     * 的视觉，所以这里只负责布局。
+     * Popover 是 position:absolute，放在按钮 wrapper 内部，不会影响按钮组对齐。
+     */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.tdoc-empty-state--with-actions {
+  gap: 12px;
+  padding: 56px 24px 64px;
+}
+.tdoc-empty-state--with-actions .tdoc-empty-state__icon {
+  font-size: 72px;
+  margin-bottom: 4px;
+}
+.tdoc-empty-state--with-actions .tdoc-empty-state__icon-emoji {
+  /* 增强版下 emoji（仅 no-results 路径用得到）也提一下不透明度 */
+  opacity: 0.85;
+}
+.tdoc-empty-state--with-actions .tdoc-empty-state__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+}
+.tdoc-empty-state--with-actions .tdoc-empty-state__desc {
+  font-size: 13px;
+  color: var(--wb-color-text-secondary);
+}
+/* ---- Skeleton ---- */
+.tdoc-file-list-skeleton {
+  display: flex;
+  flex-direction: column;
+}
+.tdoc-file-list-skeleton__header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 40px;
+  border-bottom: 1px solid var(--wb-border-default);
+}
+.tdoc-file-list-skeleton__header-cell {
+  padding: 0 8px;
+}
+.tdoc-file-list-skeleton__row {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 57px;
+  border-bottom: 1px solid var(--wb-border-default);
+}
+.tdoc-file-list-skeleton__cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+}
+.tdoc-file-list-skeleton__icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--wb-bg-skeleton);
+  animation: tdoc-skeleton-pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.tdoc-file-list-skeleton__bar {
+  height: 12px;
+  border-radius: 4px;
+  background: var(--wb-bg-skeleton);
+  animation: tdoc-skeleton-pulse 1.5s ease-in-out infinite;
+}
+.tdoc-file-list-skeleton__bar--short {
+  width: 40px;
+}
+.tdoc-file-list-skeleton__bar--medium {
+  width: 60px;
+}
+.tdoc-file-list-skeleton__bar--long {
+  width: 120px;
+}
+@keyframes tdoc-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}

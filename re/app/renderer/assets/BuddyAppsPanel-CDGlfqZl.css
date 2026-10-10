@@ -1,0 +1,217 @@
+.buddy-apps-panel-tabs {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+.buddy-apps-panel-tabs__tabs {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.buddy-apps-panel-tabs__inner {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  gap: var(--wb-spacing-5);
+}
+.buddy-apps-panel-tabs__inner > .wb-tabs__panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.buddy-apps-panel-tabs__inner.wb-tabs--button > .wb-tabs__header .wb-tabs__tab--active {
+  background: var(--wb-bg-tertiary);
+}
+.vscode-dark .buddy-apps-panel-tabs__inner.wb-tabs--button > .wb-tabs__header .wb-tabs__tab--active,
+.dark .buddy-apps-panel-tabs__inner.wb-tabs--button > .wb-tabs__header .wb-tabs__tab--active {
+  background: var(--wb-bg-hover-light);
+}
+.buddy-apps-panel {
+  display: flex;
+  box-sizing: border-box;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--wb-spacing-6);
+  min-height: 0;
+  padding: var(--wb-spacing-2) var(--wb-spacing-3) var(--wb-spacing-7);
+}
+.buddy-apps-panel__description {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--wb-color-text-secondary);
+}
+.buddy-apps-panel__guide-link {
+  color: var(--wb-color-text-link-default);
+  text-decoration: none;
+  cursor: pointer;
+}
+.buddy-apps-panel__guide-link:hover {
+  color: var(--wb-color-text-link-hover);
+  text-decoration: underline;
+}
+.buddy-apps-panel__state {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-4);
+  min-height: 48px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--wb-color-text-secondary);
+}
+.buddy-apps-panel__state--loading,
+.buddy-apps-panel__state--empty {
+  flex: 1;
+  justify-content: center;
+  min-height: 0;
+  text-align: center;
+}
+.buddy-apps-panel__list {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  margin: 0;
+  min-height: 0;
+  padding: var(--wb-spacing-4) 12px var(--wb-spacing-5);
+  overflow-y: auto;
+  list-style: none;
+  border-radius: var(--wb-radius-xl);
+  background: var(--wb-bg-primary);
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.buddy-apps-panel__list::-webkit-scrollbar {
+  width: 4px;
+}
+.buddy-apps-panel__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.buddy-apps-panel__list::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: var(--wb-radius-full);
+}
+.buddy-apps-panel__list:hover {
+  scrollbar-color: var(--wb-scrollbar-thumb) transparent;
+}
+.buddy-apps-panel__list:hover::-webkit-scrollbar-thumb {
+  background: var(--wb-scrollbar-thumb);
+}
+.buddy-apps-panel__list:hover::-webkit-scrollbar-thumb:hover {
+  background: var(--wb-scrollbar-thumb-hover);
+}
+.buddy-apps-panel__sentinel {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  width: 100%;
+  min-height: 1px;
+}
+.buddy-apps-panel__sentinel-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+  padding: var(--wb-spacing-3) 0;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wb-color-text-tertiary);
+}
+.buddy-apps-panel__card {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-4);
+}
+.buddy-apps-panel__card + .buddy-apps-panel__card {
+  margin-top: var(--wb-spacing-6);
+}
+.buddy-apps-panel__card-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--wb-bg-secondary);
+}
+.buddy-apps-panel__card-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+.buddy-apps-panel__card-icon-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ff5a52 0%, #ff8a65 100%);
+}
+.buddy-apps-panel__card-info {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0;
+}
+.buddy-apps-panel__card-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-2);
+  min-width: 0;
+}
+.buddy-apps-panel__card-name {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  color: var(--wb-color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+}
+.buddy-apps-panel__card-tag {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 4px;
+  height: 20px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--wb-color-text-success-active, #088F50);
+  background: var(--wb-palette-green-1, #E7F8F0);
+}
+.buddy-apps-panel__card-disconnect {
+  flex-shrink: 0;
+}
+.buddy-apps-panel__card-desc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--wb-color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.buddy-apps-panel__card-time {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--wb-color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

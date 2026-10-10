@@ -1,0 +1,19 @@
+{
+  "extensionId": "edge-sync",
+  "version": "0.0.1",
+  "kind": "builtin",
+  "grantedPermissions": [
+    "*"
+  ],
+  "processPolicy": {
+    "server": "fork",
+    "renderer": "mf"
+  },
+  "rollout": {
+    "strategy": "full",
+    "percentage": 100
+  },
+  "status": "active",
+  "resident": true,
+  "_comment": "edge-sync 是端云一体同步的 builtin extension，含 fork server（channel-sdk 长连接 + SQLite mapping + JSONL 直读）+ MF renderer（debug 面板）。resident=true 常驻，跟老 daemon 服务对齐。"
+}

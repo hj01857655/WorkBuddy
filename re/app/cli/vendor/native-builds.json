@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "sourceRepository": "tsbx-macos",
+  "artifacts": {
+    "toybox-macos/toybox": {
+      "sourceCommit": "54b7b4be978d6c6c2feee15f4ab6f79d3c2f534a",
+      "buildCommand": "./build-toybox-macos.sh",
+      "platform": "macos",
+      "archs": ["x86_64", "arm64"]
+    },
+    "zsh-macos/bin/zsh": {
+      "sourceCommit": "0c9a4f0e3be02c7e39ab4c2d7c34d55de85dd270",
+      "buildCommand": "cd zsh-macos && ./build-zsh-macos.sh",
+      "platform": "macos",
+      "archs": ["x86_64", "arm64"]
+    }
+  }
+}

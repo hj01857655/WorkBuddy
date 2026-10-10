@@ -1,0 +1,25 @@
+{
+  "name": "welcomemode-code",
+  "version": "5.6.2-wb.39298511.g37a65c0b.he233403f909a",
+  "description": "WorkBuddy code welcomeMode root agent and resources.",
+  "author": {
+    "name": "WorkBuddy"
+  },
+  "category": "welcomeMode",
+  "keywords": [
+    "workbuddy",
+    "welcomeMode",
+    "code"
+  ],
+  "agents": [
+    "agents/code.md"
+  ],
+  "workbuddy": {
+    "dependencies": [
+      {
+        "type": "mcp",
+        "name": "netdrive"
+      }
+    ]
+  }
+}

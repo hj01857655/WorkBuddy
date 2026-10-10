@@ -1,0 +1,359 @@
+/* TODO: 此文件已 316 行，超过样式软阈值（200 行）。后续按 panel / filter / footer / pick-state 拆分。 */
+/* ===== ExpertPicker 弹框样式 ===== */
+.ec-picker-overlay {
+  position: fixed;
+  inset: 0;
+  /* z-index 由 useFloatingLayer 运行时分配（规则 7），不要在这里写死——
+       否则内部触发的其它 Modal（如资产上云预检确认弹窗）会被本遮罩的静态高层级压住看不到。 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--wb-color-mask-color);
+  animation: ec-picker-fade-in 0.15s ease-out;
+  -webkit-app-region: no-drag;
+}
+.ec-picker-panel {
+  --ec-bg-primary: var(--wb-bg-primary);
+  --ec-bg-secondary: var(--wb-bg-secondary);
+  --ec-bg-tertiary: var(--wb-bg-tertiary);
+  --ec-bg-hover: var(--wb-bg-hover);
+  --ec-bg-active: var(--wb-bg-active);
+  --ec-text-primary: var(--wb-color-text-primary);
+  --ec-text-secondary: var(--wb-color-text-secondary);
+  --ec-text-tertiary: var(--wb-color-text-tertiary);
+  --ec-text-placeholder: var(--wb-color-text-disabled);
+  --ec-text-desc: var(--wb-color-text-secondary);
+  --ec-text-usage: var(--wb-color-text-tertiary);
+  --ec-text-use-count: var(--wb-color-text-tertiary);
+  --ec-text-category-tab: var(--wb-color-text-secondary);
+  --ec-text-contrast: var(--wb-text-on-primary);
+  --ec-text-soft: var(--wb-color-text-secondary);
+  --ec-text-strong: var(--wb-color-text-primary);
+  --ec-text-muted: var(--wb-color-text-tertiary);
+  --ec-expert-card-bg: var(--wb-bg-secondary);
+  --ec-expert-card-hover-bg: var(--wb-bg-tertiary);
+  --ec-expert-card-hover-border: var(--wb-color-border-primary);
+  --ec-expert-card-avatar-bg: var(--wb-bg-tertiary);
+  --ec-expert-card-shadow: none;
+  --ec-expert-card-desc-color: var(--wb-color-text-secondary);
+  --ec-card-tag-bg: var(--wb-bg-tertiary);
+  --ec-card-tag-border: var(--wb-color-border-secondary);
+  --ec-card-tag-color: var(--wb-color-text-secondary);
+  --ec-filter-border: var(--wb-color-border-secondary);
+  --ec-filter-text: var(--wb-color-text-secondary);
+  --ec-filter-text-hover: var(--wb-color-text-primary);
+  --ec-filter-text-active: var(--wb-color-text-primary);
+  --ec-primary: var(--wb-color-text-primary);
+  --ec-primary-light: var(--wb-bg-tertiary);
+  --ec-primary-shadow: var(--wb-bg-active);
+  --ec-border: var(--wb-color-border-secondary);
+  --ec-border-light: var(--wb-color-border-secondary);
+  --ec-border-hover: var(--wb-color-border-primary);
+  --ec-border-subtle: var(--wb-color-border-secondary);
+  --ec-card-bg: var(--wb-bg-secondary);
+  --ec-modal-bg: var(--wb-bg-popover);
+  --ec-card-border-static: var(--wb-color-border-secondary);
+  --ec-card-shadow: none;
+  --ec-card-shadow-hover: none;
+  --ec-card-border-hover: var(--wb-color-border-primary);
+  --ec-surface-muted: var(--wb-bg-secondary);
+  --ec-surface-subtle: var(--wb-bg-tertiary);
+  --ec-surface-hover: var(--wb-bg-hover);
+  display: flex;
+  flex-direction: column;
+  width: min(1060px, calc(100vw - 48px));
+  height: min(780px, calc(100vh - 90px));
+  border-radius: 16px;
+  border: 1px solid var(--wb-color-border-secondary);
+  background: var(--wb-bg-primary);
+  box-shadow: var(--wb-shadow-xl);
+  overflow: hidden;
+  animation: ec-picker-scale-in 0.2s ease-out;
+}
+/* ===== 头部：标题 + 搜索 + 关闭 ===== */
+.ec-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 54px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--wb-border-card);
+  flex-shrink: 0;
+}
+.ec-picker-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--wb-color-text-primary);
+  flex-shrink: 0;
+}
+.ec-picker-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.ec-picker-header-right .ec-search-wrapper {
+  width: 220px;
+}
+.ec-picker-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wb-color-text-secondary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ec-picker-close:hover {
+  background: var(--wb-color-bg-primary-hover);
+}
+/* ===== Tab 切换 ===== */
+.ec-picker-tabs-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.ec-picker-tabs {
+  display: flex;
+  gap: 4px;
+}
+.ec-picker-source-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 28px;
+  padding: 2px;
+  border: 1px solid var(--wb-border-weak);
+  border-radius: 6px;
+  background: var(--wb-bg-tertiary);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.ec-picker-source-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 22px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.ec-picker-source-tab:hover {
+  color: var(--wb-color-text-secondary);
+}
+.ec-picker-source-tab.is-active {
+  background: var(--wb-bg-card);
+  color: var(--wb-color-text-primary);
+}
+.ec-picker-tab {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wb-color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.ec-picker-tab:hover {
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-hover);
+}
+.ec-picker-tab--active {
+  color: var(--wb-color-text-primary);
+  background: var(--wb-bg-active);
+  font-weight: 600;
+}
+/* ===== 过滤区 ===== */
+.ec-picker-filters {
+  padding: 12px 20px 0;
+  flex-shrink: 0;
+}
+/* ===== 主体网格区 ===== */
+.ec-picker-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 20px 16px;
+}
+.ec-picker-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+/* ===== 底部操作栏 ===== */
+.ec-picker-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--wb-color-border-tertiary);
+  flex-shrink: 0;
+}
+.ec-picker-count {
+  font-size: 13px;
+  color: var(--wb-color-text-primary);
+  font-weight: 500;
+}
+.ec-picker-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.ec-picker-btn {
+  padding: 7px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+  line-height: 1.4;
+}
+.ec-picker-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ec-picker-btn--primary {
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+}
+.ec-picker-btn--primary:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.ec-picker-btn--secondary {
+  background: var(--wb-button-grey-bg);
+  color: var(--wb-button-grey-fg);
+}
+.ec-picker-btn--secondary:hover:not(:disabled) {
+  background: var(--wb-button-grey-bg-hover);
+}
+.ec-picker-panel .ec-category-tab:hover {
+  background: var(--wb-bg-hover);
+  color: var(--wb-color-text-primary);
+}
+.ec-picker-panel .ec-category-tab.is-active {
+  background: var(--wb-bg-active);
+  color: var(--wb-color-text-primary);
+}
+.ec-picker-panel .ec-expert-card {
+  border-color: var(--wb-color-border-secondary);
+}
+/* ===== ExpertCard 选中态扩展 ===== */
+.ec-expert-card--selectable {
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.ec-expert-card--selectable:hover:not(.ec-expert-card--selected) {
+  border-color: var(--wb-color-border-primary);
+}
+.ec-picker-panel .ec-expert-card.ec-expert-card--selected,
+.ec-picker-panel .ec-expert-card.ec-expert-card--selected:hover {
+  border-color: var(--wb-button-primary-bg);
+  box-shadow: 0 0 0 1px var(--wb-button-primary-bg);
+  background: var(--wb-bg-tertiary);
+  transform: none;
+}
+.ec-expert-card--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+/* 右上角勾选标记 */
+.ec-card-selected-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+  animation: ec-picker-check-in 0.2s ease-out;
+}
+/* footer 内联勾选 */
+.ec-card-check-mark {
+  display: flex;
+  align-items: center;
+  color: var(--wb-color-text-primary);
+}
+/* ===== 动画 ===== */
+@keyframes ec-picker-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes ec-picker-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes ec-picker-check-in {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* ===== 卡片云徽标（picker 行内变体） ===== */
+/* ec-cr-cloud-icon 基类为绝对定位（专家中心卡片右上角），picker 内改行内布局 */
+.ec-expert-card .ec-picker-cloud-badge.ec-cr-cloud-icon {
+  position: static;
+  top: auto;
+  right: auto;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  padding: 1px;
+  margin-left: 4px;
+  border-radius: 4px;
+  z-index: 0;
+}
+/* ===== 徽标行内样式补充（picker 卡片内可点击，hover 有 tooltip） ===== */
+.ec-expert-card .ec-picker-cloud-badge.ec-cr-cloud-icon:not(.is-disabled) {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.ec-expert-card .ec-picker-cloud-badge.ec-cr-cloud-icon:not(.is-disabled):hover {
+  background: var(--ec-hover-bg, rgba(0, 0, 0, 0.05));
+}
+/* ===== picker 内 tooltip 层级说明 =====
+   picker 遮罩 .ec-picker-overlay 的 z-index 已改为 useFloatingLayer(visible) 动态分配
+   （default 分组，通常在 1100 起步区间，与内部触发的其它 Modal 共用同一套运行时栈）。
+   wb-components Tooltip 浮层 z-index 同样由 useFloatingLayer 运行时分配（inline style），
+   CSS 类无法覆盖，故不在此写 z-index。
+   为保证 tooltip 始终稳定盖在 picker 整个面板之上（不受 default 分组栈高度变化影响），
+   ExpertCloudSyncBadge 传 Tooltip.floatingLayer = { groupKey: 'expert-picker-tooltip', base: 10130 }
+   （独立浮层组，与 default 分组互不感知，天然常驻高位）。 */

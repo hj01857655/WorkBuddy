@@ -1,0 +1,72 @@
+._previewWithActionArea_dqjnt_1 {
+  box-sizing: border-box;
+  padding-top: 50px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+._previewContainer_dqjnt_9 {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+._pptxPreviewInstance_dqjnt_15 {
+  border-radius: 8px;
+  width: 960px;
+  margin: 0 auto;
+}
+
+._pptxScrollWrapper_dqjnt_21 {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+  scrollbar-color: var(--wb-scrollbar-thumb) transparent;
+}
+
+body[data-office-shell='true'] ._pptxScrollWrapper_dqjnt_21 {
+  background: var(--wb-color-bg-primary-default);
+  scrollbar-width: none;
+}
+body[data-office-shell='true'] ._pptxScrollWrapper_dqjnt_21::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+body[data-office-shell='true'] ._pptxScrollWrapper_dqjnt_21::-webkit-scrollbar-thumb {
+  background: transparent;
+  border: 0 solid transparent;
+  border-right-width: 6px;
+  background-clip: padding-box;
+  border-radius: 6px;
+}
+body[data-office-shell='true'] ._pptxScrollWrapper_dqjnt_21:hover::-webkit-scrollbar-thumb {
+  background-color: var(--wb-scrollbar-thumb);
+}
+body[data-office-shell='true'] ._pptxScrollWrapper_dqjnt_21:hover {
+  scrollbar-width: thin;
+  scrollbar-color: var(--wb-scrollbar-thumb) transparent;
+}
+
+._loadingContainer_dqjnt_52,
+._errorContainer_dqjnt_53 {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--wb-color-text-primary);
+  font-size: 14px;
+  z-index: 10;
+  padding: 16px 24px;
+  background-color: var(--wb-bg-primary);
+  border-radius: 8px;
+}
+
+._errorContainer_dqjnt_53 {
+  color: var(--wb-error-foreground);
+}
+
+.pptx-preview-wrapper {
+  background: transparent !important;
+}

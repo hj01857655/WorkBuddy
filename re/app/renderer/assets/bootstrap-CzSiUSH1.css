@@ -1,0 +1,239 @@
+.settings-window-root {
+  background: var(--wb-bg-secondary, var(--wb-color-bg-primary, #fff));
+  color: var(--wb-color-text-primary, #1f2329);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  width: 100vw;
+}
+.settings-window-root .settings-modal--window {
+  border-radius: 0;
+  box-shadow: none;
+  flex: 1;
+  height: auto;
+  max-height: none;
+  max-width: none;
+  width: 100vw;
+}
+.settings-window-root .settings-modal--window .settings-modal__nav {
+  margin: 0 12px 12px;
+  padding: 0;
+}
+.settings-window-root .settings-modal__header {
+  -webkit-app-region: drag;
+}
+.settings-window-root .settings-modal__header button,
+.settings-window-root .settings-modal__nav,
+.settings-window-root .settings-modal__panel {
+  -webkit-app-region: no-drag;
+}
+
+.settings-window-chrome {
+  -webkit-app-region: drag;
+  align-items: center;
+  display: flex;
+  flex: 0 0 32px;
+  min-height: 32px;
+  padding: 0 8px;
+  user-select: none;
+}
+.settings-window-chrome--windows {
+  justify-content: flex-end;
+}
+
+.settings-window-close {
+  -webkit-app-region: no-drag;
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--wb-radius-2, 6px);
+  color: var(--wb-color-text-secondary, #646a73);
+  cursor: pointer;
+  display: inline-flex;
+  height: 24px;
+  justify-content: center;
+  padding: 0;
+  width: 24px;
+}
+.settings-window-close:hover {
+  background: var(--wb-color-fill-hover, rgba(0, 0, 0, 0.06));
+  color: var(--wb-color-text-primary, #1f2329);
+}
+.settings-window-close:active {
+  background: var(--wb-color-fill-active, rgba(0, 0, 0, 0.1));
+}
+
+.settings-window-loading {
+  background: var(--wb-bg-secondary, var(--wb-color-bg-primary, #fff));
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 20px 8px;
+}
+.settings-window-loading__nav {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 200px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 12px;
+}
+.settings-window-loading__content {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 0 12px;
+}
+.settings-window-loading__line, .settings-window-loading__card {
+  animation: settings-window-loading-pulse 1.2s ease-in-out infinite alternate;
+  background: var(--wb-color-fill-secondary, rgba(0, 0, 0, 0.055));
+  border-radius: var(--wb-radius-2, 6px);
+}
+.settings-window-loading__line {
+  height: 26px;
+  width: 88%;
+}
+.settings-window-loading__line:first-child {
+  height: 26px;
+  margin-bottom: 8px;
+  width: 42%;
+}
+.settings-window-loading__nav .settings-window-loading__line:first-child {
+  height: 26px;
+  margin-bottom: 10px;
+  width: 42%;
+}
+.settings-window-loading__card {
+  height: 72px;
+  width: 100%;
+}
+
+@keyframes settings-window-loading-pulse {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-window-loading__line,
+  .settings-window-loading__card {
+    animation: none;
+  }
+}
+[data-theme=dark] .settings-window-chrome,
+body.vscode-dark .settings-window-chrome,
+.vscode-dark .settings-window-chrome,
+body.dark .settings-window-chrome,
+.dark .settings-window-chrome {
+  background: var(--wb-bg-modal);
+}
+
+.settings-window-subpage-header {
+  -webkit-app-region: no-drag;
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--wb-spacing-2, 4px);
+  padding: var(--wb-spacing-3, 8px) var(--wb-spacing-5, 16px);
+  border-bottom: 1px solid var(--wb-border-subtle, rgba(0, 0, 0, 0.08));
+}
+.settings-window-subpage-header__back.wb-button--small .wb-button__icon {
+  width: var(--wb-icon-size-lg);
+  height: var(--wb-icon-size-lg);
+}
+.settings-window-subpage-header__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--wb-color-text-primary, #1f2329);
+  font-size: var(--wb-font-body-size, 14px);
+  font-weight: var(--wb-font-weight-500, 500);
+}
+.settings-window-subpage-header__extra {
+  -webkit-app-region: no-drag;
+  margin-left: auto;
+}
+
+.settings-window-panel {
+  align-items: flex-start;
+  color: var(--wb-color-text-secondary, #646a73);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 520px;
+  padding: 24px;
+}
+.settings-window-panel h2 {
+  color: var(--wb-color-text-primary, #1f2329);
+  font-size: 20px;
+  margin: 0;
+}
+.settings-window-panel p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+[data-theme=dark] .settings-window-root {
+  --wb-color-text-primary: #f2f3f5;
+  --wb-color-text-secondary: #a6a8ad;
+}.mac-window-controls {
+  -webkit-app-region: no-drag;
+  align-items: center;
+  display: flex;
+  margin-left: 6px;
+}
+.mac-window-controls:hover .mac-close-btn__cross {
+  opacity: 1;
+}
+.mac-window-controls--inactive:hover .mac-close-btn__cross {
+  opacity: 0;
+}
+
+.mac-close-btn {
+  background: transparent;
+  border: 0;
+  cursor: default;
+  display: block;
+  height: 12px;
+  padding: 0;
+  width: 12px;
+}
+.mac-close-btn--pressed .mac-close-btn__background {
+  fill: var(--wb-window-close-bg-active);
+}
+.mac-close-btn--pressed .mac-close-btn__cross {
+  stroke: var(--wb-window-close-fg-active);
+  opacity: 1;
+}
+
+.mac-close-btn__icon {
+  display: block;
+  height: 12px;
+  width: 12px;
+}
+
+.mac-close-btn__background {
+  fill: var(--wb-window-close-bg);
+}
+
+.mac-close-btn__cross {
+  fill: none;
+  opacity: 0;
+  stroke: var(--wb-window-close-fg);
+  stroke-linecap: round;
+  stroke-width: 0.8;
+  transition: opacity var(--wb-motion-duration-instant) ease;
+}
+
+.mac-window-controls--inactive .mac-close-btn__background {
+  fill: var(--wb-window-close-bg-inactive);
+}

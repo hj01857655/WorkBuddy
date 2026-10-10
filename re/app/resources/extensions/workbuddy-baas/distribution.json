@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.workbuddy.ai/extension-distribution.v1.json",
+  "extensionId": "workbuddy-baas",
+  "version": "0.0.1",
+  "kind": "builtin",
+  "grantedPermissions": [
+    "*"
+  ],
+  "processPolicy": {
+    "server": null,
+    "renderer": "mf"
+  },
+  "rollout": {
+    "strategy": "full",
+    "percentage": 100
+  },
+  "status": "active",
+  "resident": true
+}

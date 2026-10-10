@@ -1,0 +1,92 @@
+@charset "UTF-8";
+/**
+ * 未提交改动处理方式选择（BranchSwitchDirtyPicker）样式。
+ * 对齐 Ardot 2399:423 / 2420:448：说明文案（黑 0.7 / 14px）+ 下拉三选项。
+ * 「推荐」标签复用标准 Tag（tone=success），选中对勾复用标准 CheckIcon，此处仅按设计稿微调布局/圆角。
+ */
+.wb-branch-switch-dirty {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.wb-branch-switch-dirty__desc {
+  margin: 0;
+  color: var(--wb-color-text-secondary);
+  font-size: 14px;
+  line-height: 22px;
+}
+.wb-branch-switch-dirty__desc strong {
+  font-weight: 500;
+  color: var(--wb-color-text-primary);
+}
+.wb-branch-switch-dirty__trigger.wb-select {
+  height: 36px;
+  border-radius: var(--wb-radius-lg);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--wb-color-text-primary);
+}
+.wb-branch-switch-dirty__trigger.wb-select .wb-select__value {
+  font-weight: 400;
+}
+.wb-branch-switch-dirty__trigger.wb-select .wb-select__value .wb-branch-switch-dirty__check,
+.wb-branch-switch-dirty__trigger.wb-select .wb-select__value .wb-branch-switch-dirty__recommend {
+  display: none;
+}
+.wb-branch-switch-dirty__option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+}
+.wb-branch-switch-dirty__option-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+.wb-branch-switch-dirty__recommend.wb-tag {
+  border-radius: 4px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+.wb-branch-switch-dirty__check {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--wb-color-accent-brand);
+}
+
+/**
+ * 下拉浮层选项覆盖（作用域限定在本 picker 的 popover，不污染全局 Select）。
+ * 对齐 Ardot 选中项 item/dropdown/1st（node 2420:468）：
+ *   - 选中态：浅灰底 #F7F7F7（--wb-palette-gray-2）+ 8px 圆角（--wb-radius-lg）；
+ *   - 文字回归主色（设计稿选中项非绿字，绿色仅体现在右侧勾选与「推荐」标签）；
+ *   - 右侧勾选用品牌绿 #00C29A（--wb-color-accent-brand）。
+ */
+.wb-branch-switch-dirty-popover {
+  width: 435px;
+}
+.wb-branch-switch-dirty-popover .wb-select__panel,
+.wb-branch-switch-dirty-popover .wb-select__list {
+  min-width: 0;
+  width: 100%;
+}
+.wb-branch-switch-dirty-popover .wb-select__list {
+  padding: 0 var(--wb-spacing-3);
+}
+.wb-branch-switch-dirty-popover .wb-select__option {
+  border-radius: var(--wb-radius-lg);
+}
+.wb-branch-switch-dirty-popover .wb-select__option--selected {
+  background: var(--wb-palette-gray-2);
+  color: var(--wb-color-text-primary);
+  font-weight: 500;
+}
+.wb-branch-switch-dirty-popover .wb-select__option--selected:hover, .wb-branch-switch-dirty-popover .wb-select__option--selected:focus-visible {
+  background: var(--wb-palette-gray-2);
+}
+.wb-branch-switch-dirty-popover .wb-select__option-check {
+  display: none;
+}

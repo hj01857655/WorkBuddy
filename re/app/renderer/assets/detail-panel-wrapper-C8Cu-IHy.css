@@ -1,0 +1,429 @@
+/**
+ * 应用空间样式。
+ *
+ * ⚠️ 这里**不能用 Tailwind** —— 桌面端 `tailwind.config.js` 的 content 只扫
+ * `packages/workbuddy-app/src/**`，不含 `packages/agent-ui/src/**`，
+ * 在 agent-ui 里写 Tailwind class 一律不生成，界面会退化成裸 HTML。
+ * 同理 `--genie-color-*` token 在本包也不存在，统一用 `--wb-*`。
+ */
+/**
+ * 应用空间在 DetailPanel 中的宿主覆盖层。
+ *
+ * 该 class 写在 detail-panel-wrapper 中，但样式必须由应用空间模块自己携带：
+ * AppSpaceContainer 会稳定导入本文件，不能再依赖已移除的 SpacePanel 样式被其它
+ * 入口顺带加载。缺少 absolute/inset 后，覆盖层会退化成 .detail-main__body 的普通
+ * flex 子项，被 wb/app 的空 artifact 外壳挤到下方。
+ */
+.detail-main__space-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  overflow: hidden;
+  background: var(--cb-bg-primary);
+}
+/**
+ * 切到 Terminal / 文件 / 浏览器预览时隐藏应用空间，但保持内部 webview/iframe
+ * 挂载，避免回切应用标签时整页重载并丢失运行态。
+ */
+.detail-main__space-overlay--hidden {
+  display: none;
+}
+.app-space {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--wb-bg-primary);
+}
+.app-space__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  height: 56px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--wb-color-border-secondary);
+}
+.app-space__app-name {
+  flex-shrink: 1;
+  min-width: 0;
+  margin-right: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--wb-color-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+}
+.app-space__page-title {
+  flex-shrink: 0;
+  color: var(--wb-color-text-primary);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+}
+.app-space__cloud-pill {
+  --wb-button-height-small: var(--wb-tag-height-small);
+  --wb-button-font-size-small: var(--wb-tag-font-size-small);
+  --wb-button-line-height-small: var(--wb-tag-line-height-small);
+  --wb-button-gap-small: var(--wb-tag-gap);
+  --wb-button-border-radius-small: var(--wb-radius-full);
+  --wb-button-icon-size-small: var(--wb-icon-size-sm);
+  --wb-button-grey-bg: var(--wb-tag-default-bg);
+  --wb-button-grey-bg-hover: var(--wb-tag-default-bg-hover);
+  --wb-button-grey-bg-active: var(--wb-tag-default-bg-hover);
+  --wb-button-grey-fg: var(--wb-tag-default-color-text);
+  flex-shrink: 0;
+  font-weight: var(--wb-tag-font-weight);
+}
+.app-space__cloud-pill:hover:not(:disabled),
+.app-space__cloud-pill:active:not(:disabled) {
+  color: var(--wb-tag-default-color-text-hover);
+}
+.app-space__cloud-pill-arrow {
+  color: var(--wb-color-text-tertiary);
+}
+.app-space__spacer {
+  flex: 1;
+  min-width: 0;
+}
+.app-space__action {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: var(--wb-radius-lg, 8px);
+  color: var(--wb-color-text-secondary);
+  transition: background 0.15s ease;
+}
+.app-space__action:hover:not(:disabled) {
+  background: var(--wb-bg-tertiary);
+}
+.app-space__action--back {
+  color: var(--wb-color-text-primary);
+}
+.app-space__action--active {
+  background: var(--wb-bg-tertiary);
+  color: var(--wb-color-text-primary);
+}
+.app-space__body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.app-space__pane {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.app-space__pane--hidden {
+  display: none;
+}
+.app-space__toolbar-anchor {
+  flex-shrink: 0;
+}
+.app-space__modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: var(--cb-z-index-modal, 1000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.32);
+}
+.app-space__modal {
+  width: 480px;
+  max-width: 100%;
+  max-height: 100%;
+  border: 0.5px solid var(--wb-color-border-primary);
+  border-radius: 24px;
+  background: var(--wb-bg-primary);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.24);
+  overflow: auto;
+}
+.app-space__preview {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  background: var(--wb-bg-secondary);
+  overflow: auto;
+}
+.app-space__preview--fill {
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+  align-items: stretch;
+  justify-content: stretch;
+}
+.app-space__frame {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.app-space__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--wb-spacing-3);
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  background: var(--wb-bg-secondary);
+}
+.app-space__empty-mascot {
+  width: 125px;
+  height: 120px;
+  object-fit: contain;
+  user-select: none;
+}
+.app-space__empty-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--wb-spacing-2) + var(--wb-spacing-1));
+}
+.app-space__empty-title {
+  margin: 0;
+  color: var(--wb-color-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+.app-space__empty-desc {
+  max-width: 320px;
+  margin: 0;
+  color: var(--wb-color-text-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+  word-break: break-all;
+}
+.app-space__empty--deleted {
+  gap: calc(var(--wb-spacing-3) + var(--wb-spacing-1));
+  background: var(--wb-bg-primary);
+}
+.app-space__empty--deleted .app-space__empty-mascot {
+  width: 96px;
+  height: 96px;
+  filter: grayscale(1);
+  opacity: 0.16;
+}
+.app-space__empty--deleted .app-space__empty-copy {
+  gap: var(--wb-spacing-3);
+}
+.app-space__empty--deleted .app-space__empty-title {
+  line-height: var(--wb-font-line-height-5-2);
+}
+.app-space__empty--deleted .app-space__empty-desc {
+  max-width: none;
+  font-weight: var(--wb-font-weight-400);
+  line-height: var(--wb-font-line-height-5);
+  word-break: normal;
+}
+.app-publish {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+.app-publish__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.app-publish__title {
+  margin: 0;
+  color: var(--wb-color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+.app-publish__close {
+  flex-shrink: 0;
+  color: var(--wb-color-text-secondary);
+}
+.app-publish__app-row {
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-4);
+}
+.app-publish__app-row > svg {
+  flex-shrink: 0;
+}
+.app-publish__app-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: var(--wb-spacing-2);
+}
+.app-publish__app-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--wb-color-text-primary);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+.app-publish__app-hint {
+  color: var(--wb-color-text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+.app-publish__action {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--wb-radius-lg, 8px);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+}
+.app-publish__action--plain {
+  font-weight: 400;
+}
+.app-publish__action--update {
+  min-width: 66px;
+}
+.app-publish__action--primary {
+  min-width: 90px;
+  border: none;
+  background: var(--wb-button-primary-bg);
+  color: var(--wb-button-primary-fg);
+}
+.app-publish__action--primary:hover:not(:disabled) {
+  background: var(--wb-button-primary-bg-hover);
+}
+.app-publish__action--primary:disabled {
+  background: var(--wb-button-primary-bg-disabled);
+  color: var(--wb-button-primary-fg-disabled);
+}
+.app-publish__error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--wb-color-text-danger, #e5484d);
+  font-size: 12px;
+  line-height: 18px;
+}
+.app-publish__error > svg {
+  flex-shrink: 0;
+}
+.app-publish__share {
+  display: flex;
+  align-items: center;
+}
+.app-publish__share .wb-share-bar__channels {
+  gap: var(--wb-spacing-4) !important;
+}
+.app-publish__share .wb-share-channel-btn {
+  width: 32px;
+  height: 32px;
+  gap: 0;
+}
+.app-publish__share .wb-share-channel-btn__icon {
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--wb-color-border-secondary);
+  background: var(--wb-bg-primary);
+}
+.app-publish__share .wb-share-channel-btn__icon > svg {
+  width: 16px;
+  height: 16px;
+}
+.app-publish__share .wb-share-channel-btn:hover:not(:disabled) .wb-share-channel-btn__icon {
+  background: var(--wb-bg-hover);
+}
+.app-publish__share .wb-share-channel-btn__label {
+  display: none;
+}
+.app-publish__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.app-publish__label {
+  color: var(--wb-color-text-secondary);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+}
+.app-publish__link-row {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 40px;
+  padding: 0 8px 0 16px;
+  border: 1px solid var(--wb-color-border-secondary);
+  border-radius: var(--wb-radius-lg, 8px);
+  background: var(--wb-bg-primary);
+}
+.app-publish__link-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--wb-color-text-primary);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+}
+.app-publish__loading {
+  display: flex;
+  width: 100%;
+  min-height: 120px;
+  justify-content: center;
+}
+.app-cloud-slot {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+/**
+ * EnterpriseDocsWebviewBody styles —— 企业版腾讯文档链接的嵌入式 webview 容器。
+ *
+ * 通过 `DetailPanel` 的 `detailMainOverlay` slot 挂载到 `.detail-main__body`
+ * 末尾，绝对定位铺满整个产物面板主区域，叠加在默认 BrowserPreview 之上。
+ */
+.tdoc-embed-webview {
+  position: absolute;
+  inset: 0;
+  background: var(--cb-bg-primary);
+  z-index: 5;
+  display: flex;
+  overflow: hidden;
+}
+.tdoc-embed-webview__webview {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: var(--cb-bg-primary);
+}
+.tdoc-embed-webview__loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-secondary);
+  font-size: 13px;
+}

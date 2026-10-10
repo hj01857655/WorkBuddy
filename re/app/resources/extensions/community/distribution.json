@@ -1,0 +1,19 @@
+{
+    "$schema": "https://schemas.workbuddy.ai/extension-distribution.v1.json",
+    "extensionId": "community",
+    "version": "0.0.1",
+    "kind": "builtin",
+    "grantedPermissions": [
+        "*"
+    ],
+    "processPolicy": {
+        "server": null,
+        "renderer": null
+    },
+    "rollout": {
+        "strategy": "full",
+        "percentage": 100
+    },
+    "status": "active",
+    "_comment": "builtin 全量分发。「更多」备注永远写灵感；inspiration_community 灰度只切换下拉是灵感还是灵感社区。"
+}

@@ -1,0 +1,115 @@
+/**
+ * Software Config Panel 样式
+ */
+.software-config-panel__section {
+  margin-bottom: var(--wb-spacing-7);
+}
+.software-config-panel__section:last-child {
+  margin-bottom: 0;
+}
+.software-config-panel__section-title {
+  margin: 0 0 var(--wb-spacing-3) 0;
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 500;
+  line-height: var(--wb-font-body-line-height);
+  letter-spacing: 0;
+}
+.software-config-panel__card {
+  margin-bottom: var(--wb-spacing-3);
+  border: none;
+  border-radius: var(--wb-radius-xl);
+  background: var(--wb-bg-primary);
+}
+.software-config-panel__card:last-child {
+  margin-bottom: 0;
+}
+.software-config-panel__card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--wb-spacing-4) var(--wb-spacing-5);
+}
+.software-config-panel__card-row + .software-config-panel__card-row {
+  border-top: 1px solid var(--wb-border-subtle);
+}
+.software-config-panel__card-left {
+  flex: 1;
+  min-width: 0;
+}
+.software-config-panel__card-right {
+  flex-shrink: 0;
+  margin-left: var(--wb-spacing-4);
+}
+.software-config-panel__card-label {
+  margin-bottom: var(--wb-spacing-1);
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  font-weight: 500;
+  line-height: var(--wb-font-body-line-height);
+}
+.software-config-panel__card-desc {
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.software-config-panel__table-header {
+  display: flex;
+  align-items: center;
+  padding: var(--wb-spacing-3) var(--wb-spacing-5);
+  border-bottom: 1px solid var(--wb-border-subtle);
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.software-config-panel__table-row {
+  display: flex;
+  align-items: center;
+  padding: var(--wb-spacing-4) var(--wb-spacing-5);
+  transition: background-color var(--wb-motion-duration-sm) var(--wb-motion-easing-standard), opacity var(--wb-motion-duration-sm) var(--wb-motion-easing-standard);
+}
+.software-config-panel__table-row + .software-config-panel__table-row {
+  border-top: 1px solid var(--wb-border-subtle);
+}
+.software-config-panel__table-row:hover {
+  background: var(--wb-bg-hover);
+}
+.software-config-panel__table-row--disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.software-config-panel__col-tool {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--wb-spacing-3);
+  color: var(--wb-color-text-primary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.software-config-panel__col-description {
+  flex: 2;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  color: var(--wb-color-text-secondary);
+  font-size: var(--wb-font-body-size);
+  line-height: var(--wb-font-body-line-height);
+}
+.software-config-panel__col-status {
+  width: 60px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.software-config-panel__tool-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-icon-secondary);
+}

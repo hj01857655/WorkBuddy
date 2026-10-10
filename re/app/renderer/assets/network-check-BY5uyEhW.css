@@ -1,0 +1,325 @@
+/**
+ * Network Check modal layout.
+ *
+ * Visual language follows `SettingsModal` (overlay + centered panel + close
+ * button in top-right, uses `--cb-*` / `--cb-vscode-*` tokens). Row structure
+ * mirrors `GeneralSettingsPanel`: each item is a card with a left-aligned
+ * copy block (title + description) and a right-aligned action block (value /
+ * badge) vertically centered against each other.
+ */
+.network-check-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.56);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: networkCheckFadeIn 0.15s ease-out;
+}
+.network-check-modal {
+  --settings-surface: var(--cb-settings-card-background, var(--cb-card-background, var(--cb-secondary-bg, #2d2d2d)));
+  --settings-border: color-mix(in srgb, var(--cb-vscode-panel-border, #3c3c3c) 72%, transparent);
+  --settings-title: var(--cb-text-primary, var(--cb-vscode-foreground, #d4d4d4));
+  --settings-body: var(--cb-text-secondary, #858699);
+  --settings-muted: var(--cb-text-tertiary, #a0a0a0);
+  width: min(780px, calc(100vw - 64px));
+  height: min(720px, calc(100vh - 64px));
+  background: var(--cb-vscode-editor-background, #1e1e1e);
+  border: 1px solid color-mix(in srgb, var(--cb-vscode-panel-border, #3c3c3c) 76%, transparent);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--cb-shadow-lg, 0 18px 48px rgba(0, 0, 0, 0.28));
+  animation: networkCheckSlideUp 0.2s ease-out;
+  position: relative;
+  color: var(--settings-title);
+}
+.network-check-modal__header {
+  padding: 28px 38px 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--settings-border);
+}
+.network-check-modal__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.network-check-modal__title {
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 28px;
+  color: var(--settings-title);
+}
+.network-check-modal__subtitle {
+  font-size: 12px;
+  color: var(--settings-body);
+  line-height: 17px;
+}
+.network-check-modal__actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-right: 42px;
+}
+.network-check-modal__rerun-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid var(--settings-border);
+  background: var(--cb-vscode-editor-background, #1e1e1e);
+  color: var(--settings-title);
+  font-size: 12px;
+  line-height: 18px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.network-check-modal__rerun-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cb-vscode-editor-background, #1e1e1e) 86%, transparent);
+}
+.network-check-modal__rerun-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.network-check-modal__rerun-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.network-check-modal__close {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cb-text-secondary, #858699);
+  z-index: 1;
+}
+.network-check-modal__close:hover {
+  background: color-mix(in srgb, var(--cb-vscode-foreground, #cccccc) 8%, transparent);
+}
+.network-check-modal__close:active {
+  background: var(--cb-icon-button-hover-background, rgba(255, 255, 255, 0.1));
+}
+.network-check-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 38px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.network-check-modal__body::-webkit-scrollbar {
+  width: 10px;
+}
+.network-check-modal__body::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+  background-color: color-mix(in srgb, var(--cb-vscode-foreground, #cccccc) 22%, transparent);
+}
+.network-check-modal__error-banner {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--cb-error-foreground, #f87171) 14%, transparent);
+  color: var(--cb-error-foreground, #f87171);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.network-check-modal__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.network-check-modal__group-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--settings-muted);
+}
+.network-check-modal__section {
+  border: none;
+  border-radius: 4px;
+  background: var(--settings-surface);
+  padding: 10px 14px;
+}
+.network-check-modal__section-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+.network-check-modal__section-copy {
+  flex: 1;
+  min-width: 0;
+}
+.network-check-modal__section-title {
+  margin: 0;
+  color: var(--settings-title);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 18px;
+}
+.network-check-modal__section-desc {
+  margin: 3px 0 0;
+  max-width: 560px;
+  color: var(--settings-body);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 17px;
+  word-break: break-word;
+}
+.network-check-modal__section-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 128px;
+}
+.network-check-modal__value {
+  color: var(--settings-title);
+  font-size: 13px;
+  line-height: 18px;
+  text-align: right;
+  word-break: break-all;
+}
+.network-check-modal__value-meta {
+  color: var(--settings-body);
+  font-size: 12px;
+  line-height: 17px;
+}
+.network-check-modal__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+.network-check-modal__badge svg {
+  width: 12px;
+  height: 12px;
+}
+.network-check-modal__badge--pending {
+  color: var(--settings-body);
+  background: color-mix(in srgb, var(--cb-vscode-foreground, #cccccc) 10%, transparent);
+}
+.network-check-modal__badge--running {
+  color: var(--cb-info, #4aa3ff);
+  background: color-mix(in srgb, var(--cb-info, #4aa3ff) 14%, transparent);
+}
+.network-check-modal__badge--success {
+  color: var(--cb-success-color, #22c55e);
+  background: color-mix(in srgb, var(--cb-success-color, #22c55e) 16%, transparent);
+}
+.network-check-modal__badge--warning {
+  color: var(--cb-warning, #facc15);
+  background: color-mix(in srgb, var(--cb-warning, #facc15) 16%, transparent);
+}
+.network-check-modal__badge--error {
+  color: var(--cb-error-foreground, #f87171);
+  background: color-mix(in srgb, var(--cb-error-foreground, #f87171) 16%, transparent);
+}
+.network-check-modal__badge--unsupported {
+  color: var(--settings-muted);
+  background: color-mix(in srgb, var(--cb-vscode-foreground, #cccccc) 8%, transparent);
+}
+.network-check-modal__spin {
+  animation: networkCheckSpin 1s linear infinite;
+}
+.network-check-modal__report-link {
+  color: var(--cb-info, #4aa3ff);
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+.network-check-modal__report-link:hover {
+  opacity: 0.85;
+}
+.network-check-modal__report-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: nowrap;
+}
+@keyframes networkCheckSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes networkCheckFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes networkCheckSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (max-width: 720px) {
+  .network-check-modal {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  .network-check-modal__header {
+    padding: 20px 16px 12px;
+  }
+  .network-check-modal__body {
+    padding: 16px 16px 24px;
+  }
+  .network-check-modal__section-main {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .network-check-modal__section-action {
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .network-check-modal__value {
+    text-align: left;
+  }
+}

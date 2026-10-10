@@ -1,0 +1,115 @@
+/**
+ * ChatWithWorkBuddyButton 样式
+ *
+ * 迁移自 apps/web/publish/src/publish-page/components/chat-with-workbuddy-button/index.less
+ * 外层容器 fixed 居中悬浮，按钮 + 关闭按钮水平排列
+ */
+.chat-with-workbuddy-entry {
+  position: fixed;
+  left: 50%;
+  bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+  z-index: 140;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  transform: translateX(-50%);
+}
+.chat-with-workbuddy-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  width: fit-content;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 14px;
+  background-color: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  cursor: pointer;
+  font-family: 'PingFang SC', 'PingFang TC', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  white-space: nowrap;
+}
+.chat-with-workbuddy-btn:hover {
+  opacity: 0.92;
+}
+.chat-with-workbuddy-btn:active {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+.chat-with-workbuddy-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 2px;
+}
+.chat-with-workbuddy-btn:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+.chat-with-workbuddy-entry__close {
+  box-sizing: border-box;
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.chat-with-workbuddy-entry__close:hover {
+  opacity: 0.92;
+}
+.chat-with-workbuddy-entry__close:active {
+  opacity: 0.85;
+  transform: scale(0.94);
+}
+.chat-with-workbuddy-entry__close:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 2px;
+}
+.chat-with-workbuddy-entry__close span {
+  margin-top: -2px;
+}
+.chat-with-workbuddy-btn__content {
+  display: inline-flex;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.chat-with-workbuddy-btn__avatar {
+  box-sizing: border-box;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+.chat-with-workbuddy-btn__avatar img {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+.chat-with-workbuddy-btn__label {
+  color: #ffffff;
+  font-family: 'PingFang SC', 'PingFang TC', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
