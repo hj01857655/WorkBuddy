@@ -74,7 +74,7 @@ python checkin.py doctor
 
 | 方法 · 路径 | 说明 |
 | --- | --- |
-| `GET /v1/models` | 从上游 `/v3/config` 拉取（1 小时缓存），55 个 CN 模型，附 `credits` 倍率、上下文、工具/图像/推理能力标记、`reasoning_efforts` 档位候选，以及 `callable` 可调性（未探测时为 `null`） |
+| `GET /v1/models` | 从上游 `/v3/config` 拉取（1 小时缓存），56 个 CN 模型（上游标 `disabled: true` 的壳条目已过滤，如 `wb-lite`），附 `credits` 倍率、上下文、工具/图像/推理能力标记、`reasoning_efforts` 档位候选、`context_lengths`（上游给的可选上下文档位，**仅目录信息**：聊天体 `Request` 无长度字段，选了不生效），以及 `callable` 可调性（未探测时为 `null`） |
 | `POST /v1/chat/completions` | 流式 / 非流式双模式，`tools` 透传，`usage.credit` 随响应回传 |
 | `GET /health` | 存活探针 |
 | `GET /` · `/admin` | 管理面板 |

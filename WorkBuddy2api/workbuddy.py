@@ -167,6 +167,12 @@ def list_models(force: bool = False) -> list:
             raise RuntimeError("模型目录业务错误 code=%s msg=%s" % (body.get("code"), body.get("msg")))
         data = body.get("data") or {}
         models = data.get("models") or []
+        # 上游会把已停用的模型留在目录里，只挂一个 `disabled: true` 壳条目
+        # （实测 `wb-lite` = `{disabled:true, id, name}`，没有 contextWindow / credits）。
+        # 不过滤就会从 `/v1/models` 出去一个选了必挂的条目——与「假控件」同一类错误，
+        # 只是长在 API 表面上。在写缓存这一层拦，而不是在 `to_openai_model` 上标
+        # `callable=False`：上游自己已标不可用，没必要再把它当候选呈现给客户端。
+        models = [m for m in models if not m.get("disabled")]
         _MODELS["data"], _MODELS["at"] = models, time.time()
         # 促销目录同源落缓存：免费判定（_model_free_promo）的数据基础
         _PROMOS["data"], _PROMOS["at"] = data.get("modelPromotions") or [], time.time()
@@ -208,6 +214,13 @@ def to_openai_model(model: dict, probe: dict = None) -> dict:
         "supports_reasoning": bool(model.get("supportsReasoning")),
         # 推理档位候选：与 reasoning_effort 对应，不接上客户端就猜不到合法取值
         "reasoning_efforts": (model.get("reasoning") or {}).get("supportedEfforts") or [],
+        # 上游目录给的可选上下文档位（实测 2026-10：7 个模型新增 600k 档）。
+        # **这是目录信息，不是可用入参**：上游聊天体 `Request` 结构里没有长度字段
+        # （实测拿 `{}` 探 `contextLength`/`context_length`/`contextWindow` 全部
+        # 200 静默丢弃，而同方法的 `temperature` 立即 400 并点名
+        # `Go struct field Request.temperature`）——所以选了也不会生效。列出来是为了
+        # 让客户端知道该模型能力边界（`context_window` 只是默认值），不是宣称可切换。
+        "context_lengths": (model.get("contextWindow") or {}).get("supportedLengths") or [],
         "only_reasoning": bool(model.get("onlyReasoning")),
         "credits": model.get("credits"),
         # 免费面标注（促销 factor==0 命中 / 目录 x0.00 兜底）；恒为 bool
