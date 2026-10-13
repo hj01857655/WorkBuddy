@@ -475,7 +475,7 @@ def admin_probe_models():
 # ── 每日自动签到（qoder2api 同款：daemon 线程，启动补签 + 每天定点）───────────
 # 签到 CLI 就在本目录（checkin.py）：网关自包含，不引用反代目录以外的文件
 CHECKIN_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkin.py")
-CHECKIN_HOUR = 10  # 每天 10:00（本地时间）
+CHECKIN_HOUR = 0  # 过 0 点就签（本地时间）；服务端不限制签到时刻，0 点后随时可领
 
 
 def _run_checkin(reason: str) -> None:
