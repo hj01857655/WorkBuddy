@@ -217,6 +217,13 @@ def _upstream_error(resp) -> tuple:
     except requests.RequestException:
         text = ""
     ctype = (resp.headers.get("Content-Type") or "").lower()
+    # 落原因到日志：否则外层只留一行 "done: status=502 287B"，
+    # 上游到底是拦凭证、限流还是改路由根本分不出来（归一化会抹掉原始状态码）。
+    # 只留 200 字并抹掉长 token 样串，避免凭据落入日志。
+    import re as _re
+    peek = _re.sub(r"[A-Za-z0-9_\-]{24,}", "…", " ".join(text.split()))[:200]
+    logger.warning("[%s] 上游非 200: HTTP %d ctype=%s %s",
+                   getattr(g, "rid", "?"), resp.status_code, ctype or "?", peek)
 
     if "json" in ctype:
         try:
