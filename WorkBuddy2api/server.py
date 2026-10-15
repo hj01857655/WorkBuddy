@@ -94,6 +94,8 @@ DUMP_MAX_FILES = int(os.environ.get("DUMP_MAX_FILES", "200"))  # ≤0 表示不�
 
 _seq_lock = threading.Lock()
 _req_seq = 0
+# 启动标识：防跨重启同名 rid 覆盖 dump（旧版 r%04d 每次重启归零，新会话同名写入直接抹掉旧证据）
+_BOOT_TAG = time.strftime("%m%d-%H%M%S", time.localtime()) + "-p%d" % os.getpid()
 
 
 def _next_req_id():
@@ -120,14 +122,17 @@ def _dump_trim():
 
 
 def _dump_save(rid, kind, data):
-    """把请求/响应原文落盘到 dumps/<rid>.<kind>.txt（DUMP=0 时跳过）。"""
+    """把请求/响应原文落盘到 dumps/<boot>.<rid>.<kind>.txt（DUMP=0 时跳过）。
+
+    文件名带启动段：日志里的 rid 仍是简洁 r%04d，但跨重启的同名 rid 不会互相覆盖 dump。
+    """
     if not DUMP_ON or not data:
         return
     try:
         os.makedirs(DUMP_DIR, exist_ok=True)
         text = data if isinstance(data, str) else data.decode("utf-8", "replace")
         truncated = len(text) > DUMP_MAX_BYTES
-        path = os.path.join(DUMP_DIR, "%s.%s.txt%s" % (rid, kind, ".truncated" if truncated else ""))
+        path = os.path.join(DUMP_DIR, "%s.%s.%s.txt%s" % (_BOOT_TAG, rid, kind, ".truncated" if truncated else ""))
         with open(path, "w", encoding="utf-8") as f:
             f.write(text[:DUMP_MAX_BYTES])
         _dump_trim()
