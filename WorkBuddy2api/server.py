@@ -30,6 +30,7 @@ from flask import Flask, Response, g, jsonify, request
 
 import credential
 import workbuddy
+import responses_bridge as rb
 
 # 加载 .env（项目根目录），让 API_KEY 等配置可写在文件里
 load_dotenv()
@@ -269,6 +270,98 @@ def list_models():
     }))
 
 
+# ── 上游瞬态失败重试 ─────────────────────────────────────────────────────────
+# 限免模型高峰容易排队（429 queue.waiting / queue.full），上游偶尔还会直接
+# 掐 TLS 连接（SSL UNEXPECTED_EOF）——两者都是"时间"问题，退避重试；
+# 401 已由 open_chat_stream 内部刷新令牌重试一次，其余 4xx 非瞬态，原样返回。
+_UPSTREAM_MAX_ATTEMPTS = 4
+_UPSTREAM_RETRY_BACKOFF_S = (2.0, 4.0, 8.0)
+_TRANSIENT_STATUS = frozenset({429, 500, 502, 503, 504})
+
+
+def _open_upstream(payload, cred):
+    """open_chat_stream + 瞬态失败重试。
+
+    返回 open 的 Response（200 或最终失败状态码）；连接层失败耗尽重试时
+    异常原样抛出（调用方统一 502）。
+    """
+    for attempt in range(_UPSTREAM_MAX_ATTEMPTS):
+        try:
+            upstream = workbuddy.open_chat_stream(payload, cred)
+        except requests.RequestException as error:
+            if attempt < _UPSTREAM_MAX_ATTEMPTS - 1:
+                logger.warning("[%s] 上游连接失败，%.0fs 后重试 %d/%d: %s",
+                               getattr(g, "rid", "?"), _UPSTREAM_RETRY_BACKOFF_S[attempt],
+                               attempt + 1, _UPSTREAM_MAX_ATTEMPTS - 1, error)
+                time.sleep(_UPSTREAM_RETRY_BACKOFF_S[attempt])
+                continue
+            raise
+        if upstream.status_code == 200 or upstream.status_code not in _TRANSIENT_STATUS:
+            return upstream
+        if attempt < _UPSTREAM_MAX_ATTEMPTS - 1:
+            upstream.close()
+            logger.warning("[%s] 上游 %d（排队/5xx），%.0fs 后重试 %d/%d",
+                           getattr(g, "rid", "?"), upstream.status_code,
+                           _UPSTREAM_RETRY_BACKOFF_S[attempt],
+                           attempt + 1, _UPSTREAM_MAX_ATTEMPTS - 1)
+            time.sleep(_UPSTREAM_RETRY_BACKOFF_S[attempt])
+            continue
+        return upstream
+
+
+def _chat_sse_lines(upstream, model, chunk_id, want_usage):
+    """产出 Chat SSE 原始行（带 data: 前缀，含 [DONE] 收尾帧）。
+
+    chat 与 responses 路由共用：后者用 responses_bridge 把这行流再包成
+    Responses SSE（每帧带 sequence_number）。
+    """
+    finish_reason, usage, saw_tool_calls, sent_role = None, None, False, False
+    for kind, value in workbuddy.iter_sse(upstream):
+        if kind == "done":
+            break
+        if kind == "content":
+            frame = workbuddy.make_chunk(chunk_id, model, {"content": value})
+        elif kind == "reasoning":
+            frame = workbuddy.make_chunk(chunk_id, model, {"reasoning_content": value})
+        elif kind == "tool_calls":
+            saw_tool_calls = True
+            frame = workbuddy.make_chunk(chunk_id, model, {"tool_calls": value})
+        elif kind == "finish":
+            finish_reason = value
+            continue
+        elif kind == "usage":
+            usage = value
+            continue
+        else:
+            continue
+        if not sent_role:
+            # 上游每帧都带 delta.role，但 OpenAI 惯例是只首帧带角色，
+            # 客户端靠它初始化 message（与 stream=false 的 message.role 对齐）
+            first = frame["choices"][0]
+            first["delta"] = dict({"role": "assistant"}, **(first.get("delta") or {}))
+            sent_role = True
+        yield b"data: " + json.dumps(
+            frame, ensure_ascii=False, separators=(",", ":")
+        ).encode("utf-8") + b"\n\n"
+
+    # 收尾：上游 finish_reason 与 usage 内联在同一帧，这里拆成标准形态下发
+    tail = workbuddy.make_chunk(
+        chunk_id, model, {},
+        finish_reason or ("tool_calls" if saw_tool_calls else "stop"),
+    )
+    if usage and not want_usage:
+        tail["usage"] = usage        # 客户端没要独立 usage 帧时内联在收尾帧
+    yield b"data: " + json.dumps(
+        tail, ensure_ascii=False, separators=(",", ":")
+    ).encode("utf-8") + b"\n\n"
+    if usage and want_usage:
+        yield b"data: " + json.dumps(
+            workbuddy.make_chunk(chunk_id, model, {}, usage=usage),
+            ensure_ascii=False, separators=(",", ":"),
+        ).encode("utf-8") + b"\n\n"
+    yield b"data: [DONE]\n\n"
+
+
 @app.route("/v1/chat/completions", methods=["POST", "OPTIONS"])
 def chat_completions():
     if request.method == "OPTIONS":
@@ -292,7 +385,7 @@ def chat_completions():
 
     try:
         cred = credential.load()
-        upstream = workbuddy.open_chat_stream(payload, cred)
+        upstream = _open_upstream(payload, cred)
     except Exception as error:
         return _cors(jsonify({"error": {"message": str(error), "type": "upstream_error"}})), 502
 
@@ -311,52 +404,75 @@ def chat_completions():
         ))
 
     def generate():
-        finish_reason, usage, saw_tool_calls, sent_role = None, None, False, False
         try:
-            for kind, value in workbuddy.iter_sse(upstream):
-                if kind == "done":
-                    break
-                if kind == "content":
-                    frame = workbuddy.make_chunk(chunk_id, model, {"content": value})
-                elif kind == "reasoning":
-                    frame = workbuddy.make_chunk(chunk_id, model, {"reasoning_content": value})
-                elif kind == "tool_calls":
-                    saw_tool_calls = True
-                    frame = workbuddy.make_chunk(chunk_id, model, {"tool_calls": value})
-                elif kind == "finish":
-                    finish_reason = value
-                    continue
-                elif kind == "usage":
-                    usage = value
-                    continue
-                else:
-                    continue
-                if not sent_role:
-                    # 上游每帧都带 delta.role，但 OpenAI 惯例是只首帧带角色，
-                    # 客户端靠它初始化 message（与 stream=false 的 message.role 对齐）
-                    first = frame["choices"][0]
-                    first["delta"] = dict({"role": "assistant"}, **(first.get("delta") or {}))
-                    sent_role = True
-                yield b"data: " + json.dumps(
-                    frame, ensure_ascii=False, separators=(",", ":")
-                ).encode("utf-8") + b"\n\n"
+            yield from _chat_sse_lines(upstream, model, chunk_id, want_usage)
+        finally:
+            upstream.close()
 
-            # 收尾：上游 finish_reason 与 usage 内联在同一帧，这里拆成标准形态下发
-            tail = workbuddy.make_chunk(
-                chunk_id, model, {},
-                finish_reason or ("tool_calls" if saw_tool_calls else "stop"),
-            )
-            if usage and not want_usage:
-                tail["usage"] = usage        # 客户端没要独立 usage 帧时内联在收尾帧
-            yield b"data: " + json.dumps(
-                tail, ensure_ascii=False, separators=(",", ":")
-            ).encode("utf-8") + b"\n\n"
-            if usage and want_usage:
-                yield b"data: " + json.dumps(
-                    workbuddy.make_chunk(chunk_id, model, {}, usage=usage),
-                    ensure_ascii=False, separators=(",", ":"),
-                ).encode("utf-8") + b"\n\n"
-            yield b"data: [DONE]\n\n"
+    resp = Response(_stream_log(generate(), g.rid, g.t0), status=200,
+                    mimetype="text/event-stream")
+    resp.headers["Cache-Control"] = "no-cache, no-transform"
+    resp.headers["X-Accel-Buffering"] = "no"
+    return _cors(resp)
+
+
+# ── OpenAI Responses 端点（grok-build / Codex 等原生 Responses 客户端）──────
+@app.route("/v1/responses", methods=["POST", "OPTIONS"])
+def responses_api():
+    """Responses 协议入口：请求体经 responses_bridge 转成 Chat 后走与 chat
+    相同的上游管线（workbuddy.open_chat_stream）；响应侧把 Chat SSE 包成
+    Responses SSE（每帧带 sequence_number，grok 类型级强制）。"""
+    if request.method == "OPTIONS":
+        return _cors(Response(""))
+    denied = _guard()
+    if denied:
+        return denied
+
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return _cors(jsonify({"error": {
+            "message": "invalid request: JSON object body required",
+            "type": "invalid_request_error",
+        }})), 400
+
+    chat_body = rb.responses_to_chat(body)
+    if not chat_body.get("messages"):
+        return _cors(jsonify({"error": {
+            "message": "invalid request: 'input' is required",
+            "type": "invalid_request_error",
+        }})), 400
+
+    payload = workbuddy.build_payload(chat_body)
+    model = payload["model"]
+    want_stream = bool(chat_body.get("stream"))
+    chunk_id = "chatcmpl-" + uuid.uuid4().hex[:24]
+
+    try:
+        cred = credential.load()
+        upstream = _open_upstream(payload, cred)
+    except Exception as error:
+        return _cors(jsonify({"error": {"message": str(error), "type": "upstream_error"}})), 502
+
+    if upstream.status_code != 200:
+        with upstream:
+            status_body, status_code = _upstream_error(upstream)
+        return _cors(status_body), status_code
+
+    if not want_stream:
+        with upstream:
+            result = workbuddy.aggregate(upstream, model, chunk_id)
+        return _cors(Response(
+            json.dumps(rb.chat_json_to_responses(result, model), ensure_ascii=False,
+                       separators=(",", ":")).encode("utf-8"),
+            status=200,
+            content_type="application/json; charset=utf-8",
+        ))
+
+    def generate():
+        try:
+            for frame in rb.chat_sse_to_responses(
+                    _chat_sse_lines(upstream, model, chunk_id, False), model):
+                yield frame
         finally:
             upstream.close()
 

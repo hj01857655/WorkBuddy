@@ -9,3 +9,4 @@ re/*.out
 re/*.log
 re/__pycache__/
 re/buildkey.json
+tools/__pycache__/
