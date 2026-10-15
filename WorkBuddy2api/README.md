@@ -80,7 +80,7 @@ Chat 是上游母语；Responses / Anthropic 均为「方言 ⇄ 母语」双向
 - **tool_choice 对象形式有损**：无法强制调用指定函数
 - **stop / response_format / logprobs / seed / top_k 上游执行不了**，网关不伪造转发
 - **推理模型留足 max_tokens**：思维链计入输出预算，给小了返回空 content + `finish_reason=”length”`
-- **系统提示不能照抄 Claude Code / Codex**：上游按内容拦截
+- **渠道内容闸门与请求侧 scrub**：上游曾在 2026-10-11 拦截含竞品产品名/照抄竞品系统提示词的请求（`400 / code 11128`），网关因此在 `workbuddy.py` 加 `_SCRUB_MAP` 出站清洗；**2026-10-15 直连上游复测：这些词裸发一律 200，闸门已不吃这套**。scrub 仍在生效且响应侧无还原，模型上下文与回显文本可能见到占位名；瘦身/开关方案见 `../docs/workbuddy-25-渠道闸门与scrub.md`
 - **thinking / cache_control 丢失**：Anthropic 特有字段，Chat 协议无对应项
 - **单账号**，会真实消耗 credit
 

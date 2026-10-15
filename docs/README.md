@@ -1,4 +1,4 @@
-# WorkBuddy 逆向系列（01–24）索引
+# WorkBuddy 逆向系列（01–25）索引
 
 目标：WorkBuddy 5.6.2（腾讯 AI 办公 Agent，Electron 定制 fork，内部代号 genie）
 工作区：`workbuddy/re/`（工具+抓包+解包产物，git-ignored）　本文档：`workbuddy/docs/`（入库）
@@ -38,6 +38,7 @@
 | [22](workbuddy-22-会话核心.md) | **会话核心** | `session-manager.ts` **242.9KB** + 30 region。**cwd 预检四条"故意如此"**（无兜底/结构化错误/**异步 fs 防 macOS TCC 弹窗卡死 event loop**/daemon 文案保持英文）。**`session-mutation-policy` 闸门为何不能一刀切**（迁移未完成时闸门过严会永久卡在 pending + DB/内存不一致 #86427）。运行时配置只在空闲点生效 |
 | [23](workbuddy-23-安全中心.md) | **安全中心** | `security-center/service.ts` **43.2KB**：沙箱规则 / 系统工具策略 / 敏感操作反向审批 / 审计日志，全走 RPC 通道。**纯本地子系统、无云端点**（全文检索无 `/security*` `/audit*` `/sandbox*`），与 05 号的云端威胁库是两套。验证口径：静态逆向 |
 | [24](workbuddy-24-协议翻译完整性审计.md) | **协议翻译完整性审计** | 只读+实调（2026-10-10 13:40–14:10）。**上游把 body 反序列化进 Go 结构体：未知键静默丢弃（`probe_zzz=1`→200），只有类型不符才 `400/11101 cannot unmarshal … into Go struct field`，取值非法一律默许（`max_tokens=-10` 也 200）→ 「✅ 200 透传」只是接受性、不是效力**。行为级证伪：`stop`（baseline `好\n###\n行` vs `stop=["###"]` 仍出 `###好`）、`response_format` json_object 返 markdown 散文、`logprobs` 恒 `null`、`temperature=0.0` 两答不同、`seed` 同种子不同答、`max_completion_tokens=20`→ct=277（而 `max_tokens=20`→ct=20）。`max_tokens` 与 `tool_choice` **按后端分裂**（`auto` 听 max_tokens、连非法 `tool_choice` 都收；`hunyuan-chat` 无视 max_tokens、`required` 直接 500）。入站 diff：`usage` 13 键全留，但**流式从不发 `delta.role`**。假接口清单 R1–R11；R1（对象→`required`）与 R2（`max_completion_tokens` 无上限）为本轮新发现回归/风险。**已执行（§十）**：剔除 `stop`/`response_format`/`logprobs`/`top_logprobs`/`seed`/`top_k`/`top_p` 七个无效转发、接 `reasoning_effort`（经网关实测 thinking 164→503）、`max_completion_tokens`→`max_tokens` 映射、对象 `tool_choice` 回退 `auto`（500→200）、流式补 `delta.role`、目录新增 `reasoning_efforts`（16/55 带档位）与 `callable` 可调性（**实扫 55 个：38 可调 / 17 个 `11102` 不可调**）、登录自启（当时用 `start-WorkBuddy2api.ps1`，2026-10-10 起改 bat + 计划任务直跑，ps1 已删）、已作 provider 追加进 AtomCode `config.toml`。**§十 同文更正了两个暂定结论**：`temperature` 由“未证实”改判**已消费**（高熵题 `=0.0` 连 5 发同值），`top_p` 由“透传”改判**未消费**（`=0.0001` 不收敛）；另查清 `agent:"cli"` 源自我们自己早期探针脚本、不在聊天端点结构体里（旧说法“不进 Web 历史列表”已推翻）。 |
+| [25](workbuddy-25-渠道闸门与scrub.md) | **渠道闸门与 scrub** | 2026-10-11 的 51×`400/11128`（hy3+33 工具+竞品名上下文）促成 `_SCRUB_MAP` 请求侧清洗；**2026-10-15 直连上游复测：原始竞品名、全套通用词、逐字 Claude Code 系统提示词一律 200，闸门已不吃这套**。现行 map 仍洗 `agent/system/MCP` 等通用词且响应侧无还原 → 模型上下文占位名自污染（本次排障实证）；11102 与 11128 的 400 body 等长、勿凭 190B 判成因。修复方向 A灰度开关/B最小句改写/C响应侧 unscrub 见文末，均未执行，删表需真实流量验证 |
 
 ## 成品工具（`workbuddy/re/`）
 
