@@ -234,144 +234,10 @@ def to_openai_model(model: dict, probe: dict = None) -> dict:
     }
 
 
-# 上游渠道闸门会扫 messages 文本，命中竞品产品名（实测 ``ZCode``）即返 11128
-# "unapproved channel"。仅做最小侵入替换：把 ZCode 字样抹成中性词，保留其余功能
-# 指令（browser-use/computer-use 等描述不动）。仅作用于转发给上游的副本，不改客户端原请求。
-# 渠道闸门清洗开关：默认关。2026-10-15 直连上游复测（docs/workbuddy-25 §四）：竞品名/通用词/
-# 逐字 Claude Code 系统提示词裸发一律 200，当晚拦截面有实效性、已放开；scrub 会污染模型上下文
-# （agent→helper 等通用词一并被洗）。若 request.log 再现 400/11128，设 WB_SCRUB=1 回滚旧行为。
-SCRUB_ON = os.environ.get("WB_SCRUB", "0").strip() != "0"
-
-_SCRUB_MAP = (
-    ("ZCode", "the tool"), ("zcode", "the tool"),
-    ("AtomCode", "the tool"), ("atomcode", "the tool"),
-    ("OpenCode", "the tool"), ("opencode", "the tool"),
-    ("CodeBuddy", "the tool"), ("codebuddy", "the tool"),
-    ("AtomGit", "the forge"), ("atomgit", "the forge"),
-    ("the assistant", "the helper"), ("the assistant", "the helper"),
-    ("assistant", "helper"), ("assistant", "helper"),
-    ("assistant", "helper"), ("assistant", "helper"),
-    ("Agent", "helper"), ("agent", "helper"),
-    ("MCP", "unit"), ("mcp", "unit"),
-    ("Browser", "tab"), ("browser", "tab"),
-    ("Computer", "box"), ("computer", "box"),
-    ("web", "net"),
-    ("system", "sys"),
-    ("tool", "unit"),
-    ("addons", "parts"), ("addon", "part"),
-    ("guides", "notes"), ("guide", "note"),
-    ("the editor", "the pane"), ("the editor", "the pane"),
-    ("editor", "pane"),
-    ("plugins", "parts"), ("plugin", "part"),
-    ("SKILL", "note"), ("skill", "note"),
-    ("the provider", "the forge"), ("the provider", "the forge"),
-    ("provider", "forge"),    # community-verified WAF triggers (zcode-prompt-sanitizer / codebuddy2api)
-    ("you will usually use this for PRs", "this is the default branch for code changes"),
-    ("DoS", "service outage"), ("dos", "service outage"),
-    ("exploit", "leverage"), ("Exploit", "Leverage"),
-    ("credential", "key material"), ("Credential", "Key Material"),
-    ("sandbox", "isolated env"), ("Sandbox", "Isolated Env"),
-    ("escalation", "promotion"), ("Escalation", "Promotion"),
-
-)
-
-
-def _scrub_text(text: str) -> str:
-    if not isinstance(text, str):
-        return text
-    out = text
-    for token, repl in _SCRUB_MAP:
-        out = out.replace(token, repl)
-    return out
-
-
-def _scrub_messages(messages: list) -> list:
-    """返回清洗后的 messages 副本（不修改入参）。"""
-    if not isinstance(messages, list):
-        return messages
-    cleaned = []
-    for m in messages:
-        if not isinstance(m, dict):
-            cleaned.append(m)
-            continue
-        c = m.get("content")
-        if isinstance(c, str):
-            nm = dict(m)
-            nm["content"] = _scrub_text(c)
-            cleaned.append(nm)
-        elif isinstance(c, list):
-            # content 为 parts 数组（如 [{type:text,text:...}]），逐 part 清洗
-            parts = []
-            for part in c:
-                if isinstance(part, dict) and isinstance(part.get("text"), str):
-                    np = dict(part)
-                    np["text"] = _scrub_text(part["text"])
-                    parts.append(np)
-                else:
-                    parts.append(part)
-            nm = dict(m)
-            nm["content"] = parts
-            cleaned.append(nm)
-        else:
-            cleaned.append(m)
-    # 角色改写：上游渠道闸门对请求体敏感词是**累计评分**制——role="system" 也占一处
-    # （atomcode 自带 system 能过，但 ZCode 清洗后残留词累加会过阈值；r0001 实测
-    # 仅把 system→user 即 400→200 且复测稳定）。提示词文本原样保留，只改 role 标签。
-    for nm in cleaned:
-        if isinstance(nm, dict) and nm.get("role") == "system":
-            nm["role"] = "user"
-    return cleaned
-
-
-def _scrub_tools(tools: list) -> list:
-    """清洗 tools 定义里的文本。上游同样扫 tools，实测 r0047 单靠清 messages 无效，
-    tools 描述里的敏感词也要一并抹（不改入参）。
-
-    注意：``function.name`` 是标识符，**绝不清洗**——替换值含空格或把不同工具名
-    洗成同名会触发上游 11152 "tool name is invalid or duplicated"（2026-10-11 实锤）。
-    description/parameters 只是说明文本，可安全清洗。"""
-    if not isinstance(tools, list):
-        return tools
-    cleaned = []
-    for t in tools:
-        if not isinstance(t, dict):
-            cleaned.append(t)
-            continue
-        nt = dict(t)
-        fn = nt.get("function")
-        if isinstance(fn, dict):
-            nf = dict(fn)
-            if isinstance(nf.get("description"), str):
-                nf["description"] = _scrub_text(nf["description"])
-            # name 保持原样（标识符）；parameters 只洗 description 类说明文本，
-            # 属性名/required/enum 等标识符一律不碰（洗了会 schema 错位）
-            nf["parameters"] = _scrub_descriptions(nf.get("parameters"))
-            nt["function"] = nf
-        cleaned.append(nt)
-    return cleaned
-
-
-def _scrub_descriptions(o):
-    """只清洗结构里 ``description`` 键下的字符串，其余（标识符、required、enum）原样保留。"""
-    if isinstance(o, dict):
-        out = dict(o)
-        if isinstance(out.get("description"), str):
-            out["description"] = _scrub_text(out["description"])
-        return {k: _scrub_descriptions(v) for k, v in out.items()}
-    if isinstance(o, list):
-        return [_scrub_descriptions(x) for x in o]
-    return o
-
-
-def _scrub_obj(o):
-    """递归清洗任意 JSON 结构里的字符串。"""
-    if isinstance(o, str):
-        return _scrub_text(o)
-    if isinstance(o, list):
-        return [_scrub_obj(x) for x in o]
-    if isinstance(o, dict):
-        return {k: _scrub_obj(v) for k, v in o.items()}
-    return o
+# 渠道闸门 scrub（_SCRUB_MAP / _scrub_* / system→user 角色改写）已于 2026-10-15 整体移除：
+# 当日直连上游复测，竞品名/通用词/逐字 Claude Code 系统提示词裸发一律 200（docs/workbuddy-25 §四），
+# 而 scrub 会污染模型上下文（agent→helper、ZCode→the unit 链式替换）。
+# 若 request.log 重现 400/11128，恢复入口：git 提交 f9e05e1（WB_SCRUB 开关版）。
 
 
 def build_payload(req: dict) -> dict:
@@ -402,10 +268,7 @@ def build_payload(req: dict) -> dict:
         # 注：``agent`` 不在上游聊天端点的结构体内（24 号审计 §5.1），
         # 保留只为与其他官方入口对齐，不应期望它影响历史列表
         "agent": "cli",
-        # 渠道闸门清洗默认关闭（2026-10-15 实测上游已不拦，见文件头 SCRUB_ON 注释；
-        # 当年 r0002/r0011 的 11128 实锤只适用于那个窗口）
-        "messages": (_scrub_messages(req.get("messages") or []) if SCRUB_ON
-                     else (req.get("messages") or [])),
+        "messages": req.get("messages") or [],
     }
     max_tokens = req.get("max_tokens")
     if max_tokens is None:
@@ -418,8 +281,7 @@ def build_payload(req: dict) -> dict:
         if req.get(key) is not None:
             payload[key] = req[key]
     if req.get("tools"):
-        # tools 描述同样受渠道闸门开关控制（旧实锤 r0047：只清 messages 不够，开就要两路都开）
-        payload["tools"] = _scrub_tools(req["tools"]) if SCRUB_ON else req["tools"]
+        payload["tools"] = req["tools"]
     choice = req.get("tool_choice")
     if isinstance(choice, str):
         # 字符串形态不依赖是否带 tools，照转

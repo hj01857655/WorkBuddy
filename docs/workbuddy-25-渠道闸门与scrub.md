@@ -1,7 +1,7 @@
 # workbuddy-25 · 渠道闸门与 scrub
 
 > 归属：[WorkBuddy 逆向系列索引](README.md)
-> 代码证据：`WorkBuddy2api/workbuddy.py` `_SCRUB_MAP`（237–271 行）
+> 代码证据：`WorkBuddy2api/workbuddy.py` `_SCRUB_MAP`（**已于 2026-10-15 整体删除**，恢复入口 git `f9e05e1`）
 > 运行证据：`WorkBuddy2api/request.log`（2026-10-11 01:19–01:29）
 > 复测日期：2026-10-15（直连上游，绕过自家 scrub）
 
@@ -35,7 +35,7 @@ prompt-injection），只改写这一句即可放行，其余全文透传、响�
 - 当晚的 req/resp dump 已被轮转冲掉，无法逐字节 diff 02:06 vs 02:14，归因到具体词只能靠 §一 的
   探针记录与社区旁证。
 
-## 三、现行 scrub 行为与副作用
+## 三、scrub 行为与副作用（历史，代码已删除）
 
 `_SCRUB_MAP` 三类词，顺序链式替换：
 
@@ -77,10 +77,8 @@ prompt-injection），只改写这一句即可放行，其余全文透传、响�
 
 ## 五、修复方向与执行状态
 
-**方案 A 已于 2026-10-15 落地**：`WB_SCRUB` 开关（`workbuddy.py` `SCRUB_ON`），**默认关=不清洗**；
-离线双态验证通过（默认态 messages/tools 原文透传；`WB_SCRUB=1` 恢复旧清洗）。
-若真实流量重现 400/11128，设 `WB_SCRUB=1` 回滚；历史已被占位名污染的本会话无法自动还原，
-新会话/重启后干净。
+**方案 A 已于 2026-10-15 落地，同日按用户决定升级为彻底删除**：`_SCRUB_MAP`、`_scrub_text/_scrub_messages/_scrub_tools/_scrub_descriptions/_scrub_obj` 及隐藏的 **`system→user` 角色改写**全部从 `workbuddy.py` 移除，`build_payload` 直接透传；`py_compile` 与透传断言（system role 保留、原文保留）通过，`WB_SCRUB` 环境变量不再存在。若真实流量重现 400/11128，恢复入口：git 提交 `f9e05e1`（开关版）或按本文重建最小规则。
+历史已被占位名污染的旧会话存档无法自动还原，新会话干净。
 
 备选（若闸门重现且需保真）：
 
