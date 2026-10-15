@@ -23,7 +23,19 @@ ZCode 3.14.5 客户端（`ua=ZCode/3.14.5`）经网关打 WorkBuddy 云端时，
 prompt-injection），只改写这一句即可放行，其余全文透传、响应不动。我们的 map 第 264 行
 也收了这句。
 
-## 二、现行 scrub 行为与副作用
+## 二·五、当晚时间线（request.log 状态机配对，rid 跨重启复用已按最近 in 行消费）
+
+| 时刻 | 结果 | body | 说明 |
+|---|---|---|---|
+| 01:19:41 – 02:06:17 | 7×`400` | 118,138–118,200B | `ua=ZCode/3.14.5`（hy3+33 tools，同一形态反复撞墙） |
+| **02:14:23 起** | 10×`ok` | 118,185 → 157,507B | 同一 UA、body 同量级——ZCode 客户端侧未变，**唯一变化是网关加了 scrub** |
+
+- 02:14 后 ZCode-UA 流量持续 200，坐实 **scrub 本身有效**（当时确实洗掉了触发内容）。
+- 结合 §三：同一形态今天不加 scrub 也过 → 拦截面有**时效性**（当晚窗口内生效，之后放开）。
+- 当晚的 req/resp dump 已被轮转冲掉，无法逐字节 diff 02:06 vs 02:14，归因到具体词只能靠 §一 的
+  探针记录与社区旁证。
+
+## 三、现行 scrub 行为与副作用
 
 `_SCRUB_MAP` 三类词，顺序链式替换：
 
@@ -31,7 +43,8 @@ prompt-injection），只改写这一句即可放行，其余全文透传、响�
 |---|---|---|
 | 竞品产品名 | `ZCode`/`AtomCode`/`OpenCode`/`CodeBuddy`/`AtomGit` | `the tool`/`the forge` |
 | agent 生态通用词 | `assistant`/`agent`/`MCP`/`Browser`/`Computer`/`web`/`system`/`tool`/`editor`/`plugin`/`skill`/`provider` | `helper`/`unit`/`tab`/`box`/`net`/`sys`/`pane`/`part`/`note`/`forge` |
-| 安全语义词 | `DoS`/`exploit`/`credential`/`sandbox`/`escalation`/PRs 句 | 中性改写 |
+
+（第三类「安全语义词」：`DoS`/`exploit`/`credential`/`sandbox`/`escalation` 与 PRs 整句，中性改写。）
 
 两个已踩实的副作用：
 
@@ -41,7 +54,7 @@ prompt-injection），只改写这一句即可放行，其余全文透传、响�
    污染随会话滚雪球。本次排障中模型侧读到的一切路径/文件名/文档标题均已被替换，
    多轮才定位到根源。
 
-## 三、2026-10-15 复测：闸门已不吃这套
+## 四、2026-10-15 复测：闸门已不吃这套
 
 方法：复用 `credential.load()/token()` + `build_headers()` **直连**
 `copilot.tencent.com/v2/chat/completions`（`stream=true`、`max_tokens=8`、不经过自家 scrub），
@@ -62,13 +75,14 @@ prompt-injection），只改写这一句即可放行，其余全文透传、响�
 拦截当时确实存在。结论：**今天（5.6.2 / hy3 面）这些词在裸请求里都不再触发**；
 当年拦截可能绑定「长对话 + 全量 33 工具 schema + hy3」的组合，也可能上游 WAF 其后调过规则。
 
-## 四、修复方向（未执行，待决策）
+## 五、修复方向（未执行，待决策）
 
 | 方案 | 内容 | 风险 |
 |---|---|---|
-| A 灰度 | 加 `WB_SCRUB` 开关（默认开），关掉跑真实流量数日，盯 request.log 是否重现 400/11128 | 低 |
+| A 灰度 | 加 `WB_SCRUB` 开关（默认开），关掉跑真实流量数日，盯 request.log 是否重现 400/11128。**重点盯 `ua=ZCode` 全量工具+长 system 形态**——当晚拦截只发生在该组合上 | 低 |
 | B 精简 | 只保留 PRs 句一条（对齐社区 zps 最小方案），删掉产品名与通用词条 | 中（8 个探针不构成全量保证） |
 | C 兜底 | 若确认个别词仍在拦截面：响应侧加对称 unscrub（SSE 整帧 JSON 解析后替换高置信组合），根治自污染 | 需防「the unit」这类正常英文误反查 |
 
 **验收基线**：无论选哪条，`agent`/`system`/`MCP` 这类通用词不该再被洗——这是本次
 上下文污染的直接根源；产品名词是否保留以真实流量验证为准，不凭探针拍板。
+**已排除的假说**：UA 非触发因子——当晚 `ua=python-requests` 同样 400，今天 `ua=ZCode` 直连 200。
