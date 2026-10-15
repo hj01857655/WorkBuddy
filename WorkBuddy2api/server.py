@@ -31,6 +31,7 @@ from flask import Flask, Response, g, jsonify, request
 import credential
 import workbuddy
 import responses_bridge as rb
+import anthropic_bridge as ab
 
 # 加载 .env（项目根目录），让 API_KEY 等配置可写在文件里
 load_dotenv()
@@ -471,6 +472,68 @@ def responses_api():
     def generate():
         try:
             for frame in rb.chat_sse_to_responses(
+                    _chat_sse_lines(upstream, model, chunk_id, False), model):
+                yield frame
+        finally:
+            upstream.close()
+
+    resp = Response(_stream_log(generate(), g.rid, g.t0), status=200,
+                    mimetype="text/event-stream")
+    resp.headers["Cache-Control"] = "no-cache, no-transform"
+    resp.headers["X-Accel-Buffering"] = "no"
+    return _cors(resp)
+
+
+# ── Anthropic Messages 端点（Claude Code 等原生 Anthropic 客户端）──────────────
+# 与 /v1/responses 同构：anthropic_bridge 把 Anthropic ⇄ Chat 翻掉，复用
+# workbuddy 上游管线；响应侧包成 Anthropic SSE。
+@app.route("/v1/messages", methods=["POST"])
+def messages_api():
+    if request.method == "OPTIONS":
+        return _cors(Response(""))
+    denied = _guard()
+    if denied:
+        return denied
+
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return _cors(jsonify(ab.error_body("invalid_request_error",
+            "invalid request: JSON object body required"))), 400
+
+    chat_body = ab.anthropic_to_chat(body)
+    if not chat_body.get("messages"):
+        return _cors(jsonify(ab.error_body("invalid_request_error",
+            "invalid request: 'messages' is required"))), 400
+
+    payload = workbuddy.build_payload(chat_body)
+    model = payload["model"]
+    want_stream = bool(chat_body.get("stream"))
+    chunk_id = "chatcmpl-" + uuid.uuid4().hex[:24]
+
+    try:
+        cred = credential.load()
+        upstream = _open_upstream(payload, cred)
+    except Exception as error:
+        return _cors(jsonify(ab.error_body("api_error", str(error)))), 502
+
+    if upstream.status_code != 200:
+        with upstream:
+            status_body, status_code = _upstream_error(upstream)
+        return _cors(status_body), status_code
+
+    if not want_stream:
+        with upstream:
+            result = workbuddy.aggregate(upstream, model, chunk_id)
+        return _cors(Response(
+            json.dumps(ab.chat_json_to_anthropic(result, model), ensure_ascii=False,
+                       separators=(",", ":")).encode("utf-8"),
+            status=200,
+            content_type="application/json; charset=utf-8",
+        ))
+
+    def generate():
+        try:
+            for frame in ab.chat_sse_to_anthropic(
                     _chat_sse_lines(upstream, model, chunk_id, False), model):
                 yield frame
         finally:
