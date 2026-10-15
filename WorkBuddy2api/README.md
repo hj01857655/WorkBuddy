@@ -68,6 +68,7 @@ Chat 是上游母语；Responses / Anthropic 均为「方言 ⇄ 母语」双向
 | `HOST` | `127.0.0.1` | 监听地址 |
 | `PORT` | `8377` | 监听端口 |
 | `API_KEY` | — | 设置后 `/v1/*` 与 `/admin/api/*` 要求 Bearer 鉴权 |
+| `WB_SCRUB` | `0` | 渠道闸门词清洗开关：`0`=不清洗（默认，2026-10-15 上游实测已不拦）；`1`=恢复 `_SCRUB_MAP` 旧行为（若重现 11128 再开） |
 
 ## 上游硬约束
 
@@ -80,7 +81,7 @@ Chat 是上游母语；Responses / Anthropic 均为「方言 ⇄ 母语」双向
 - **tool_choice 对象形式有损**：无法强制调用指定函数
 - **stop / response_format / logprobs / seed / top_k 上游执行不了**，网关不伪造转发
 - **推理模型留足 max_tokens**：思维链计入输出预算，给小了返回空 content + `finish_reason=”length”`
-- **渠道内容闸门与请求侧 scrub**：上游曾在 2026-10-11 当晚对 `ua=ZCode` 长上下文请求拦截（`400 / code 11128`，仅 01:19–02:06 窗口内），网关加 `_SCRUB_MAP` 出站清洗后当晚即放行；**2026-10-15 直连上游复测：竞品名/通用词/逐字 Claude Code 系统提示词裸发一律 200，拦截面有时效性、已放开**。scrub 仍在生效且响应侧无还原，模型上下文与回显文本可能见到占位名；瘦身/开关方案见 `../docs/workbuddy-25-渠道闸门与scrub.md`
+- **渠道内容闸门与请求侧 scrub（已默认关闭）**：上游曾在 2026-10-11 当晚对 `ua=ZCode` 长上下文请求拦截（`400 / code 11128`），网关因此加了 `_SCRUB_MAP` 出站清洗；**2026-10-15 直连上游复测：竞品名/通用词/逐字 Claude Code 系统提示词裸发一律 200，拦截面有时效性、已放开**。现 scrub 由 `WB_SCRUB` 控制，**默认关（不清洗、不污染上下文）**；若 `request.log` 再现 400/11128，设 `WB_SCRUB=1` 即可回滚旧行为。背景与证据见 `../docs/workbuddy-25-渠道闸门与scrub.md`
 - **thinking / cache_control 丢失**：Anthropic 特有字段，Chat 协议无对应项
 - **单账号**，会真实消耗 credit
 

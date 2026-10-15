@@ -237,6 +237,11 @@ def to_openai_model(model: dict, probe: dict = None) -> dict:
 # 上游渠道闸门会扫 messages 文本，命中竞品产品名（实测 ``ZCode``）即返 11128
 # "unapproved channel"。仅做最小侵入替换：把 ZCode 字样抹成中性词，保留其余功能
 # 指令（browser-use/computer-use 等描述不动）。仅作用于转发给上游的副本，不改客户端原请求。
+# 渠道闸门清洗开关：默认关。2026-10-15 直连上游复测（docs/workbuddy-25 §四）：竞品名/通用词/
+# 逐字 Claude Code 系统提示词裸发一律 200，当晚拦截面有实效性、已放开；scrub 会污染模型上下文
+# （agent→helper 等通用词一并被洗）。若 request.log 再现 400/11128，设 WB_SCRUB=1 回滚旧行为。
+SCRUB_ON = os.environ.get("WB_SCRUB", "0").strip() != "0"
+
 _SCRUB_MAP = (
     ("ZCode", "the tool"), ("zcode", "the tool"),
     ("AtomCode", "the tool"), ("atomcode", "the tool"),
@@ -397,8 +402,10 @@ def build_payload(req: dict) -> dict:
         # 注：``agent`` 不在上游聊天端点的结构体内（24 号审计 §5.1），
         # 保留只为与其他官方入口对齐，不应期望它影响历史列表
         "agent": "cli",
-        # messages 文本做渠道闸门清洗（抹 ZCode 字样），避免上游 11128（r0002/r0011 实锤）
-        "messages": _scrub_messages(req.get("messages") or []),
+        # 渠道闸门清洗默认关闭（2026-10-15 实测上游已不拦，见文件头 SCRUB_ON 注释；
+        # 当年 r0002/r0011 的 11128 实锤只适用于那个窗口）
+        "messages": (_scrub_messages(req.get("messages") or []) if SCRUB_ON
+                     else (req.get("messages") or [])),
     }
     max_tokens = req.get("max_tokens")
     if max_tokens is None:
@@ -411,8 +418,8 @@ def build_payload(req: dict) -> dict:
         if req.get(key) is not None:
             payload[key] = req[key]
     if req.get("tools"):
-        # tools 描述同样过渠道闸门清洗（r0047 实锤：只清 messages 不够）
-        payload["tools"] = _scrub_tools(req["tools"])
+        # tools 描述同样受渠道闸门开关控制（旧实锤 r0047：只清 messages 不够，开就要两路都开）
+        payload["tools"] = _scrub_tools(req["tools"]) if SCRUB_ON else req["tools"]
     choice = req.get("tool_choice")
     if isinstance(choice, str):
         # 字符串形态不依赖是否带 tools，照转
