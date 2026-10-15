@@ -10,3 +10,9 @@ re/*.log
 re/__pycache__/
 re/buildkey.json
 tools/__pycache__/
+
+# 清理时新增：归档压缩包 / 网关请求日志 / Python 缓存
+re/hook-traffic.jsonl.gz
+re/*.gz
+WorkBuddy2api/request.log*
+*.pyc
