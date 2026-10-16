@@ -16,3 +16,20 @@ re/hook-traffic.jsonl.gz
 re/*.gz
 WorkBuddy2api/request.log*
 *.pyc
+
+# 环境配置：真配置一律忽略，仅放行 .example 模板
+.env
+.env.*
+!.env.example
+# 密钥、证书、令牌样本
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+.npmrc
+# 备份与临时产物
+*.bak
+*.orig
+*.tmp
+*~
