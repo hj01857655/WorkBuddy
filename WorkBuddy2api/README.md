@@ -39,7 +39,7 @@ python checkin.py doctor
 | 端点 | 方法 | 说明 |
 |---|---|---|
 | `/v1/chat/completions` | POST | OpenAI Chat Completions（流式/非流式，`tools` 透传） |
-| `/v1/responses` | POST | OpenAI Responses API（翻译层 ⇄ Chat） |
+| `/v1/responses` | POST | OpenAI Responses API（请求翻 Chat 调上游，响应由桥重放原生事件流） |
 | `/v1/messages` | POST | Anthropic Messages API（翻译层 ⇄ Chat） |
 | `/v1/models` | GET | 模型列表（56 个 CN 模型，附 credits 倍率、能力标记、可调性） |
 | `/health` | GET | 存活探针 |
@@ -54,12 +54,14 @@ python checkin.py doctor
 客户端                 proxy 翻译层              上游（仅 Chat）
 ─────────            ─────────────            ─────────────
 Chat Completions ──→  直通                 ──→  /v2/chat/completions
-Responses        ──→  responses_to_chat   ──→  /v2/chat/completions
-Anthropic        ──→  anthropic_to_chat   ──→  /v2/chat/completions
-                    ↑ 响应翻回各自格式
+Responses        ──→  responses_bridge     ──→  /v2/chat/completions
+                      （请求翻 Chat；响应重放 Responses 事件流——sequence_number
+                        递增、终帧携带聚合全文与 usage，dsh 等 Responses 客户端直连）
+Anthropic        ──→  anthropic_bridge     ──→  /v2/chat/completions
+                      （双向翻译）
 ```
 
-Chat 是上游母语；Responses / Anthropic 均为「方言 ⇄ 母语」双向翻译层。`thinking`、`cache_control` 等 Anthropic 特有字段无 Chat 对应项，翻译时丢弃。
+Chat 是上游母语；Responses / Anthropic 均为「方言 ⇄ 母语」双向翻译层。`cache_control` 与 Anthropic 入站 `thinking` 配置无 Chat 对应项，翻译时丢弃；上游输出思维链时经 `reasoning_content` 返回，Responses 客户端以 `reasoning_summary_*` 事件收到。
 
 ## 配置
 
@@ -81,21 +83,5 @@ Chat 是上游母语；Responses / Anthropic 均为「方言 ⇄ 母语」双向
 - **stop / response_format / logprobs / seed / top_k 上游执行不了**，网关不伪造转发
 - **推理模型留足 max_tokens**：思维链计入输出预算，给小了返回空 content + `finish_reason=”length”`
 - **渠道内容闸门（scrub 已整体移除）**：上游曾在 2026-10-11 当晚对 `ua=ZCode` 长上下文请求拦截（`400 / code 11128`），网关曾加 `_SCRUB_MAP` 出站清洗；**2026-10-15 直连上游复测：竞品名/通用词/逐字 Claude Code 系统提示词裸发一律 200，拦截面有时效性、已放开**，当日实测后清洗代码连同 `system→user` 角色改写一并删除（它曾把 `Agent`→`helper`、`ZCode`→`the unit`，污染模型上下文）。若 `request.log` 重现 400/11128，恢复入口：git 提交 `f9e05e1`（WB_SCRUB 开关版）；完整背景见 `../docs/workbuddy-25-渠道闸门与scrub.md`
-- **thinking / cache_control 丢失**：Anthropic 特有字段，Chat 协议无对应项
+- **cache_control / Anthropic thinking 配置丢弃**：Chat 协议无对应项（上游亦无 Anthropic 式 prompt cache）；思维链内容在 Responses 侧以 reasoning 事件保留
 - **单账号**，会真实消耗 credit
-
-## 项目结构
-
-```
-WorkBuddy2api/
-├── server.py              # Flask 应用：API + 管理面板 + 签到线程
-├── workbuddy.py           # 上游客户端：请求头、模型目录、SSE 解析
-├── credential.py          # 凭证读取 + 令牌续期
-├── responses_bridge.py    # Responses ⇄ Chat 翻译层
-├── anthropic_bridge.py    # Anthropic ⇄ Chat 翻译层
-├── oauth.py               # OAuth 设备流登录
-├── checkin.py             # 每日签到 CLI
-├── panel.html             # 管理面板（vanilla JS）
-├── requirements.txt
-└── .env
-```
