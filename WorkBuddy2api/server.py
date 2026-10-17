@@ -30,8 +30,8 @@ from flask import Flask, Response, g, jsonify, request
 
 import credential
 import workbuddy
-import responses_bridge as rb
-import anthropic_bridge as ab
+from adapters import responses as rb
+from adapters import anthropic as ab
 
 # 加载 .env（项目根目录），让 API_KEY 等配置可写在文件里
 load_dotenv()
@@ -69,6 +69,20 @@ def _guard():
     if _authorized():
         return None
     return _cors(jsonify({"error": {"message": "invalid api key", "type": "auth_error"}})), 401
+
+
+def _request_realm():
+    """本次请求用哪个 realm（国内版 cn / 国际版 intl）。
+
+    优先级：请求头 ``X-WorkBuddy-Realm`` > 查询参数 ``?realm=`` > 环境变量 ``WB_REALM``
+    > 有凭据的槽位（cn 优先）。返回 None 表示交给 credential 自己决定。
+    两个 realm 就用同一个端口切换，不必起两份服务。
+    """
+    raw = request.headers.get("X-WorkBuddy-Realm") or request.args.get("realm") or ""
+    name = credential.normalize_realm(raw)
+    if raw and not name:
+        raise RuntimeError("未知 realm: %s（可用 cn / intl）" % raw)
+    return name or None
 
 
 # ── 请求日志（与 qoder2api 同一标准：request.log 轮转 + rid + in:/done: 双行）──
@@ -264,14 +278,15 @@ def list_models():
     if denied:
         return denied
     try:
-        models = workbuddy.list_models()
+        realm = _request_realm()
+        models = workbuddy.list_models(realm=realm)
     except Exception as error:
         return _cors(jsonify({"error": {"message": str(error), "type": "upstream_error"}})), 502
     # 带上本账号可调性结果（未探测的模型返回 callable=null，呌面板/管理员跑探测）
-    probe = workbuddy.load_probe()
+    probe = workbuddy.load_probe(realm)
     return _cors(jsonify({
         "object": "list",
-        "data": [workbuddy.to_openai_model(model, probe.get(model.get("id")))
+        "data": [workbuddy.to_openai_model(model, probe.get(model.get("id")), realm)
                  for model in models if model.get("id")],
     }))
 
@@ -318,7 +333,7 @@ def _open_upstream(payload, cred):
 def _chat_sse_lines(upstream, model, chunk_id, want_usage):
     """产出 Chat SSE 原始行（带 data: 前缀，含 [DONE] 收尾帧）。
 
-    chat 与 responses 路由共用：后者用 responses_bridge 把这行流再包成
+    chat 与 responses 路由共用：后者用 adapters.responses 把这行流再包成
     Responses SSE（每帧带 sequence_number）。
     """
     finish_reason, usage, saw_tool_calls, sent_role = None, None, False, False
@@ -390,7 +405,7 @@ def chat_completions():
     chunk_id = "chatcmpl-" + uuid.uuid4().hex[:24]
 
     try:
-        cred = credential.load()
+        cred = credential.load(_request_realm())
         upstream = _open_upstream(payload, cred)
     except Exception as error:
         return _cors(jsonify({"error": {"message": str(error), "type": "upstream_error"}})), 502
@@ -425,7 +440,7 @@ def chat_completions():
 # ── OpenAI Responses 端点（grok-build / Codex 等原生 Responses 客户端）──────
 @app.route("/v1/responses", methods=["POST", "OPTIONS"])
 def responses_api():
-    """Responses 协议入口：请求体经 responses_bridge 转成 Chat 后走与 chat
+    """Responses 协议入口：请求体经 adapters.responses 转成 Chat 后走与 chat
     相同的上游管线（workbuddy.open_chat_stream）；响应侧把 Chat SSE 包成
     Responses SSE（每帧带 sequence_number，grok 类型级强制）。"""
     if request.method == "OPTIONS":
@@ -454,7 +469,7 @@ def responses_api():
     chunk_id = "chatcmpl-" + uuid.uuid4().hex[:24]
 
     try:
-        cred = credential.load()
+        cred = credential.load(_request_realm())
         upstream = _open_upstream(payload, cred)
     except Exception as error:
         return _cors(jsonify({"error": {"message": str(error), "type": "upstream_error"}})), 502
@@ -490,7 +505,7 @@ def responses_api():
 
 
 # ── Anthropic Messages 端点（Claude Code 等原生 Anthropic 客户端）──────────────
-# 与 /v1/responses 同构：anthropic_bridge 把 Anthropic ⇄ Chat 翻掉，复用
+# 与 /v1/responses 同构：adapters.anthropic 把 Anthropic ⇄ Chat 翻掉，复用
 # workbuddy 上游管线；响应侧包成 Anthropic SSE。
 @app.route("/v1/messages", methods=["POST"])
 def messages_api():
@@ -516,7 +531,7 @@ def messages_api():
     chunk_id = "chatcmpl-" + uuid.uuid4().hex[:24]
 
     try:
-        cred = credential.load()
+        cred = credential.load(_request_realm())
         upstream = _open_upstream(payload, cred)
     except Exception as error:
         return _cors(jsonify(ab.error_body("api_error", str(error)))), 502
@@ -555,7 +570,16 @@ def messages_api():
 def health():
     if request.method == "OPTIONS":
         return _cors(Response(""))
-    return _cors(jsonify({"ok": True, "service": "WorkBuddy2api"}))
+    # realm 与槽位状态放进探活：客户端拿不准现在走哪套上游时，先看这里
+    try:
+        active = credential.resolve(_request_realm())
+    except Exception as error:
+        active, notice = "", str(error)
+    else:
+        notice = ""
+    return _cors(jsonify({"ok": True, "service": "WorkBuddy2api",
+                          "realm": active, "realms": credential.status(),
+                          "notice": notice}))
 
 
 # ── 管理面板 ──────────────────────────────────────────────────────────
@@ -574,11 +598,13 @@ def admin_overview():
     if denied:
         return denied
 
-    info = {"uid": "", "nickname": "", "domain": "", "valid": False,
-            "remain_text": "—", "notice": ""}
+    info = {"realm": "", "realm_label": "", "uid": "", "nickname": "", "domain": "",
+            "valid": False, "remain_text": "—", "notice": ""}
     try:
-        cred = credential.load()
+        cred = credential.load(_request_realm())
         info.update({
+            "realm": cred["realm"],
+            "realm_label": cred["realm_label"],
             "uid": cred["uid"],
             "nickname": cred["nickname"],
             "domain": cred["domain"],
@@ -589,9 +615,9 @@ def admin_overview():
         info["notice"] = str(error)
 
     models = []
-    probe = workbuddy.load_probe()
+    probe = workbuddy.load_probe(info["realm"] or None)
     try:
-        for model in workbuddy.list_models():
+        for model in workbuddy.list_models(realm=info["realm"] or None):
             if not model.get("id"):
                 continue
             models.append({
@@ -611,6 +637,8 @@ def admin_overview():
     return _cors(jsonify({
         "service": "WorkBuddy2api",
         "credential": info,
+        # 两个槽位都列出来：国际版/国内版各一份凭据，缺哪个一眼可见
+        "realms": credential.status(),
         "models": models,
         "local_auth": bool(API_KEY),
         "probe": {"done": len(probed), "total": len(models),
@@ -629,7 +657,7 @@ def admin_refresh_token():
     if denied:
         return denied
     try:
-        credential.refresh()
+        credential.refresh(realm=_request_realm())
         return _cors(jsonify({"ok": True, "message": "令牌已刷新"}))
     except Exception as error:
         return _cors(jsonify({"ok": False, "message": str(error)})), 500
@@ -648,7 +676,7 @@ def admin_probe_models():
         return denied
     force = bool((request.get_json(silent=True) or {}).get("force"))
     try:
-        cache = workbuddy.probe_models(force=force)
+        cache = workbuddy.probe_models(force=force, realm=_request_realm())
     except Exception as error:
         return _cors(jsonify({"ok": False, "message": str(error)})), 502
     ok = [k for k, v in cache.items() if v.get("callable")]
@@ -704,13 +732,18 @@ def _checkin_loop() -> None:
 
 
 if __name__ == "__main__":
+    for row in credential.status():
+        if row["present"]:
+            print("凭证账号 [%s] %s (%s)  剩余 %s"
+                  % (row["label"], row["nickname"] or "未命名", row["uid"], row["remain_text"]))
+        else:
+            print("凭证账号 [%s] 无（登录：%s）"
+                  % (row["label"], "python oauth.py --realm global" if row["realm"] == "intl"
+                     else "python checkin.py doctor"))
     try:
-        cred = credential.load()
-        print("凭证账号: %s (%s)" % (cred["nickname"] or "未命名", cred["uid"]))
-        print("令牌有效期: %s" % credential.remain_text(cred["expires_at"]))
+        print("默认 realm: %s" % credential.resolve(_request_realm() if False else None))
     except Exception as error:
         print("凭证不可用: %s" % error)
-        print("请先运行签到脚本引导凭据：python checkin.py doctor")
     print("WorkBuddy2api 已启动: http://%s:%s" % (LISTEN_HOST, LISTEN_PORT))
     print("OpenAI Base URL: http://%s:%s/v1" % (LISTEN_HOST, LISTEN_PORT))
     print("本地鉴权: %s" % ("已开启（API_KEY）" if API_KEY else "未开启（仅回环）"))

@@ -5,5 +5,7 @@ request.log*
 server.log*
 server_console.log*
 dumps/
+# 可调性探测结果：每次探测都重写，属于运行期产物（按 realm 分文件）
+models_probe*.json
 __pycache__/
 *.pyc

@@ -23,7 +23,9 @@ import requests
 import credential
 
 APP_VERSION = "5.6.2"
-USER_AGENT = "WorkBuddy/5.6.2 CLI/2.147.0"
+# UA 按 realm 取：国内版两段式、国际版三段式（多一段客户端名），上游按段校验，
+# 混用会被拒（实测 400/code 12403）。表在 credential.REALMS 里，一处维护。
+USER_AGENT = credential.USER_AGENT
 MAX_BODY_BYTES = 33554432        # 上游请求体上限 32MB
 UPSTREAM_TIMEOUT = (10, 570)     # 官方总超时 570s
 CONFIG_PATH = "/v3/config"
@@ -34,14 +36,25 @@ _SESSION = {
     "conversation_id": str(uuid.uuid4()),
     "conversation_request_id": str(uuid.uuid4()),
 }
-_MODELS = {"at": 0.0, "data": None}
+_MODELS = {}                     # realm -> {"at": float, "data": list|None}
 _MODELS_TTL = 3600
 # 促销目录（/v3/config → data.modelPromotions），与模型目录同 TTL 同步刷新。
 # 免费/折扣判定只认上游数据：enabled + factor==0 + 有效期 + daily 窗口（北京时间）
-_PROMOS = {"at": 0.0, "data": []}
+_PROMOS = {}                     # realm -> {"at": float, "data": list}
 # 单飞锁：缓存失效瞬间多个并发请求只放行一个去拉上游，其余阻塞复用其结果，
 # 避免缓存击穿（thundering herd）打爆上游 /v3/config 触发 502
 _MODELS_LOCK = threading.Lock()
+
+
+def _cache_bucket(store: dict, realm: str = None, empty=None) -> dict:
+    """按 realm 分桶的进程内缓存。
+
+    模型目录与促销目录都是**按 realm 拉**的（国际版与国内版的目录不同），
+    共用一个桶会让后拉的 realm 看到前一个的模型表。探测结果同理，但那边落在
+    各自的文件里（见 probe_cache_path）。
+    """
+    key = credential.resolve(realm)
+    return store.setdefault(key, {"at": 0.0, "data": empty})
 
 
 def _bj_now() -> time.struct_time:
@@ -89,10 +102,10 @@ def _promo_free(promo: dict, now: time.struct_time | None = None) -> tuple[bool,
     return True, ",".join("%s-%s" % (w["start"], w["end"]) for w in daily)
 
 
-def _model_free_promo(mid: str, now: time.struct_time | None = None) -> tuple[bool, str]:
+def _model_free_promo(mid: str, now=None, realm: str = None) -> tuple[bool, str]:
     """汇总该模型命中的所有 0 扣费促销（多窗口以逗号连接）。"""
     windows = []
-    for p in _PROMOS["data"]:
+    for p in _cache_bucket(_PROMOS, realm, [])["data"]:
         if mid in (p.get("modelIds") or []):
             free, win = _promo_free(p, now)
             if free:
@@ -112,7 +125,7 @@ def build_headers(cred: dict, token: str) -> dict:
         "Accept": "application/json",
         # 上游按 UA 校验客户端版本：缺少 "CLI/<版本>" 会被拒
         # （实测 400 / code 12403 "check ua, get coding copilot version error"）
-        "User-Agent": USER_AGENT,
+        "User-Agent": credential.user_agent(cred.get("realm")),
         # 官方强制：SSE 不能被压缩缓冲
         "Accept-Encoding": "identity",
         "x-requested-with": "XMLHttpRequest",
@@ -143,23 +156,26 @@ def build_headers(cred: dict, token: str) -> dict:
     return headers
 
 
-def list_models(force: bool = False) -> list:
+def list_models(force: bool = False, realm: str = None) -> list:
     """从 /v3/config 拉模型目录 + 促销目录（1 小时缓存，同响应同刷新）。
 
     缓存未命中时走单飞锁：仅一个线程去拉上游，其余并发线程阻塞复用同一份结果，
     防止多并发同时打上游造成节流 502（2026-10-11 日志 r0114–r0119 六并发全 502 根因）。
     """
-    if (not force and _MODELS["data"] is not None
-            and time.time() - _MODELS["at"] < _MODELS_TTL):
-        return _MODELS["data"]
+    bucket = _cache_bucket(_MODELS, realm, None)
+    if (not force and bucket["data"] is not None
+            and time.time() - bucket["at"] < _MODELS_TTL):
+        return bucket["data"]
     with _MODELS_LOCK:
         # 二次检查：等锁期间可能已有线程刷新完缓存
-        if (not force and _MODELS["data"] is not None
-                and time.time() - _MODELS["at"] < _MODELS_TTL):
-            return _MODELS["data"]
-        cred = credential.load()
+        bucket = _cache_bucket(_MODELS, realm, None)
+        if (not force and bucket["data"] is not None
+                and time.time() - bucket["at"] < _MODELS_TTL):
+            return bucket["data"]
+        cred = credential.load(realm)
         url = credential.api_origin(cred) + CONFIG_PATH
-        resp = requests.get(url, headers=build_headers(cred, credential.token()), timeout=30)
+        resp = requests.get(url, headers=build_headers(cred, credential.token(realm=cred["realm"])),
+                            timeout=30)
         if resp.status_code != 200:
             raise RuntimeError("模型目录获取失败 HTTP %s: %s" % (resp.status_code, resp.text[:200]))
         body = resp.json()
@@ -173,13 +189,14 @@ def list_models(force: bool = False) -> list:
         # 只是长在 API 表面上。在写缓存这一层拦，而不是在 `to_openai_model` 上标
         # `callable=False`：上游自己已标不可用，没必要再把它当候选呈现给客户端。
         models = [m for m in models if not m.get("disabled")]
-        _MODELS["data"], _MODELS["at"] = models, time.time()
-        # 促销目录同源落缓存：免费判定（_model_free_promo）的数据基础
-        _PROMOS["data"], _PROMOS["at"] = data.get("modelPromotions") or [], time.time()
+        bucket["data"], bucket["at"] = models, time.time()
+        # 促销目录同源落缓存（同样按 realm 分桶）：免费判定（_model_free_promo）的数据基础
+        promos = _cache_bucket(_PROMOS, realm, [])
+        promos["data"], promos["at"] = data.get("modelPromotions") or [], time.time()
         return models
 
 
-def to_openai_model(model: dict, probe: dict = None) -> dict:
+def to_openai_model(model: dict, probe: dict = None, realm: str = None) -> dict:
     """把上游模型对象转成 OpenAI 模型对象（附能力元数据）。
 
     ``probe`` 是 `probe_models` 落盘的本账号可调性结果；没有结果时 ``callable`` 为
@@ -194,7 +211,7 @@ def to_openai_model(model: dict, probe: dict = None) -> dict:
     # hy4 夜间免费同源于此；目录 credits=x0.00（如有）仅作静态兜底
     credits_raw = str(model.get("credits") or "").strip().lower()
     static_free = credits_raw in ("x0.00", "x0", "$0", "0")
-    promo_free, free_window = _model_free_promo(model.get("id") or "")
+    promo_free, free_window = _model_free_promo(model.get("id") or "", realm=realm)
     is_free = static_free or promo_free
     return {
         "id": model.get("id"),
@@ -304,11 +321,12 @@ def open_chat_stream(payload: dict, cred: dict) -> requests.Response:
 
     resp = None
     for attempt in (1, 2):
-        headers = build_headers(cred, credential.token())
+        headers = build_headers(cred, credential.token(realm=cred["realm"]))
         resp = requests.post(url, data=raw, headers=headers, stream=True, timeout=UPSTREAM_TIMEOUT)
         if resp.status_code == 401 and attempt == 1:
             resp.close()
-            credential.refresh()        # 旧 Bearer 进、新 token 出
+            # 旧 Bearer 进、新 token 出；刷新端点按 realm 选（国际版同路径、只收 POST）
+            credential.refresh(realm=cred["realm"])
             continue
         return resp
     return resp
@@ -451,22 +469,32 @@ def make_chunk(chunk_id: str, model: str, delta: dict, finish_reason=None, usage
 
 
 # ── 可调性探测（目录不等于能调）───────────────────────────────────
+# 可调性结果按 realm 分开存：同一个模型在国内外账号上可调性不同
+# （上游目录会把本账号调不动的模型也列出来），混存会互相误导。
 PROBE_CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models_probe.json")
 PROBE_TTL = 24 * 3600          # 结果一天内有效；可手动重探
 PROBE_TEXT = "回复一个字：好"
 
 
-def load_probe() -> dict:
-    """读可调性缓存 {model_id: {callable, code, msg, at}}；文件缺失/损坏返回空。"""
+def probe_cache_path(realm: str = None) -> str:
+    """探测结果文件：cn 沿用历史文件名，其余 realm 加后缀。"""
+    name = credential.resolve(realm)
+    if name == credential.DEFAULT_REALM:
+        return PROBE_CACHE
+    return os.path.join(os.path.dirname(PROBE_CACHE), "models_probe_%s.json" % name)
+
+
+def load_probe(realm: str = None) -> dict:
+    """读该 realm 的可调性缓存 {model_id: {callable, code, msg, at}}；文件缺失/损坏返回空。"""
     try:
-        with open(PROBE_CACHE, "r", encoding="utf-8") as file:
+        with open(probe_cache_path(realm), "r", encoding="utf-8") as file:
             data = json.load(file)
         return data if isinstance(data, dict) else {}
     except (OSError, ValueError):
         return {}
 
 
-def probe_one(model_id: str, tries: int = 3) -> dict:
+def probe_one(model_id: str, tries: int = 3, realm: str = None) -> dict:
     """对单模型发一发极小请求，只看能不能调起来（读到首帧即断开，不跑完回复）。
 
     只用来区分“本账号无此模型服务”（如 400/11102）与“能调”，不能当作能力评测。
@@ -481,7 +509,7 @@ def probe_one(model_id: str, tries: int = 3) -> dict:
     resp = None
     for attempt in range(tries):
         try:
-            resp = open_chat_stream(payload, credential.load())
+            resp = open_chat_stream(payload, credential.load(realm))
             break
         except Exception as error:
             if attempt == tries - 1:
@@ -508,15 +536,15 @@ def probe_one(model_id: str, tries: int = 3) -> dict:
         resp.close()
 
 
-def probe_models(force: bool = False) -> dict:
+def probe_models(force: bool = False, realm: str = None) -> dict:
     """给目录内每个模型跑一次可调性探测，结果落盘。
 
     默认用缓存（TTL 1 天）；``force=True`` 重跑全部。返回缓存。
     这一步会向真实模型发请求（小但非零 credit），所以**不在启动时自动跑**，
     只由面板/管理员主动触发（`POST /admin/api/probe-models`）。
     """
-    cache = load_probe()
-    ids = [m.get("id") for m in list_models() if m.get("id")]
+    cache = load_probe(realm)
+    ids = [m.get("id") for m in list_models(realm=realm) if m.get("id")]
     todo = []
     for model_id in ids:
         hit = cache.get(model_id) or {}
@@ -526,9 +554,9 @@ def probe_models(force: bool = False) -> dict:
             continue
         todo.append(model_id)
     for model_id in todo:
-        cache[model_id] = probe_one(model_id)
+        cache[model_id] = probe_one(model_id, realm=realm)
         try:
-            with open(PROBE_CACHE, "w", encoding="utf-8") as file:
+            with open(probe_cache_path(realm), "w", encoding="utf-8") as file:
                 json.dump(cache, file, ensure_ascii=False, indent=1)
         except OSError:
             pass

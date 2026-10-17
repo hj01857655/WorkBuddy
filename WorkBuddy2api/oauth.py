@@ -13,8 +13,8 @@
 无 PKCE：安全性依赖服务端签发的一次性 state。准入三件套：Origin/Referer/UA 伪装官方 CLI。
 
 用法：
-    python oauth.py            # 发起登录，轮询完成后把凭据写入 auth.json（与签到脚本同仓）
-    python oauth.py --realm global
+    python oauth.py                 # 国内版：写 auth.json（与签到脚本同槽位）
+    python oauth.py --realm global  # 国际版：写 auth-intl.json，不覆盖国内版凭据
 """
 import argparse
 import json
@@ -24,6 +24,8 @@ import time
 
 import requests
 
+import credential
+
 # realm → 上游 base / Origin（准入三件套之一）
 REALMS = {
     "cn": {"base": "https://copilot.tencent.com",
@@ -32,7 +34,9 @@ REALMS = {
                "origin": "https://www.workbuddy.ai"},
 }
 # 凭据仓库：与签到脚本共用同一份（auth.json 归两边共读，签到脚本负责续期落盘）
-AUTH_STORE = os.path.join(os.path.expanduser("~"), ".workbuddy", "checkin", "auth.json")
+# 凭据落盘位置由 credential 按 realm 决定：cn → auth.json（签到脚本同槽位）、
+# intl → auth-intl.json。以前两 realm 共用一份，登一个就把另一个冲掉。
+AUTH_STORE = credential.AUTH_STORE
 STATE_PATH = "/v2/plugin/auth/state?platform=CLI"
 TOKEN_PATH = "/v2/plugin/auth/token"
 ACCOUNT_PATH = "/v2/plugin/login/account"
@@ -111,7 +115,7 @@ def fetch_account(realm: str, state: str, access_token: str) -> dict:
 
 
 def save_credentials(bundle: dict, account: dict, realm: str) -> str:
-    """合并 token + account 写入 auth.json（签到脚本/反代共读的同一份）。"""
+    """合并 token + account 写入该 realm 的槽位（cn → auth.json，intl → auth-intl.json）。"""
     creds = {
         "accessToken": bundle.get("accessToken"),
         "refreshToken": bundle.get("refreshToken") or "",
@@ -119,15 +123,16 @@ def save_credentials(bundle: dict, account: dict, realm: str) -> str:
         "uid": account.get("uid") or "",
         "nickname": account.get("nickname") or "",
         "domain": bundle.get("domain") or REALMS[realm]["base"].split("//")[1],
-        "_realm": realm,
+        "_realm": credential.normalize_realm(realm) or realm,
     }
     for key in ("accessToken", "uid"):
         if not creds.get(key):
             raise RuntimeError("凭据缺少 %s，不落盘" % key)
-    os.makedirs(os.path.dirname(AUTH_STORE), exist_ok=True)
-    with open(AUTH_STORE, "w", encoding="utf-8") as fh:
+    path = credential.store(realm)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
         json.dump(creds, fh, ensure_ascii=False, indent=2)
-    return AUTH_STORE
+    return path
 
 
 def login(realm: str = "cn") -> dict:

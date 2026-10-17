@@ -76,7 +76,7 @@ captured = {}
 
 def install_fake(kind):
     server.API_KEY = ""
-    server.credential.load = lambda: {"token": "fake"}
+    server.credential.load = lambda realm=None: {"token": "fake", "realm": realm or "cn"}
     server.workbuddy.build_payload = (
         lambda body: captured.update(payload=body) or {"model": body.get("model")})
 
